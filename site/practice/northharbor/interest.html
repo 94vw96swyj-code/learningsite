@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Interest Card, City of North Harbor Careers Portal (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a sign-up for job alert emails. It is not a job application.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="nh-portal">
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> The City of North Harbor is not a real city. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Job Interest Card page (signs up for job alert emails, not an application)">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>careers.northharbormn.gov</b>/interest-card</span></div>
+    <div class="site portal">
+      <header class="pt-top">
+        <div class="pt-name"><svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12" fill="#fff"/><path d="M7 17c2.3-1.6 4.7-1.6 7 0s4.7 1.6 7 0" stroke="#26323D" stroke-width="2" fill="none"/><path d="M14 6v8M10 10h8" stroke="#26323D" stroke-width="2"/></svg><div><b>City of North Harbor</b><span>Careers Portal</span></div></div>
+        <a href="home.html">City website</a>
+      </header>
+      <div class="pt-body">
+        <a class="pt-back" href="jobs.html"><span aria-hidden="true">&larr;</span> Back to current openings</a>
+        <h1 id="icH" tabindex="-1">Job Interest Card</h1>
+        <p class="pt-intro">Tell us what kind of work you want. We’ll email you when the City posts a new job in that area.</p>
+        <div class="pt-info"><p><b>This is not a job application.</b> To apply for a job that’s open now, find it in the current openings and click Apply.</p></div>
+        <div id="icArea">
+          <form class="pt-form" id="icForm" novalidate>
+            <div id="icErr" aria-live="polite"></div>
+            <div class="field" id="f-ic-email"><label for="ic-email">Email address<span class="req" aria-hidden="true">*</span></label><input type="email" id="ic-email" autocomplete="email" required data-private><p class="hint">Job alerts go to this email.</p></div>
+            <fieldset id="f-ic-cats"><legend>Job categories<span class="req" aria-hidden="true">*</span></legend>
+              <p class="hint" style="margin:0 0 0.4rem">Choose at least one.</p>
+              <label class="choice"><input type="checkbox" name="ic-cat" value="office"> <span>Office and clerical</span></label>
+              <label class="choice"><input type="checkbox" name="ic-cat" value="finance"> <span>Finance and accounting</span></label>
+              <label class="choice"><input type="checkbox" name="ic-cat" value="parks"> <span>Parks, recreation and library</span></label>
+              <label class="choice"><input type="checkbox" name="ic-cat" value="safety"> <span>Police and fire</span></label>
+              <label class="choice"><input type="checkbox" name="ic-cat" value="works"> <span>Public works and utilities</span></label>
+            </fieldset>
+            <button class="btn btn-primary" type="submit">Sign up for job alerts</button>
+          </form>
+        </div>
+        <noscript><p>This form needs JavaScript. Ask your instructor for help.</p></noscript>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, card = P.byId("card"), form = P.byId("icForm");
+  function coachNotes(done) {
+    P.coach(done ? [
+      "You signed up for emails, but you have not applied for any job.",
+      "Click “Back to current openings.” Then find posting 2026‑0419 and click Apply."
+    ] : [
+      "This is not an application. A Job Interest Card only sends you emails when new jobs are posted.",
+      "The job you picked is open right now, so you don’t need this. Click “Back to current openings” and find posting 2026‑0419."
+    ]);
+  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    P.clearErrors();
+    var n = 0, email = P.val("ic-email");
+    if (!P.validEmail(email)) { P.markInvalid("ic-email", email.trim() ? "Enter a valid email, like name@example.com." : "Enter an email address."); n++; }
+    if (!form.querySelector("input[name=ic-cat]:checked")) { P.markInvalid("ic-cats", "Choose at least one job category."); n++; }
+    P.summary("icErr", n);
+    if (n) return;
+    P.byId("icArea").innerHTML = '<div class="pt-done"><h2 id="icDone" tabindex="-1">You’re signed up for job alerts</h2>' +
+      "<p>We’ll email you when the City posts new jobs in the categories you chose. (This is practice, so no email is sent.)</p>" +
+      "<p><b>You have not applied for any job.</b> A Job Interest Card is not an application.</p>" +
+      '<a class="btn btn-primary" href="jobs.html">Back to current openings</a></div>';
+    card.setAttribute("data-step", "Job Interest Card: signed up for job alert emails (this is not an application)");
+    coachNotes(true);
+    P.byId("icDone").focus();
+  });
+  coachNotes(false);
+  P.initBar();
+})();
+</script>
+</body>
+</html>

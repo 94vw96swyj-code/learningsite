@@ -1,0 +1,82 @@
+/* Tamarack State University practice application. The same navy and gold as the university's practice website (site.css). */
+:root {
+  --brand: #1E3F6F; --brand-dark: #142B4D; --brand-tint: #E8EEF6;
+  --ts-gold: #E4A82A; --ts-rule: #DCE2EA;
+  --ts-serif: "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+}
+
+/* University header: logo, "Careers", and who's signed in */
+.uni-head { background: var(--card); border-bottom: 3px solid var(--ts-gold); }
+.uni-head .inner { max-width: 84rem; margin: 0 auto; padding: 0.85rem 1rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 0.75rem; }
+.uni-logo { display: inline-flex; align-items: center; gap: 0.55rem; font-family: var(--ts-serif); font-weight: 700; font-size: 1.12rem; line-height: 1.15; color: var(--brand-dark); }
+.uni-logo svg { flex: none; }
+.uni-unit { font-family: var(--ts-serif); font-size: 1.05rem; color: var(--brand); border-left: 1px solid var(--ts-rule); padding-left: 0.75rem; margin-right: auto; }
+.me { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; color: var(--muted); }
+.me-av { width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--brand-tint); color: var(--brand-dark); display: grid; place-items: center; flex: none; }
+@media (max-width: 560px) { .me-long { display: none; } }
+
+#card h1 { font-family: var(--ts-serif); font-weight: 600; }
+
+/* Start page */
+.kicker { font-size: 0.85rem; font-weight: 600; color: var(--brand); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 0.2rem; }
+.signed { display: flex; gap: 0.6rem; align-items: flex-start; background: #EEF6F1; border: 1px solid #BFDCC9; border-radius: 6px; padding: 0.75rem 1rem; margin: 0 0 1.25rem; }
+.signed svg { flex: none; margin-top: 0.1rem; }
+.signed p { margin: 0; overflow-wrap: anywhere; }
+.posting-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem 1.5rem; margin: 0 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 6px; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.posting h2 { font-size: 1.08rem; margin: 1.5rem 0 0.4rem; }
+.posting p { margin: 0 0 0.5rem; }
+.posting ul { margin: 0; padding-left: 1.25rem; }
+.posting li { margin: 0.2rem 0; }
+
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.1rem 0.5rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: -0.25rem 0 1.5rem; }
+.alert p { margin: 0 0 0.35rem; }
+.alert p:last-child { margin-bottom: 0; }
+
+/* "Show me what's off" notes sit under the box they name */
+#card .field > .flag-note { margin: 0.6rem 0 0; }
+#card .btn + .flag-note { margin: 0.9rem 0 1rem; }
+
+/* Documents: attached files and the practice person's files */
+.doc-h { font-size: 1.1rem; margin: 1.25rem 0 0.6rem; }
+.att-list, .pick-list { list-style: none; margin: 0 0 1.5rem; padding: 0; display: grid; gap: 0.6rem; }
+.att, .pick { border: 1px solid var(--line); border-radius: 6px; padding: 0.7rem 0.9rem; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0.2rem 0.75rem; align-items: center; background: #fff; }
+.att { background: #FAFBFD; border-color: #C9D3E0; }
+.att-ic { grid-row: 1; align-self: start; padding-top: 0.15rem; }
+.att-main { min-width: 0; }
+.fname { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.fmeta { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.att .att-type { grid-column: 2; margin: 0.35rem 0 0; max-width: 17rem; }
+.att .att-type label { font-size: 0.88rem; }
+.fbtns { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.25rem; }
+.fbtns .btn-link { min-height: 2.5rem; } /* tall enough to tap on a phone */
+.btn-sm { padding: 0.4rem 0.95rem; font-size: 0.95rem; min-height: 2.5rem; }
+.fbtns .btn-sm { margin: 0.25rem 0; }
+.is-on { font-size: 0.92rem; font-weight: 600; color: var(--ok); min-height: 2.5rem; display: inline-flex; align-items: center; }
+@container card (min-width: 30rem) {
+  .pick { grid-template-columns: 1.6rem minmax(0, 1fr) auto; }
+  .pick .fbtns { grid-column: 3; grid-row: 1; justify-content: flex-end; }
+}
+
+/* Qualifications */
+.quals-box { background: #F7F8F9; border: 1px solid var(--line); border-radius: 6px; padding: 0.85rem 1rem; margin: 0 0 1.5rem; font-size: 0.95rem; }
+.quals-box p { margin: 0 0 0.2rem; }
+.quals-box ul { margin: 0 0 0.6rem; padding-left: 1.2rem; }
+.quals-box ul:last-child { margin-bottom: 0; }
+.qbox { border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1.05rem 0.5rem; margin: 0 0 1.1rem; }
+.qbox legend { padding: 0 0.3rem; }
+.qbox fieldset { margin-bottom: 0.75rem; }
+.qbox .hint { margin: 0.3rem 0 0.6rem; }
+.qtag { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0 0.35rem; margin-right: 0.2rem; vertical-align: 0.1em; }
+
+/* Long file names in the results wrap instead of pushing the page sideways on phones */
+.debrief li > span { min-width: 0; overflow-wrap: anywhere; }
+
+/* the open file's pages can be reached with Tab, to scroll them with the arrow keys */
+.viewer-body:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+/* coach buttons: a lighter hover, so the blue text keeps enough contrast (4.5 to 1) */
+.coach button:hover { background: #E6EDFA; }
+/* box headings on Review and the last page: h2 for the outline, sized like the engine's h3 */
+.review-block .rb-h { font-size: 1rem; margin: 0; }

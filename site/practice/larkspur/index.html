@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supervisor, Clinic Operations, Larkspur Health (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice hospital job application for a salaried supervisor job: fix three professional résumés, check licenses, answer screening questions and leadership scenarios, and sign. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<style>
+/* Larkspur Health's application: the hospital's own purple, a serif headline, round buttons and a step meter */
+:root { --brand: #4B3C8C; --brand-dark: #33285F; --brand-tint: #F0EDF8; --lk-leaf: #2F6B45; --lk-cream: #FAF7F1; }
+.lh-head .logo { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 1.3rem; color: var(--brand-dark); }
+.lh-head .logo b { font-weight: 400; color: var(--lk-leaf); }
+.lh-band { background: var(--brand-dark); color: #fff; font-size: 0.9rem; }
+.lh-band .inner { max-width: 84rem; margin: 0 auto; padding: 0.45rem 1rem; display: flex; flex-wrap: wrap; gap: 0.1rem 1.25rem; }
+.lh-band b { font-weight: 600; }
+.card { border-top: 4px solid var(--brand); border-radius: 10px; }
+.card h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; color: var(--brand-dark); font-size: 1.8rem; }
+.card .btn { border-radius: 999px; padding-left: 1.4rem; padding-right: 1.4rem; }
+.lh-steps { margin: 0 0 1.5rem; }
+.lh-steps p { margin: 0 0 0.45rem; font-size: 0.92rem; color: var(--muted); }
+.lh-steps p b { color: var(--text); }
+.lh-bar { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.lh-bar li { height: 6px; border-radius: 3px; background: #DCD7EA; }
+.lh-bar li.done { background: var(--brand); }
+.lh-bar li.now { background: #8D7FD6; }
+.posting-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem 1.5rem; margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 8px; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.posting h2 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; }
+.posting ul { margin: 0; padding-left: 1.25rem; }
+.posting li { margin: 0.2rem 0; }
+.req-tag { font-size: 0.8rem; font-weight: 600; color: var(--err); margin-left: 0.4rem; }
+.pref-tag { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-left: 0.4rem; }
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 999px; padding: 0.1rem 0.65rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: -0.25rem 0 1.5rem; }
+.lh-as { margin: -0.75rem 0 1.25rem; font-size: 0.92rem; color: var(--muted); overflow-wrap: anywhere; }
+.lh-as b { color: var(--text); font-weight: 600; }
+/* licenses */
+.lic .job-head h2 { font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.review-block h2 { font-size: 1rem; margin: 0; }
+.lic-exp { font-size: 0.78rem; font-weight: 700; color: #fff; background: var(--err); border-radius: 999px; padding: 0.05rem 0.55rem; letter-spacing: 0.02em; }
+.lic-warn:empty { display: none; }
+.lic-warn { background: var(--err-bg); border: 1px solid #F0C2BE; color: #7A1A14; border-radius: 6px; padding: 0.65rem 0.8rem; margin: 0 0 1rem; font-size: 0.93rem; }
+.lic .dates + .field { margin-top: -0.4rem; }
+.empty-note { color: var(--muted); margin: 0 0 1rem; }
+/* questions and scenarios */
+.sjt fieldset, .yn { border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1.1rem 0.5rem; margin-bottom: 1rem; }
+/* the question sits inside its box, even when it wraps to several lines */
+.sjt legend, .yn legend { float: left; width: 100%; padding: 0; margin: 0 0 0.45rem; }
+.sjt .choice, .yn .inline-choices { clear: both; }
+.yn .inline-choices { margin-bottom: 0.3rem; }
+.sjt fieldset, .yn { padding-top: 0.9rem; }
+.lh-legal { background: var(--lk-cream); border: 1px solid #E7DFCF; border-radius: 8px; padding: 1rem 1.1rem; margin: 0 0 1.25rem; }
+.lh-legal p { margin: 0 0 0.5rem; }
+.lh-legal ul { margin: 0; padding-left: 1.2rem; }
+.lh-legal li { margin: 0.2rem 0; }
+.review-block .tagx { color: var(--err); font-weight: 600; }
+@media (max-width: 560px) { .card h1 { font-size: 1.5rem; } .lh-band .inner { font-size: 0.85rem; } }
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice application">
+  <div class="inner">
+    <p><b>Practice application.</b> Larkspur Health is not a real health system. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<header class="ats-head lh-head">
+  <div class="inner">
+    <div class="logo">
+      <svg width="26" height="30" viewBox="0 0 30 34" aria-hidden="true"><path d="M15 33V7" stroke="#2F6B45" stroke-width="2" fill="none"/><path d="M15 29c-3.5-1-6-3.5-7-7M15 30c3.5-1 6-3.5 7-6.5" stroke="#2F6B45" stroke-width="1.8" fill="none"/><circle cx="15" cy="4.5" r="2.6" fill="#8D7FD6"/><circle cx="11.2" cy="9.6" r="3" fill="#6A5BC0"/><circle cx="18.8" cy="12.2" r="3.2" fill="#4B3C8C"/><circle cx="10.8" cy="16.4" r="3.4" fill="#6A5BC0"/><circle cx="19.4" cy="19.6" r="3.5" fill="#4B3C8C"/></svg>
+      <span>Larkspur <b>Health</b></span>
+    </div>
+    <span class="careers">Careers: job application</span>
+  </div>
+</header>
+<div class="lh-band" role="region" aria-label="The job you’re applying for"><div class="inner"><span><b>Supervisor, Clinic Operations</b></span><span>Req ID R-10457</span><span>Bloomington Clinic, Bloomington, MN</span></div></div>
+
+<div class="layout" id="layout">
+  <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+  <main class="card" id="card"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.LH_RESUMES, H = window.LH_HELP;
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout");
+  var JOB = { title: "Supervisor, Clinic Operations", req: "R-10457", where: "Bloomington Clinic, Bloomington, MN", pay: "$61,000 to $72,000 a year", low: 61000, high: 72000 };
+  var STEPS = ["Get started", "Profile", "Licenses", "Questions", "Scenarios", "Voluntary info", "eSignature", "Review"];
+  /* step numbers: 0 posting, 1 email, 2 upload, 3 profile, 4 licenses, 5 round done, 6 questions,
+     7 scenarios, 8 voluntary self-ID, 9 eSignature, 10 review, 11 submitted */
+  var PROG = { 1: 1, 2: 1, 3: 2, 4: 3, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8 };
+  var DEGREES = ["High school diploma or GED", "Certificate or diploma", "Associate degree", "Bachelor's degree", "Master's degree", "Other"];
+  var EDU_LEVELS = ["High school diploma or GED", "Certificate or diploma", "Associate degree", "Bachelor's degree", "Master's degree or higher"];
+  /* in A to Z order, like a real hospital system. CMA and CNA sit right next to each other. */
+  var CERTS = [["ACLS", "ACLS (Advanced Cardiac Life Support)"], ["BLS", "BLS (Basic Life Support, CPR)"], ["CMA", "CMA (Certified Medical Assistant)"],
+    ["CNA", "CNA (Certified Nursing Assistant)"], ["CPhT", "CPhT (Certified Pharmacy Technician)"], ["First Aid", "First Aid"], ["LPN", "LPN (Licensed Practical Nurse)"],
+    ["Phlebotomy", "Phlebotomy Technician"], ["RN", "RN (Registered Nurse)"], ["Other", "Other (type the name)"]];
+  var QUESTIONS = [
+    { id: "qauth", text: "Are you legally authorized to work in the United States?", bad: "No" },
+    { id: "qbg", text: "If you are offered this job, will you agree to a background check?", bad: "No" },
+    { id: "qexcl", text: "Have you ever been excluded, suspended or banned from a federal or state health care program, such as Medicare or Medicaid?", bad: "Yes", flipped: true },
+    { id: "qbls", text: "This job requires a current BLS (CPR) card within 30 days of hire. Do you have one now, or can you get one within 30 days?", bad: "No", resume: "bls" },
+    { id: "qlead", text: "Do you have at least 2 years of supervisory or lead experience?", bad: "No", resume: "lead" }
+  ];
+  var SJT = [
+    { id: "s1", q: "A patient at the front desk is upset. They’ve waited 45 minutes past their appointment time, and they’re getting loud. What do you do first?",
+      a: ["Explain that clinics often run behind because earlier patients needed extra time, thank them for their patience, and ask them to take a seat until they’re called",
+        "Listen, say you’re sorry about the wait, find out how much longer it will be, and offer choices like waiting, rescheduling, or another provider if one is free",
+        "Call security right away so they can stand by in the lobby, since raised voices can scare other patients and staff need to feel safe at work",
+        "Send them over to the nurse manager’s office, so the front desk team can keep checking in the other patients who are waiting in line"], right: 1,
+      why: "Listen, own the problem, and give real information and choices. Most upset patients calm down when they feel heard. Security is for real safety threats." },
+    { id: "s2", q: "One of your front desk staff is late for the third time this month. The morning was short-staffed because of it. What’s the best next step?",
+      a: ["Say nothing this time, because bringing it up could hurt their feelings, and wait to see if the problem goes away on its own next month",
+        "Bring it up at the morning huddle in front of everyone, so the whole team hears clearly that being late is not okay at this clinic",
+        "Quietly move them to a later shift without talking to them first, so their lateness doesn’t leave the morning short-staffed again",
+        "Meet with them in private. Say what happened and how it affected the team, listen to their side, agree on next steps, and write it down"], right: 3,
+      why: "Talk in private and be specific. Listen, because there may be a reason, like a bus change or child care. Follow the attendance policy and write it down so it’s fair. Calling someone out in front of the team hurts trust." },
+    { id: "s3", q: "A man calls the front desk. He says he’s a patient’s husband. He asks what time her appointment is and why she’s coming in. What should your staff member do?",
+      a: ["Check her record for permission to share with him. If there’s none, share nothing and offer to take a message",
+        "Tell him the time and the reason. He’s her husband and is probably helping her get there, so sharing it is the kind thing to do",
+        "Tell him the appointment time so he can plan the drive, but keep the reason for the visit private unless she says otherwise",
+        "Ask him to prove he’s her husband by giving her full name and birth date, and if both match her record, tell him"], right: 0,
+      why: "Patient information is private, even from family. Only share what the patient has said, in writing, can be shared. A birth date doesn’t prove permission. Taking a message is a kind way to help." },
+    { id: "s4", q: "Two front desk staff call in sick on a Monday. The clinic opens in 30 minutes. What do you do?",
+      a: ["Cancel the first two hours of appointments, call those patients to apologize, and ask them to come back on another day this week",
+        "Keep the desk short today and ask the staff who came in to work faster, since bringing in extra help costs the clinic money",
+        "Call staff on the on-call list, move a float worker to the desk, cover the desk yourself if needed, and tell the providers about any delays",
+        "Have the medical assistants cover the front desk between patients, and don’t bother the providers, since they are busy with care"], right: 2,
+      why: "Work the plan for call-outs, and step in yourself if needed. Keep the providers and the nurse manager in the loop so patients are seen safely. Canceling care is a last resort." },
+    { id: "s5", q: "A staff member tells you a patient slipped on a wet floor by the entrance. The patient says they’re fine. What do you do?",
+      a: ["Thank the staff member for telling you, and since the patient says they’re fine, have someone mop the floor and leave it at that",
+        "Have a nurse or provider check the patient, get the floor cleaned or put out a wet floor sign, and write an incident report the same day",
+        "Ask the staff member to keep it quiet for now, so the clinic doesn’t get in trouble, and check back with the patient next week",
+        "Put out a wet floor sign, and write up what happened at the end of the week, when the clinic is less busy and there’s more time"], right: 1,
+      why: "Safety first: get the patient checked, fix the danger, and report it the same day. Reports help stop the next fall. Hiding a problem is never the right call." }
+  ];
+  var SELFID = [
+    { id: "s-gender", label: "Gender", opts: ["Male", "Female", "Another gender", "I don't wish to answer"] },
+    { id: "s-race", label: "Race or ethnicity", opts: ["Hispanic or Latino", "White", "Black or African American", "Asian", "Native Hawaiian or Other Pacific Islander", "American Indian or Alaska Native", "Two or more races", "I don't wish to answer"] },
+    { id: "s-vet", label: "Veteran status", opts: ["I am a protected veteran", "I am not a protected veteran", "I don't wish to answer"] },
+    { id: "s-dis", label: "Disability status", opts: ["Yes, I have a disability, or have had one in the past", "No, I don't have a disability", "I don't wish to answer"] }
+  ];
+
+  var S, loadTimer = null;
+  /* current/profile: the round on screen. Its profile holds contact, jobs, edu (schools) and certs (licenses).
+     drafts: unfinished rounds the learner went Back from, by résumé id, so nothing is lost.
+     The application itself always uses the last FINISHED round (see app()). returnTo: the step an Edit goes back to. */
+  function fresh() {
+    clearTimeout(loadTimer); loadTimer = null;
+    S = { step: 0, email: "", welcome: false, rounds: [], done: {}, current: null, profile: null, drafts: {}, reading: false, restored: false,
+      returnTo: 0, switched: null, answers: {}, team: "", edu: "", salary: "", hourlyCaught: false, sjt: {}, cert: false, sign: "", startedAt: null, finishedAt: null };
+  }
+  fresh();
+  function remaining() { return RES.filter(function (r) { return !S.done[r.id]; }); }
+  function app() { return S.rounds[S.rounds.length - 1]; }
+  function resume(id) { return RES.filter(function (r) { return r.id === id; })[0]; }
+  function firstName(r) { return r.person.split(" ")[0]; }
+  function sentence(s) { return /[.?!]$/.test(s) ? s : s + "."; }
+  function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+  // The résumés are set in October 2026, so licenses are checked against that month. A correct card never turns "Expired" as real time passes.
+  function nowYm() { return P.ym(10, 2026); }
+  function isExpired(c) { return !c.noexp && !!c.expM && !!c.expY && P.ym(c.expM, c.expY) < nowYm(); }
+  function certLabel(c) {
+    if (c.type === "Other") return String(c.other || "").trim() || "Other";
+    var m = CERTS.filter(function (x) { return x[0] === c.type; })[0];
+    return m ? m[1] : "(not chosen)";
+  }
+  function pretty(s) { return String(s == null ? "" : s).replace(/'/g, "\u2019"); } // shown with a curly apostrophe; the value stays the same
+  function fullName(c) { return (c.first + " " + c.last).trim().replace(/\s+/g, " "); }
+
+  /* ---------- coach ---------- */
+  var COACH = {
+    0: ["Same Req ID as the careers site: R-10457. Hospital systems often write titles backward. “Supervisor, Clinic Operations” is the job board’s “Clinic Operations Supervisor.”",
+      "Read what’s required and what’s only preferred. Here a degree is preferred, not required.", "The pay is a yearly salary. You’ll be asked about pay later, so note the range."],
+    1: ["Many hospital systems start with just your email. It becomes how you sign in and check on your application later.",
+      "Make up a practice email here. On a real site, use one you check often, and write down which one you used."],
+    2: ["Three practice résumés are waiting, from cleanest to trickiest. Preview one, then drag it onto the upload box or use its Upload button.",
+      "These are professional résumés. The system’s mistakes are small and easy to miss, just like on real sites."],
+    6: ["Some of these are knockout questions. One answer can end an application on the spot. Always answer honestly.",
+      "Read each question to the end. One question is flipped: Yes is the answer that ends the application.",
+      "Answer the experience and education questions from the résumé you used. Count people and years from it.",
+      "The salary box wants pay for a whole year. The posting says $61,000 to $72,000."],
+    7: ["Hospitals use questions like these to see how you’d handle real problems at work.",
+      "Think patients first, then fairness, privacy and safety. The best answer deals with the problem now and follows the rules.",
+      "Words you might not know: A call-out is when someone calls in sick. An incident report is a written record of an accident or safety problem. A float worker moves to wherever help is needed."],
+    8: ["This page is voluntary. By law it’s kept separate from the people deciding who gets hired.", "“I don't wish to answer” is always a fine choice.", "This practice page doesn’t save anything you pick here."],
+    9: ["An eSignature is your name typed as a signature. It counts the same as signing on paper.", "It has to match the name on your application exactly. No credentials after it, like CMA or RN."],
+    10: ["Last chance to catch mistakes. Use Edit on anything that looks wrong.", "Check that no license shows as expired, and that the salary is a yearly number."]
+  };
+  function renderCoach() {
+    var showBtn = '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>';
+    if (S.step === 3 && S.current && !S.returnTo) P.coach(["The system just read the résumé and filled in your profile."].concat(S.current.coach), showBtn);
+    else if (S.step === 4 && S.current && !S.returnTo) P.coach(["The system also pulled licenses and certifications from the résumé."].concat(S.current.certCoach), showBtn);
+    else if (S.step === 3 || S.step === 4) P.coach(["You’re changing your application. Save to go back to where you were."]);
+    else if (S.step === 5) P.coach(remaining().length && S.rounds.length < 3 ? ["Try the next résumé. Each one breaks in a different way.", "Or continue the application. You can stop after any round."] : ["That’s all three. Now finish the application the way you would for real."]);
+    else P.coach(COACH[S.step] || []);
+  }
+
+  /* ---------- dock ---------- */
+  function renderDock() {
+    var show = S.step >= 2 && S.step <= 5;
+    dock.hidden = !show;
+    layout.classList.toggle("with-dock", show);
+    if (show) dock.innerHTML = P.dockHtml(RES, S.done, { canUpload: S.step === 2 });
+  }
+  P.bindDock(dock);
+
+  /* ---------- small builders ---------- */
+  function stepper() {
+    var n = PROG[S.step];
+    if (!n) return "";
+    return '<div class="lh-steps"><p>Step ' + n + " of " + STEPS.length + ": <b>" + esc(STEPS[n - 1]) + "</b></p>" +
+      '<ol class="lh-bar" aria-hidden="true">' + STEPS.map(function (s, i) { return '<li class="' + (i + 1 < n ? "done" : i + 1 === n ? "now" : "") + '"></li>'; }).join("") + "</ol></div>";
+  }
+  function roundTag() { return S.returnTo ? "" : '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>"; }
+  function selectField(id, label, list, value, opts) {
+    opts = opts || {};
+    return '<div class="field" id="f-' + id + '"><label for="' + id + '">' + esc(label) + (opts.req ? '<span class="req" aria-hidden="true">*</span>' : "") + "</label>" +
+      '<select id="' + id + '"><option value="">Select</option>' + list.map(function (o) {
+        var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o;
+        return '<option value="' + esc(v) + '"' + (v === value ? " selected" : "") + ">" + esc(pretty(t)) + "</option>";
+      }).join("") + "</select>" + (opts.hint ? '<p class="hint">' + esc(opts.hint) + "</p>" : "") + "</div>";
+  }
+  function monthOpts(sel) { var o = '<option value="">Month</option>'; for (var i = 1; i <= 12; i++) o += '<option value="' + i + '"' + (String(sel) === String(i) ? " selected" : "") + ">" + P.MONTHS[i - 1] + "</option>"; return o; }
+  function yearOpts(sel) { var o = '<option value="">Year</option>'; for (var y = 2032; y >= 1990; y--) o += '<option value="' + y + '"' + (String(sel) === String(y) ? " selected" : "") + ">" + y + "</option>"; return o; }
+  function monthYear(id, label, m, y, req, off) {
+    var word = label.split(" ")[0];
+    return '<div class="field" id="f-' + id + '"><label for="' + id + 'M">' + esc(label) + (req ? '<span class="req" aria-hidden="true">*</span>' : "") + '</label><div class="pair">' +
+      '<select id="' + id + 'M" aria-label="' + word + ' month"' + (off ? " disabled" : "") + ">" + monthOpts(off ? "" : m) + "</select>" +
+      '<select id="' + id + 'Y" aria-label="' + word + ' year"' + (off ? " disabled" : "") + ">" + yearOpts(off ? "" : y) + "</select></div></div>";
+  }
+  function yn(q, v) {
+    return '<fieldset class="yn" id="f-' + q.id + '"><legend>' + esc(q.text) + '<span class="req" aria-hidden="true">*</span></legend><div class="inline-choices">' +
+      ["Yes", "No"].map(function (x) { return '<label class="choice"><input type="radio" name="' + q.id + '" value="' + x + '"' + (v === x ? " checked" : "") + "> " + x + "</label>"; }).join("") + "</div></fieldset>";
+  }
+  function resultList(results) {
+    return "<ul>" + results.map(function (x) {
+      return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? (x.word || "Fixed") : "Missed") + "</span><span><b>" + esc(sentence(x.label)) + "</b> " + esc(x.why) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+  function switchNote() {
+    var w = S.switched;
+    if (!w) return "";
+    return '<div class="alert alert-info" role="status"><p style="margin:0">Your application now uses ' + esc(w.person) + "’s profile instead of " + esc(w.old) + "’s. Check your answers to the questions, since some come from the résumé." +
+      (w.sign ? " Your eSignature was cleared. Sign again with the new name." : "") + "</p></div>";
+  }
+
+  /* ---------- views ---------- */
+  var V = {};
+  V[0] = function () {
+    return '<article class="posting"><h1 tabindex="-1">' + esc(JOB.title) + "</h1>" +
+      '<p class="sub">Larkspur Health, ' + esc(JOB.where) + ". Req ID " + esc(JOB.req) + "</p>" +
+      '<dl class="posting-meta"><div><dt>Pay</dt><dd>' + esc(JOB.pay) + "</dd></div><div><dt>Schedule</dt><dd>Full time, days (Monday to Friday)</dd></div><div><dt>Type</dt><dd>Salaried</dd></div></dl>" +
+      '<button class="btn btn-primary" type="button" data-action="apply">Start application</button>' +
+      "<h2>About the job</h2><p>Lead the front desk, check-in and scheduling team at our busy Bloomington Clinic. The clinic sees about 250 patients a day in family medicine, pediatrics and lab. You keep the day running smoothly for patients and staff.</p>" +
+      "<h2>What you’ll do</h2><ul><li>Supervise and schedule a team of 12 patient service staff</li><li>Cover gaps when people call out</li><li>Solve patient and workflow problems as they come up, including complaints</li><li>Train new staff and track team goals</li><li>Protect patient privacy and follow safety rules</li><li>Work with the clinic manager, nurses and doctors</li></ul>" +
+      '<h2>What you need<span class="req-tag">Required</span></h2><ul><li>2 or more years of supervisory or lead experience</li><li>Experience in clinic, healthcare or customer service operations</li><li>BLS (CPR) certification within 30 days of hire</li></ul>' +
+      '<h2>Nice to have<span class="pref-tag">Preferred</span></h2><ul><li>Associate’s or bachelor’s degree, or equal experience</li></ul>' +
+      "<h2>Benefits</h2><ul><li>Health, dental and vision insurance</li><li>Paid time off and paid holidays</li><li>Help paying for school</li></ul>" +
+      '<div class="actions"><button class="btn btn-primary" type="button" data-action="apply">Start application</button></div></article>';
+  };
+  V[1] = function () {
+    return stepper() + '<h1 tabindex="-1">Enter your email to begin</h1><p class="sub">Use an email you check often. We’ll send news about your application there.</p><div id="emErr" aria-live="polite"></div>' +
+      P.textField("em-email", "Email address", S.email, { type: "email", req: true, ac: "off", hint: "Practice only. You can make one up, like name@example.com." }) +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back to job posting</button><button class="btn btn-primary" type="button" data-action="email-next">Continue</button></div>';
+  };
+  function draftsHtml() {
+    return RES.filter(function (r) { return S.drafts[r.id] && !S.done[r.id]; }).map(function (r) {
+      return '<div class="alert alert-info"><p style="margin:0 0 0.6rem">You didn’t finish ' + esc(r.person) + "’s round. Your changes are saved." + (S.rounds.length ? " “Continue the application” uses only the rounds you finished." : "") + "</p>" +
+        '<button class="btn btn-secondary" type="button" data-action="resume-draft" data-id="' + esc(r.id) + '">Back to ' + esc(firstName(r)) + "’s profile</button></div>";
+    }).join("");
+  }
+  V[2] = function () {
+    return stepper() + roundTag() +
+      (S.welcome ? '<div class="alert alert-info" role="status">Welcome. We didn’t find an application for that email, so we started a new one.</div>' : "") +
+      '<h1 tabindex="-1">Upload your résumé</h1><p class="sub">We’ll read your résumé and fill in your profile. You’ll check everything after.</p>' +
+      '<p class="lh-as">Applying as <b data-private>' + esc(S.email) + "</b></p>" + draftsHtml() +
+      '<div class="drop" id="drop"><p><b>Drag a résumé here</b></p><p class="hint">Or use an Upload button in the practice résumés.</p></div>' +
+      (S.rounds.length ? '<div class="actions"><span></span><button class="btn btn-secondary" type="button" data-action="to-questions">Continue the application</button></div>'
+        : '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button></div>');
+  };
+  function compareBtn() {
+    return '<p class="compare"><button class="btn btn-secondary" type="button" data-action="open-current">Open ' + esc(S.current.file) + '</button><span class="hint">It opens beside the form so you can compare.</span></p>';
+  }
+  function editLabel() { return S.returnTo === 9 ? "Save and return to eSignature" : "Save and return to review"; }
+  function eduEntry(e, i) {
+    var p = "ed" + i + "-";
+    return '<div class="job" id="edu-' + i + '"><div class="job-head"><h3>School ' + (i + 1) + "</h3>" + (i > 0 ? '<button class="btn-link" type="button" data-action="remove-edu" data-i="' + i + '">Remove<span class="visually-hidden"> school ' + (i + 1) + "</span></button>" : "") + "</div>" +
+      P.textField(p + "school", "School", e.school, { req: true }) +
+      '<div class="row">' + selectField(p + "degree", "Degree or credential", DEGREES, e.degree, { req: true }) + P.textField(p + "field", "Field of study (major)", e.field) + "</div>" +
+      '<div class="row">' + selectField(p + "status", "Status", ["Completed", "In progress"], e.status, { req: true }) + P.textField(p + "year", "Year finished (or expected)", e.year, { req: true }) + "</div></div>";
+  }
+  V[3] = function () {
+    var edit = S.returnTo, pr = S.profile;
+    var base = P.formHtml({ contact: pr.contact, jobs: pr.jobs, education: { school: "", credential: "", year: "" } });
+    var cut = base.indexOf('<div class="section"><h2>Education</h2>');
+    if (cut !== -1) base = base.slice(0, cut); // this hospital asks for more about school, so it has its own Education section
+    return stepper() + roundTag() + '<h1 tabindex="-1">Your profile</h1>' +
+      (edit ? "" : '<div class="alert alert-info">' + (S.restored ? "Welcome back. The changes you made were saved." : "We filled in your profile from your résumé. Check every box before you continue.") + "</div>") +
+      compareBtn() + '<div id="infoErr" aria-live="polite"></div>' + base +
+      '<div class="section"><h2>Education</h2>' + pr.edu.map(eduEntry).join("") + '<button class="btn btn-secondary" type="button" id="add-edu" data-action="add-edu">Add another school</button></div>' +
+      '<div id="coachCheck"></div><div class="actions">' + (edit ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-info">' + (edit ? editLabel() : "Continue") + "</button></div>";
+  };
+  var WARN = "This date has passed, so this shows as expired. If the card is still current, check the date on the résumé and fix it here.";
+  function certEntry(c, i) {
+    var p = "k" + i + "-", ex = isExpired(c);
+    return '<div class="job lic" id="cert-' + i + '"><div class="job-head"><h2>License or certification ' + (i + 1) + ' <span class="lic-exp" id="' + p + 'tag"' + (ex ? "" : " hidden") + ">Expired</span></h2>" +
+      '<button class="btn-link" type="button" data-action="remove-cert" data-i="' + i + '">Remove<span class="visually-hidden"> license or certification ' + (i + 1) + "</span></button></div>" +
+      selectField(p + "type", "License or certification", CERTS, c.type, { req: true }) +
+      '<div class="field" id="f-' + p + 'other"' + (c.type === "Other" ? "" : " hidden") + '><label for="' + p + 'other">Name of license or certification<span class="req" aria-hidden="true">*</span></label><input type="text" id="' + p + 'other" value="' + esc(c.other) + '"></div>' +
+      P.textField(p + "org", "Issuing organization", c.org, { req: true }) +
+      P.textField(p + "num", "License or certificate number", c.number, { hint: "Leave it blank if there isn’t one." }) +
+      '<div class="dates">' + monthYear(p + "issue", "Issue date", c.issueM, c.issueY, true, false) + monthYear(p + "exp", "Expiration date", c.expM, c.expY, false, c.noexp) + "</div>" +
+      '<div class="field" id="f-' + p + 'noexp"><label class="choice"><input type="checkbox" id="' + p + 'noexp" data-noexp="' + i + '"' + (c.noexp ? " checked" : "") + "> <span>This doesn’t expire</span></label></div>" +
+      '<div class="lic-warn" id="' + p + 'warn" aria-live="polite">' + (ex ? WARN : "") + "</div></div>";
+  }
+  V[4] = function () {
+    var edit = S.returnTo, list = S.profile.certs;
+    return stepper() + roundTag() + '<h1 tabindex="-1">Licenses and certifications</h1>' +
+      (edit ? "" : '<div class="alert alert-info">We found these on your résumé. Check each one. Hospitals check every license with the group that issued it.</div>') +
+      compareBtn() + '<div id="certErr" aria-live="polite"></div>' +
+      (list.length ? list.map(certEntry).join("") : '<p class="empty-note">No licenses or certifications yet.</p>') +
+      '<button class="btn btn-secondary" type="button" id="add-cert" data-action="add-cert">Add a license or certification</button>' +
+      '<div id="coachCheck"></div><div class="actions">' + (edit ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-certs">' + (edit ? editLabel() : "Continue") + "</button></div>";
+  };
+  V[5] = function () {
+    var R = app(), more = remaining().length && S.rounds.length < 3;
+    return stepper() + '<h1 tabindex="-1">Round ' + S.rounds.length + " done</h1>" +
+      '<p class="sub">' + esc(R.person) + " (" + esc(R.level) + ")</p>" + switchNote() +
+      '<section class="debrief" aria-label="Round results"><p class="score">You caught ' + R.fixed + " of " + R.total + "</p>" + resultList(R.results) + "</section>" +
+      '<div class="actions">' + (more ? '<button class="btn btn-primary" type="button" data-action="next-round">Try the next résumé</button>' : "<span></span>") +
+      '<button class="btn ' + (more ? "btn-secondary" : "btn-primary") + '" type="button" data-action="to-questions">Continue the application</button></div>';
+  };
+  V[6] = function () {
+    return stepper() + '<h1 tabindex="-1">A few questions</h1><p class="sub">Answer every question. Some answers come from your résumé.</p>' + switchNote() + '<div id="qErr" aria-live="polite"></div>' +
+      QUESTIONS.map(function (q) { return yn(q, S.answers[q.id]); }).join("") +
+      P.textField("q-team", "How many people have you supervised or led at one time?", S.team, { req: true, hint: "A number, like 5" }) +
+      selectField("q-edu", "Highest level of education you have finished", EDU_LEVELS, S.edu, { req: true }) +
+      P.textField("q-salary", "Desired yearly salary", S.salary, { req: true, hint: "Pay for a whole year, in dollars" }) +
+      '<div class="actions">' + (S.returnTo ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-q">' + (S.returnTo ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+  V[7] = function () {
+    return stepper() + '<h1 tabindex="-1">Leadership scenarios</h1><p class="sub">Five short situations from a busy clinic. Pick what you would do. Each one has one best answer.</p><div id="sjErr" aria-live="polite"></div><div class="sjt">' +
+      SJT.map(function (q, i) {
+        return '<fieldset id="f-' + q.id + '"><legend>' + (i + 1) + ". " + esc(q.q) + "</legend>" +
+          q.a.map(function (a, k) { return '<label class="choice"><input type="radio" name="' + q.id + '" value="' + k + '"' + (S.sjt[q.id] === k ? " checked" : "") + "> <span>" + esc(a) + "</span></label>"; }).join("") + "</fieldset>";
+      }).join("") + "</div>" +
+      '<div class="actions">' + (S.returnTo ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-sjt">' + (S.returnTo ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+  V[8] = function () {
+    return stepper() + '<h1 tabindex="-1">Voluntary self-identification</h1>' +
+      '<p class="sub">Larkspur Health is an equal opportunity employer. Answering is voluntary and won’t affect your application. Your answers are kept separate from your application.</p><div id="vErr" aria-live="polite"></div>' +
+      SELFID.map(function (f) { return selectField(f.id, f.label, f.opts, "", { req: true }); }).join("") +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="next-v">Continue</button></div>';
+  };
+  function today() { return new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); }
+  V[9] = function () {
+    return stepper() + '<h1 tabindex="-1">eSignature</h1><p class="sub">Read this, then sign by typing your name.</p>' + switchNote() +
+      '<div class="lh-legal"><p>By signing, I confirm that:</p><ul><li>The information in this application is true and complete.</li><li>Larkspur Health may check my work history, education, licenses and references.</li>' +
+      "<li>False or missing information can end my application, or my job if I’m hired.</li></ul></div><div id=\"sgErr\" aria-live=\"polite\"></div>" +
+      '<div class="field" id="f-e-cert"><label class="choice"><input type="checkbox" id="e-cert"' + (S.cert ? " checked" : "") + '> <span>I have read and agree to the statement above.<span class="req" aria-hidden="true">*</span></span></label></div>' +
+      P.textField("e-sign", "Type your full legal name", S.sign, { req: true, ac: "off" }) + '<p class="hint">Date: ' + esc(today()) + "</p>" +
+      '<div class="actions">' + (S.returnTo === 10 ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') + '<button class="btn btn-primary" type="button" data-action="next-sign">' + (S.returnTo === 10 ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+  function editBtn(to, what) { return '<button class="btn-link" type="button" data-action="edit" data-to="' + to + '">Edit<span class="visually-hidden"> ' + what + "</span></button>"; }
+  function datesText(m, y) { return m && y ? P.fmtDate(m, y) : (y || ""); }
+  V[10] = function () {
+    var pr = app().profile, c = pr.contact;
+    var jobs = pr.jobs.map(function (j) {
+      var end = j.current ? "Present" : datesText(j.endM, j.endY), st = datesText(j.startM, j.startY);
+      return "<dt>" + esc(j.title || "(no title)") + "</dt><dd>" + esc(j.employer) + (st ? ", " + esc(st) + (end ? " to " + esc(end) : "") : "") + "</dd>";
+    }).join("");
+    var edu = pr.edu.map(function (e) {
+      return "<dt>" + esc(e.school || "(no school)") + "</dt><dd>" + esc(pretty([e.degree, e.field].filter(Boolean).join(", "))) + (e.status === "In progress" ? ". In progress, expected " : ". Finished ") + esc(e.year) + "</dd>";
+    }).join("");
+    var certs = pr.certs.length ? pr.certs.map(function (k) {
+      var ex = isExpired(k);
+      return "<dt>" + esc(certLabel(k)) + "</dt><dd>" + esc(k.org) + (k.number ? ", No. " + esc(k.number) : "") + ". Issued " + esc(datesText(k.issueM, k.issueY)) + ". " +
+        (k.noexp ? "Doesn’t expire." : "Expires " + esc(datesText(k.expM, k.expY)) + "." + (ex ? ' <span class="tagx">Expired</span>' : "")) + "</dd>";
+    }).join("") : "<dt>None</dt><dd></dd>";
+    var qs = QUESTIONS.map(function (q) { return "<dt>" + esc(q.text) + "</dt><dd>" + esc(S.answers[q.id]) + "</dd>"; }).join("") +
+      "<dt>People supervised or led at one time</dt><dd>" + esc(S.team) + "</dd><dt>Highest education finished</dt><dd>" + esc(pretty(S.edu)) + "</dd>" +
+      "<dt>Desired yearly salary</dt><dd>" + esc(isNaN(P.num(S.salary)) ? S.salary : money(P.num(S.salary))) + "</dd>";
+    var answered = SJT.filter(function (q) { return S.sjt[q.id] !== undefined; }).length;
+    return stepper() + '<h1 tabindex="-1">Review and submit</h1><p class="sub">Make sure everything is correct. You can’t change your application after you submit it.</p>' + switchNote() +
+      '<div class="review-block"><div class="rb-head"><h2>Contact information</h2>' + editBtn(3, "contact information") + "</div><dl>" +
+      "<dt>Name</dt><dd>" + esc(fullName(c)) + "</dd><dt>Email</dt><dd>" + esc(c.email) + "</dd><dt>Phone</dt><dd>" + esc(c.phone) + "</dd><dt>Location</dt><dd>" + esc(c.city + ", " + c.state + " " + c.zip) + "</dd></dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h2>Work experience</h2>' + editBtn(3, "work experience") + "</div><dl>" + jobs + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h2>Education</h2>' + editBtn(3, "education") + "</div><dl>" + edu + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h2>Licenses and certifications</h2>' + editBtn(4, "licenses and certifications") + "</div><dl>" + certs + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h2>Questions</h2>' + editBtn(6, "answers to questions") + "</div><dl>" + qs + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h2>Leadership scenarios</h2>' + editBtn(7, "leadership scenarios") + "</div><dl><dt>Answered</dt><dd>" + answered + " of " + SJT.length + "</dd></dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h2>eSignature</h2>' + editBtn(9, "eSignature") + "</div><dl><dt>Signed by</dt><dd>" + esc(S.sign.trim()) + "</dd><dt>Date</dt><dd>" + esc(today()) + "</dd></dl></div>" +
+      '<div id="rErr" aria-live="polite"></div>' +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="submit">Submit application</button></div>';
+  };
+
+  /* What the answers say about the résumé they came from (not part of the score) */
+  function answerNotes() {
+    var R = app(), t = R.resume.truth, f = t.facts, name = firstName(R.resume), notes = [];
+    var knocked = QUESTIONS.filter(function (q) { return !q.flipped && S.answers[q.id] === q.bad; });
+    if (knocked.length) notes.push("You answered No to: " + knocked.map(function (q) { return "“" + q.text + "”"; }).join(" ") + " On a real hospital site, an answer like that can end the application automatically. That’s fine when it’s true. It tells you this job may not fit.");
+    if (S.answers.qbls === "No") notes.push(name + "’s résumé shows a current BLS card, so the honest answer for this résumé is Yes.");
+    if (S.answers.qlead === "No") notes.push(name + "’s résumé shows a lead role since " + P.fmtDate(f.leadSince[0], f.leadSince[1]) + ", so the honest answer for this résumé is Yes.");
+    if (S.answers.qexcl === "Yes") notes.push("You answered Yes to being excluded or banned from health care programs. Yes means you were banned, and hospitals can’t hire someone who was. It’s a flipped question, so read every question to the end.");
+    var team = P.num(S.team);
+    if (!isNaN(team) && team !== f.team) notes.push("You said you’ve led " + team + " " + P.plural(team, "person", "people") + " at one time. " + name + "’s résumé says " + f.team_how + ". Use the number your résumé backs up.");
+    if (S.edu && S.edu !== f.highest) notes.push("You picked “" + pretty(S.edu) + "” for highest education finished. " + (f.eduNote || name + "’s résumé shows “" + pretty(f.highest) + "”.") + " Recruiters check this against the résumé and the school.");
+    if (!notes.length) notes.push("Your answers match " + name + "’s résumé. Nice work.");
+    return notes;
+  }
+  function payNotes() {
+    var n = P.num(S.salary), out = [];
+    if (S.hourlyCaught) out.push("This site caught an hourly number in the yearly box. Many real sites won’t. A 32 in a yearly box can read as $32 a year, or get an application filtered out.");
+    if (!isNaN(n)) {
+      if (n > JOB.high) out.push("You asked for " + money(n) + ", above the posted range of " + JOB.pay.replace(" a year", "") + ". Some systems quietly filter out anyone above the range. If your experience is worth more, say so in the interview.");
+      else if (n < JOB.low) out.push("You asked for " + money(n) + ", below the posted range. You can ask for at least " + money(JOB.low) + ".");
+      else out.push("You asked for " + money(n) + ", inside the posted range. That’s a safe choice.");
+    }
+    return out;
+  }
+  V[11] = function () {
+    var fixed = 0, total = 0, R = app(), c = R.profile.contact;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    var sj = SJT.map(function (q) { return { label: q.q, why: q.why, fixed: S.sjt[q.id] === q.right, word: "Right" }; });
+    var right = sj.filter(function (x) { return x.fixed; }).length;
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var cd = P.code("LH", S.rounds.length, fixed + right, total + SJT.length);
+    var li = function (n) { return "<li>" + esc(n) + "</li>"; };
+    return '<div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 tabindex="-1">Application submitted</h1>' +
+      "<p>Thank you, " + esc(c.first) + ". We received your application for " + esc(JOB.title) + " (Req ID " + esc(JOB.req) + ") at the Bloomington Clinic. We’ll email you at " + esc(c.email) + ".</p>" +
+      '<div class="review-block"><h2 style="margin-bottom:0.4rem">What happens next</h2><ol style="margin:0;padding-left:1.2rem"><li>A recruiter checks your application against the requirements.</li>' +
+      "<li>If it’s a match, you get a phone screen, then an interview with the clinic manager.</li><li>If you get an offer, Larkspur checks your background, education and licenses before your first day.</li></ol>" +
+      '<p class="hint" style="margin-top:0.5rem">This can take two to four weeks. Watch your email, including spam.</p></div>' +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2><p>You finished in about ' + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Résumé mistakes caught: ' + fixed + " of " + total + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") + "</ul>" +
+      (S.rounds.some(function (r) { return r.fixed < r.total; }) ? '<h3>What slipped through</h3><ul class="plain">' + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(sentence(x.label)) + "</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      "<h3>Leadership scenarios: " + right + " of " + SJT.length + "</h3>" + resultList(sj) +
+      '<h3>Your answers</h3><ul class="plain">' + answerNotes().map(li).join("") + "</ul>" +
+      '<h3>Pay</h3><ul class="plain">' + payNotes().map(li).join("") + "</ul>" +
+      '<h3>Good to know about hospital and clinic jobs</h3><ul class="plain"><li>Hospitals check licenses and certifications with the group that issued them. Keep your cards and numbers in one safe place.</li>' +
+      "<li>Before you start, many hospital jobs need a background check, a health screening and proof of vaccines.</li>" +
+      "<li>Salaried jobs show pay for a year. To compare with hourly pay, divide the yearly pay by 2,080.</li>" +
+      "<li>If you’re still in school, write “in progress” or “expected” and the date. That’s honest, and it still counts.</li></ul>" +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      "<h3>For job coaches</h3><p>The code counts the résumé mistakes caught plus the five leadership scenarios. Run it once with coach notes on, then again with them off, and compare.</p>" +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="restart">Try it again</button><a href="../">Back to job board</a></div></section>';
+  };
+
+  var STEP_NAME = { 0: "Job posting: Supervisor, Clinic Operations, Req ID R-10457", 1: "Enter your email to begin", 2: "Upload your résumé", 3: "Your profile (filled from the résumé)",
+    4: "Licenses and certifications (filled from the résumé)", 6: "A few questions (screening questions and desired yearly salary)", 7: "Leadership scenarios (5 questions)",
+    8: "Voluntary self-identification", 9: "eSignature", 10: "Review and submit", 11: "Application submitted (last page, with the completion code)" };
+  function stepName() {
+    if (S.step === 5) return "Round " + S.rounds.length + " done";
+    var n = STEP_NAME[S.step] || "";
+    if ((S.step === 3 || S.step === 4) && S.returnTo) n += ", changed from " + (S.returnTo === 9 ? "eSignature" : "Review");
+    else if (S.step >= 2 && S.step <= 4) n += ", round " + (S.rounds.length + 1) + " of 3";
+    return n;
+  }
+
+  function render(focus) {
+    if (focus !== false) P.closeViewer(false); // same-step re-renders (Add another job, Remove) keep the résumé open
+    card.innerHTML = V[S.step]();
+    card.setAttribute("data-step", stepName());
+    renderDock(); renderCoach();
+    if (S.step === 2) bindUpload();
+    // warn before leaving once the application has started, but not on the finished screen
+    P.setInProgress(S.step !== 11 && !!(S.email || S.rounds.length || S.current));
+    if (focus !== false) {
+      var h = card.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+      window.scrollTo(0, 0);
+    }
+  }
+  function go(step) { S.step = step; render(); }
+
+  /* ---------- rounds ---------- */
+  function bindUpload() {
+    P.bindDrop(P.byId("drop"), { onResume: startRound, onFile: function () {
+      var old = P.byId("fileNote"); if (old) old.remove();
+      P.byId("drop").insertAdjacentHTML("afterend", '<p class="alert alert-info" id="fileNote" role="status" style="margin-top:1rem">For this practice, use one of the practice résumés.</p>');
+    } });
+  }
+  function startRound(id) {
+    var r = resume(id);
+    if (!r || S.done[r.id] || S.step !== 2 || S.reading) return;
+    P.setInProgress(true);
+    if (S.drafts[r.id]) { openRound(r, true); return; } // the same résumé again brings back the learner's changes
+    S.reading = true;
+    dock.querySelectorAll("[data-upload]").forEach(function (x) { x.disabled = true; });
+    dock.querySelectorAll(".rcard[draggable]").forEach(function (x) { x.removeAttribute("draggable"); });
+    card.innerHTML = '<div class="loading" role="status" tabindex="-1" style="outline:none"><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(r.file) + "…</b></p><p class=\"hint\">This can take a moment.</p></div>";
+    card.querySelector(".loading").focus({ preventScroll: true });
+    loadTimer = setTimeout(function () { loadTimer = null; S.reading = false; openRound(r, false); }, 1300);
+  }
+  function openRound(r, restored) {
+    S.current = r; S.profile = P.clone(restored ? S.drafts[r.id] : r.parsed); S.restored = restored; S.returnTo = 0;
+    go(3);
+  }
+  /* Score one page (profile or certs) or the whole round. Each miss outlines the boxes that are still wrong. */
+  function scoreNow(r, pr, page) {
+    var errs = r.errors.filter(function (e) { return !page || e.page === page; });
+    return P.score({ truth: r.truth, errors: errs }, pr).map(function (x, k) {
+      return x.fixed || !errs[k].where ? x : { label: x.label, why: x.why, fields: errs[k].where(pr), fixed: false };
+    });
+  }
+  function rescore(R) {
+    R.results = scoreNow(R.resume, R.profile);
+    R.fixed = R.results.filter(function (x) { return x.fixed; }).length; R.total = R.results.length;
+    S.done[R.id] = { fixed: R.fixed, total: R.total };
+  }
+  function finishRound() {
+    var prev = app();
+    var R = { id: S.current.id, person: S.current.person, level: S.current.level, resume: S.current, profile: P.clone(S.profile) };
+    rescore(R);
+    S.rounds.push(R);
+    delete S.drafts[R.id];
+    if (prev) switchPerson(prev, R);
+    go(5);
+  }
+  /* A later round changes whose profile the application uses. Answers may not fit the new résumé, and the signature won't match. */
+  function switchPerson(prev, R) {
+    var started = Object.keys(S.answers).length || S.team || S.edu || S.salary || Object.keys(S.sjt).length || S.sign;
+    if (!started) { S.switched = null; return; }
+    var signed = !!String(S.sign || "").trim();
+    S.sign = ""; S.cert = false;
+    S.switched = { person: R.person, old: prev.person, sign: signed };
+  }
+
+  /* ---------- reading the form ---------- */
+  function collectEdu() {
+    return S.profile.edu.map(function (e, i) {
+      var p = "ed" + i + "-";
+      return { school: P.val(p + "school"), degree: P.val(p + "degree"), field: P.val(p + "field"), status: P.val(p + "status"), year: P.val(p + "year") };
+    });
+  }
+  function collectProfile() {
+    var b = P.collect(S.profile.jobs.length);
+    S.profile.contact = b.contact; S.profile.jobs = b.jobs; S.profile.edu = collectEdu();
+  }
+  function collectCerts() {
+    S.profile.certs = S.profile.certs.map(function (c, i) {
+      var p = "k" + i + "-";
+      return { type: P.val(p + "type"), other: P.val(p + "other"), org: P.val(p + "org"), number: P.val(p + "num"),
+        issueM: P.val(p + "issueM"), issueY: P.val(p + "issueY"), expM: P.val(p + "expM"), expY: P.val(p + "expY"), noexp: P.checked(p + "noexp") };
+    });
+  }
+  /* The same checks run on the profile page and again before submitting */
+  function checkProfile(pr, boxId) {
+    var ok = P.validateProfile({ contact: pr.contact, jobs: pr.jobs, education: { school: "", credential: "", year: "" } }, boxId), extra = 0;
+    pr.edu.forEach(function (e, i) {
+      var p = "ed" + i + "-";
+      function need(cond, id, msg) { if (!cond) { P.markInvalid(id, msg); extra++; } }
+      need(String(e.school).trim(), p + "school", "Enter the school’s name.");
+      need(e.degree, p + "degree", "Choose a degree or credential.");
+      need(e.status, p + "status", "Choose Completed or In progress.");
+      need(/^\s*\d{4}\s*$/.test(e.year || ""), p + "year", String(e.year || "").trim() ? "Enter a 4-digit year, like 2018." : "Enter the year you finished, or expect to finish.");
+    });
+    if (extra) P.summary(boxId, card.querySelectorAll(".field.invalid").length);
+    return ok && !extra;
+  }
+  function checkCerts(list, boxId) {
+    P.clearErrors(); var n = 0;
+    function need(cond, id, msg) { if (!cond) { P.markInvalid(id, msg); n++; } }
+    list.forEach(function (c, i) {
+      var p = "k" + i + "-";
+      need(c.type, p + "type", "Choose one. Pick “Other” if yours isn’t in the list.");
+      if (c.type === "Other") need(String(c.other).trim(), p + "other", "Type the name of the license or certification.");
+      need(String(c.org).trim(), p + "org", "Enter the organization that gave it.");
+      need(c.issueM && c.issueY, p + "issue", "Choose the month and year it was issued.");
+      if (!c.noexp) {
+        if (!c.expM || !c.expY) { P.markInvalid(p + "exp", "Choose the month and year it expires, or check “This doesn’t expire.”"); n++; }
+        else if (c.issueM && c.issueY && P.ym(c.expM, c.expY) < P.ym(c.issueM, c.issueY)) { P.markInvalid(p + "exp", "The expiration date is before the issue date."); n++; }
+      }
+    });
+    P.summary(boxId, n);
+    return !n;
+  }
+  /* Show or hide the "Expired" tag and note on one license as its dates change */
+  function updateExpired(i) {
+    var p = "k" + i + "-", tag = P.byId(p + "tag"), warn = P.byId(p + "warn");
+    if (!tag || !warn) return;
+    var ex = isExpired({ noexp: P.checked(p + "noexp"), expM: P.val(p + "expM"), expY: P.val(p + "expY") });
+    tag.hidden = !ex;
+    var want = ex ? WARN : "";
+    if (warn.textContent !== want) warn.textContent = want;
+  }
+  card.addEventListener("change", function (e) {
+    var t = e.target, m;
+    if (!t || !t.id) return;
+    if ((m = t.id.match(/^k(\d+)-type$/))) {
+      var o = P.byId("f-k" + m[1] + "-other"); if (o) o.hidden = t.value !== "Other";
+    }
+    if (t.dataset && t.dataset.noexp !== undefined) {
+      ["expM", "expY"].forEach(function (k) { var el = P.byId("k" + t.dataset.noexp + "-" + k); if (el) { el.disabled = t.checked; if (t.checked) el.value = ""; } });
+    }
+    if ((m = t.id.match(/^k(\d+)-(expM|expY|noexp)$/))) updateExpired(+m[1]);
+  });
+  /* Keep answers as they change, so Back and Edit never lose them */
+  function collectQ() {
+    QUESTIONS.forEach(function (q) { var el = card.querySelector('input[name="' + q.id + '"]:checked'); if (el) S.answers[q.id] = el.value; });
+    if (P.byId("q-team")) { S.team = P.val("q-team"); S.edu = P.val("q-edu"); S.salary = P.val("q-salary"); }
+  }
+  function collectSjt() { SJT.forEach(function (q) { var x = card.querySelector('input[name="' + q.id + '"]:checked'); if (x) S.sjt[q.id] = +x.value; }); }
+  function collectSign() { if (P.byId("e-sign")) { S.sign = P.val("e-sign"); S.cert = P.checked("e-cert"); } }
+  function keep() { if (S.step === 6) collectQ(); else if (S.step === 7) collectSjt(); else if (S.step === 9) collectSign(); }
+  card.addEventListener("change", keep);
+  card.addEventListener("input", keep);
+
+  /* Desired yearly salary: catch an hourly number (or a month's pay) in the yearly box, kindly */
+  function salaryMsg(s) {
+    var t = String(s || "").trim(), n = P.num(t);
+    if (!t) return "Enter your desired yearly salary.";
+    if (isNaN(n) || n <= 0) return "Enter a number, like 65000.";
+    var perHour = /(\/\s*h|\bhr\b|\bhrs\b|hour|hourly)/i.test(t);
+    if (n < 200 || (perHour && n < 1000)) {
+      S.hourlyCaught = true;
+      return "That looks like pay for one hour, which is easy to mix up. This box asks for pay for a whole year. $" + n.toFixed(2) + " an hour, full time, is about " + money(n * 2080) + " a year (hourly pay times 2,080 hours).";
+    }
+    if (n < 15000) return "That looks low for a whole year of full-time pay. If it’s pay for one month, multiply it by 12. Enter pay for one year, like 65000.";
+    if (n > 500000) return "That looks too high for one year. Check for an extra zero.";
+    return "";
+  }
+  function checkQ() {
+    P.clearErrors(); var m = 0;
+    QUESTIONS.forEach(function (q) { if (!S.answers[q.id]) { P.markInvalid(q.id, "Choose Yes or No."); m++; } });
+    var t = String(S.team || "").trim(), n = P.num(t);
+    if (!t) { P.markInvalid("q-team", "Enter a number, like 5."); m++; }
+    else if (isNaN(n) || n < 0 || n > 1000 || n !== Math.floor(n)) { P.markInvalid("q-team", "Enter a whole number of people, like 5."); m++; }
+    if (!S.edu) { P.markInvalid("q-edu", "Choose one."); m++; }
+    var sm = salaryMsg(S.salary);
+    if (sm) { P.markInvalid("q-salary", sm); m++; }
+    return m;
+  }
+  function qValid() { // the same rules, without touching the page
+    var n = P.num(S.team), sal = String(S.salary || "").trim(), s = P.num(sal), perHour = /(\/\s*h|\bhr\b|\bhrs\b|hour|hourly)/i.test(sal);
+    return QUESTIONS.every(function (q) { return S.answers[q.id]; }) && !isNaN(n) && n >= 0 && n <= 1000 && n === Math.floor(n) && !!S.edu &&
+      !isNaN(s) && s >= 15000 && s <= 500000 && !(perHour && s < 1000);
+  }
+  function signProblem(sign) {
+    var R = app(), full = fullName(R.profile.contact), sig = String(sign || "").trim().replace(/\s+/g, " "), t = R.resume.truth.contact;
+    if (!sig) return { id: "e-sign", msg: "Type your full name." };
+    if (P.sameName(sig, full)) return null;
+    var off = !P.sameName(full, t.first + " " + t.last);
+    return { id: "e-sign", off: off, msg: off ? "The name on your application is “" + full + "”, and it doesn’t look right. Use “Fix my name” to correct it, then sign with the fixed name." :
+      "Your signature must match the name on your application: " + full };
+  }
+
+  function showWrong() {
+    var page = S.step === 4 ? "certs" : "profile";
+    if (page === "certs") collectCerts(); else collectProfile();
+    var n = P.flag(scoreNow(S.current, S.profile, page)), out = P.byId("coachResult");
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks" : "look") + " off. " + (n === 1 ? "It’s" : "They’re") + " outlined in blue." : "Everything on this page matches the résumé. Nice work.";
+  }
+  /* Coach notes on: a last check before leaving a page with mistakes still on it. Only "Continue anyway" skips it. */
+  function coachCheck(page) {
+    var bad = scoreNow(S.current, S.profile, page).filter(function (x) { return !x.fixed; });
+    if (!P.hints() || !bad.length) return false;
+    P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " on this page still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real hospital site wouldn’t warn you.</p>" +
+      '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="continue-anyway" style="margin-left:1rem">Continue anyway</button></div>';
+    return true;
+  }
+  /* Edit from Review (or "Fix my name"): save the change into the application and score that round again */
+  function saveEdit() {
+    var R = app();
+    R.profile = P.clone(S.profile); rescore(R);
+    var to = S.returnTo; S.returnTo = 0; go(to);
+  }
+  function editProfile(to, back) {
+    var R = app();
+    S.current = R.resume; S.profile = P.clone(R.profile); S.returnTo = back;
+    go(to);
+  }
+  function blankJob() { return { title: "", employer: "", location: "", startM: "", startY: "", endM: "", endY: "", current: false, desc: "" }; }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload]");
+    if (!b) return;
+    if (b.dataset.preview) { P.openViewer(resume(b.dataset.preview), b); return; }
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    switch (b.dataset.action) {
+      case "apply": S.startedAt = S.startedAt || Date.now(); go(1); break;
+      case "email-next": {
+        P.clearErrors();
+        var em = P.val("em-email").trim();
+        if (!P.validEmail(em)) { P.markInvalid("em-email", em ? "Enter a valid email, like name@example.com." : "Enter your email address."); P.summary("emErr", 1); break; }
+        S.welcome = S.email !== em; S.email = em; go(2); break;
+      }
+      case "back":
+        if (S.step === 1) { S.email = P.val("em-email").trim() || S.email; go(0); break; }
+        if (S.step === 2) { S.welcome = false; go(1); break; }
+        if (S.step === 3) { collectProfile(); S.drafts[S.current.id] = P.clone(S.profile); S.welcome = false; go(2); break; } // unfinished: kept as a draft, never part of the application
+        if (S.step === 4) { collectCerts(); go(3); break; }
+        if (S.step === 6) { collectQ(); go(S.rounds.length ? 5 : 2); break; }
+        if (S.step === 7) { collectSjt(); go(6); break; }
+        if (S.step === 9) { collectSign(); go(8); break; }
+        if (S.step === 10) { go(9); break; }
+        go(S.step - 1); break;
+      case "resume-draft": { var dr = resume(b.dataset.id); if (dr && S.drafts[dr.id] && !S.done[dr.id] && S.step === 2 && !S.reading) openRound(dr, true); break; }
+      case "open-current": P.openViewer(S.current, b); break;
+      case "add-job": {
+        collectProfile(); S.profile.jobs.push(blankJob()); render(false);
+        var t = P.byId("j" + (S.profile.jobs.length - 1) + "-title"); if (t) t.focus(); break;
+      }
+      case "remove-job": { collectProfile(); S.profile.jobs.splice(+b.dataset.i, 1); render(false); var aj = P.byId("add-job"); if (aj) aj.focus(); break; }
+      case "add-edu": {
+        collectProfile(); S.profile.edu.push({ school: "", degree: "", field: "", status: "", year: "" }); render(false);
+        var s = P.byId("ed" + (S.profile.edu.length - 1) + "-school"); if (s) s.focus(); break;
+      }
+      case "remove-edu": { collectProfile(); S.profile.edu.splice(+b.dataset.i, 1); render(false); var ae = P.byId("add-edu"); if (ae) ae.focus(); break; }
+      case "add-cert": {
+        collectCerts(); S.profile.certs.push({ type: "", other: "", org: "", number: "", issueM: "", issueY: "", expM: "", expY: "", noexp: false }); render(false);
+        var k = P.byId("k" + (S.profile.certs.length - 1) + "-type"); if (k) k.focus(); break;
+      }
+      case "remove-cert": { collectCerts(); S.profile.certs.splice(+b.dataset.i, 1); render(false); var ac = P.byId("add-cert"); if (ac) ac.focus(); break; }
+      case "show-wrong": showWrong(); break;
+      case "next-info": {
+        collectProfile();
+        if (!checkProfile(S.profile, "infoErr")) break;
+        if (S.returnTo) { saveEdit(); break; }
+        if (coachCheck("profile")) break;
+        go(4); break;
+      }
+      case "next-certs": {
+        collectCerts();
+        if (!checkCerts(S.profile.certs, "certErr")) break;
+        if (S.returnTo) { saveEdit(); break; }
+        if (coachCheck("certs")) break;
+        finishRound(); break;
+      }
+      case "continue-anyway":
+        if (S.step === 3) { collectProfile(); if (checkProfile(S.profile, "infoErr")) go(4); }
+        else if (S.step === 4) { collectCerts(); if (checkCerts(S.profile.certs, "certErr")) finishRound(); }
+        break;
+      case "next-round": go(2); break;
+      case "to-questions": if (S.rounds.length && !S.reading) go(6); break;
+      case "next-q": {
+        collectQ();
+        var m = checkQ();
+        P.summary("qErr", m);
+        if (!m) { if (S.returnTo) { S.returnTo = 0; go(10); } else go(7); }
+        break;
+      }
+      case "next-sjt": {
+        collectSjt(); P.clearErrors();
+        var sm = 0;
+        SJT.forEach(function (q) { if (S.sjt[q.id] === undefined) { P.markInvalid(q.id, "Choose an answer."); sm++; } });
+        P.summary("sjErr", sm);
+        if (!sm) { if (S.returnTo) { S.returnTo = 0; go(10); } else go(8); }
+        break;
+      }
+      case "next-v": {
+        P.clearErrors(); var v = 0;
+        SELFID.forEach(function (f) { if (!P.val(f.id)) { P.markInvalid(f.id, "Choose an option. “I don't wish to answer” counts."); v++; } });
+        P.summary("vErr", v);
+        if (!v) go(9); // the choices are dropped here, never kept
+        break;
+      }
+      case "next-sign": {
+        collectSign(); P.clearErrors();
+        var g = 0, sp = signProblem(S.sign);
+        if (!S.cert) { P.markInvalid("e-cert", "Check the box to agree to the statement."); g++; }
+        if (sp) {
+          P.markInvalid(sp.id, sp.msg); g++;
+          if (sp.off) { var fe = P.byId("f-e-sign"); if (fe) fe.insertAdjacentHTML("beforeend", '<p class="err-msg" style="margin-top:0.5rem"><button class="btn btn-secondary" type="button" data-action="fix-name">Fix my name</button></p>'); }
+        }
+        P.summary("sgErr", g);
+        if (!g) { S.switched = null; if (S.returnTo === 10) S.returnTo = 0; go(10); }
+        break;
+      }
+      case "fix-name": collectSign(); editProfile(3, 9); break;
+      case "edit": {
+        var to = +b.dataset.to;
+        if (to === 3 || to === 4) { editProfile(to, 10); break; }
+        S.returnTo = 10; go(to); break;
+      }
+      case "submit": {
+        P.clearErrors();
+        var R = app(), box = P.byId("rErr");
+        // what gets submitted must pass the same checks as the form steps
+        if (!checkProfile(R.profile, "")) { editProfile(3, 10); checkProfile(S.profile, "infoErr"); break; }
+        if (!checkCerts(R.profile.certs, "")) { editProfile(4, 10); checkCerts(S.profile.certs, "certErr"); break; }
+        if (!qValid()) { S.returnTo = 10; go(6); P.summary("qErr", checkQ()); break; }
+        P.clearErrors();
+        var sp2 = signProblem(S.sign);
+        if (sp2 || !S.cert) {
+          box.innerHTML = '<div class="alert alert-err" role="alert">' + esc(!S.cert ? "Your eSignature isn’t finished. Use Edit next to eSignature to agree to the statement and sign." :
+            sp2.off ? "The name on your application is “" + fullName(R.profile.contact) + "”, and it doesn’t look right. Use Edit next to Contact information to fix it, then Edit next to eSignature to sign again." :
+            "Your eSignature doesn’t match the name on your application: " + fullName(R.profile.contact) + ". Use Edit next to eSignature to sign again.") + "</div>";
+          var ed = card.querySelector('[data-action=edit][data-to="' + (S.cert && sp2 && sp2.off ? 3 : 9) + '"]'); if (ed) ed.focus();
+          break;
+        }
+        S.finishedAt = Date.now(); S.switched = null; P.setInProgress(false); go(11);
+        break;
+      }
+      case "copy-code": {
+        var txt = P.byId("code").textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; });
+        break;
+      }
+      case "restart": fresh(); P.setInProgress(false); go(0); break;
+    }
+  });
+
+  /* Coach notes off: take away the coach's box and blue outlines too, not just the side column */
+  P.onHints(function (on) {
+    if (on) return;
+    var cc = P.byId("coachCheck"), had = cc && cc.contains(document.activeElement);
+    if (cc) cc.innerHTML = "";
+    P.clearFlags();
+    if (had) { var nx = card.querySelector("[data-action=next-info], [data-action=next-certs]"); if (nx) nx.focus(); }
+  });
+
+  /* The résumé viewer scrolls, so keyboard users need to be able to reach it and scroll it with the arrow keys.
+     The engine builds the viewer (and rebuilds it when the window crosses 1000px), so this fills in what it leaves out. */
+  if (window.MutationObserver) new MutationObserver(function () {
+    var vb = document.querySelector(".viewer-body:not([tabindex])");
+    if (vb) { vb.setAttribute("tabindex", "0"); vb.setAttribute("role", "region"); vb.setAttribute("aria-label", "Résumé pages"); }
+  }).observe(document.body, { childList: true, subtree: true });
+
+  P.initBar();
+  render(false);
+  // Enter in the email box works like Continue
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || !e.target || e.target.id !== "em-email") return;
+    var b = document.querySelector('[data-action="email-next"]');
+    if (b) { e.preventDefault(); b.click(); }
+  });
+})();
+</script>
+</body>
+</html>

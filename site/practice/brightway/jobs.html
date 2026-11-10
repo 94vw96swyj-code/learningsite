@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find work, Brightway Staffing (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a staffing agency job search where look-alike jobs make you match the Job number.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Brightway Staffing is not a real company. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Brightway Staffing job search (the “Find work” page)">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url"><b>brightwaystaffing.com</b>/jobs</span></div>
+    <div class="site">
+      <header class="bw-top">
+        <a class="bw-logo" href="home.html"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 22L14 4l10 18z" fill="#24479A"/><circle cx="14" cy="16" r="3.5" fill="#F5C518"/></svg> Brightway Staffing</a>
+        <nav class="bw-nav" aria-label="Brightway Staffing">
+          <a href="jobs.html" aria-current="page">Job seekers</a><a href="hire.html">Employers</a><a href="home.html#locations">Locations</a><a href="home.html#about">About</a>
+        </nav>
+      </header>
+
+      <div class="bw-band">
+        <svg class="sun" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <g stroke="#F5C518" stroke-width="4" stroke-linecap="round" opacity="0.45">
+            <path d="M100 38V8" transform="rotate(90 100 100)"/><path d="M100 38V8" transform="rotate(120 100 100)"/><path d="M100 38V8" transform="rotate(150 100 100)"/><path d="M100 38V8" transform="rotate(180 100 100)"/><path d="M100 38V8" transform="rotate(210 100 100)"/><path d="M100 38V8" transform="rotate(240 100 100)"/>
+          </g>
+          <circle cx="100" cy="100" r="44" fill="#F5C518" opacity="0.9"/>
+        </svg>
+        <p class="kicker">Job seekers</p>
+        <h1>Find work</h1>
+        <p class="lead">Search open jobs at all six Brightway branches. We add new jobs every day.</p>
+      </div>
+
+      <div class="bw-body">
+        <form class="bw-search" id="jobForm" role="search" action="#">
+          <label class="kw">Keyword <input type="text" id="kw" placeholder="Job title, skill or Job #" autocomplete="off"></label>
+          <label>ZIP code or city <input type="text" id="where" placeholder="Like 55441 or Plymouth" autocomplete="off"></label>
+          <label>Distance
+            <select id="miles" autocomplete="off">
+              <option value="10">Within 10 miles</option>
+              <option value="25" selected>Within 25 miles</option>
+              <option value="50">Within 50 miles</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+        <div class="bw-chips" id="chips"></div>
+        <p class="bw-count" id="count" aria-live="polite"></p>
+        <ul class="bw-list" id="list"><li class="bw-empty js-note">Loading jobs… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</li></ul>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc;
+  var TARGET = "4471";
+  var NB = "Job # "; // "Job #" never splits from its number at the end of a line
+
+  /* The job from the job board is here, but under a different title: "Production Associate (Temp to Hire)".
+     Look-alikes: a job called exactly "Production Worker" in Blaine with the digits swapped (4417),
+     and other production and packaging jobs, one of them in Plymouth too. Newest first, like a real job list. */
+  var JOBS = [
+    { no: "4493", title: "Receptionist, Branch Office", city: "Eagan", pay: "$19.00 an hour", type: "Temp to hire", posted: "Today", shift: "Monday to Friday, 8:00 am to 4:30 pm",
+      text: "Greet job seekers at our Eagan branch office and help them get started.", does: ["Answer phones and greet visitors", "Help people fill out paperwork", "Schedule interviews"], needs: ["1 year of customer service", "Basic computer skills"] },
+    { no: "4417", title: "Production Worker", city: "Blaine", pay: "$18.50 an hour", type: "Temp to hire", posted: "Today", shift: "2nd shift, 2:30 pm to 11:00 pm",
+      text: "Put together and pack plastic parts at a manufacturing plant in Blaine.", does: ["Put together and pack plastic parts on a line", "Check parts for damage", "Keep your work area clean"], needs: ["Able to stand for a full shift", "Steel-toe boots", "A reliable way to get to Blaine"] },
+    { no: "4481", title: "Food Production Team Member", city: "Eagan", pay: "$18.75 an hour", type: "Temp to hire", posted: "Today", shift: "1st shift, 6:00 am to 2:30 pm",
+      text: "Make and pack fresh salads and sandwiches at a food plant in Eagan.", does: ["Portion and pack fresh food", "Label trays and cases", "Follow food safety rules"], needs: ["Able to work in a cold room (38 degrees)", "Able to stand for a full shift"] },
+    { no: "4475", title: "Forklift Operator", city: "Brooklyn Center", pay: "$22.00 an hour", type: "Direct hire", posted: "Today", shift: "1st shift, 6:00 am to 2:30 pm",
+      text: "Load and unload trucks at a busy distribution center in Brooklyn Center.", does: ["Move pallets with a sit-down forklift", "Load and unload trucks", "Count stock"], needs: ["Current forklift certification", "1 year of forklift experience"] },
+    { no: "4471", title: "Production Associate (Temp to Hire)", city: "Plymouth", pay: "$19.00 an hour", type: "Temp to hire", posted: "1 day ago", shift: "1st and 2nd shift open",
+      text: "Pack and label food products on a moving line at a food packaging plant in Plymouth.", does: ["Pack and label food products on a moving line", "Keep your area clean", "Follow food safety rules"], needs: ["Able to stand for a full shift", "Steel-toe boots (we can help you get them)", "A reliable way to get to Plymouth"] },
+    { no: "4468", title: "Order Picker, Weekends", city: "St. Paul", pay: "$19.25 an hour", type: "Temp", posted: "1 day ago", shift: "Saturday and Sunday, 6:00 am to 4:30 pm",
+      text: "Pick and pack store orders at a grocery warehouse in St. Paul.", does: ["Pick orders with a handheld scanner", "Build pallets", "Wrap and label pallets"], needs: ["Able to lift 50 pounds", "Available every weekend"] },
+    { no: "4463", title: "Warehouse Associate", city: "Eagan", pay: "$19.50 an hour", type: "Temp to hire", posted: "1 day ago", shift: "2nd shift, 2:30 pm to 11:00 pm",
+      text: "Receive, store and ship boxes at an electronics warehouse in Eagan.", does: ["Unload trucks", "Put stock away on shelves", "Pack and ship orders"], needs: ["Able to lift 40 pounds", "Basic math for counting stock"] },
+    { no: "4459", title: "Quality Inspector", city: "Plymouth", pay: "$21.50 an hour", type: "Direct hire", posted: "2 days ago", shift: "1st shift, 7:00 am to 3:30 pm",
+      text: "Check medical parts against a checklist at a plant in Plymouth.", does: ["Measure and check parts", "Fill out inspection forms", "Set aside parts that don’t pass"], needs: ["1 year of production or quality experience", "Able to read and fill out checklists"] },
+    { no: "4455", title: "Labeler, 2nd Shift", city: "Shakopee", pay: "$18.50 an hour", type: "Temp", posted: "2 days ago", shift: "2nd shift, 2:30 pm to 11:00 pm",
+      text: "Label and seal cases of canned food at a food warehouse in Shakopee.", does: ["Label cases on a moving line", "Seal and stack cases", "Report damaged cans"], needs: ["Able to stand for a full shift", "Able to lift 30 pounds"] },
+    { no: "4452", title: "Packaging Operator", city: "Shakopee", pay: "$20.25 an hour", type: "Temp to hire", posted: "2 days ago", shift: "1st shift, 6:00 am to 2:30 pm",
+      text: "Run a machine that wraps and boxes products at a packaging plant in Shakopee.", does: ["Load and run a packaging machine", "Change rolls of film and labels", "Check boxes for mistakes"], needs: ["6 months of machine experience", "Steel-toe boots"] },
+    { no: "4447", title: "Shipping and Receiving Clerk", city: "St. Paul", pay: "$20.50 an hour", type: "Temp to hire", posted: "3 days ago", shift: "1st shift, 7:00 am to 3:30 pm",
+      text: "Check in deliveries and get orders ready to ship at a supply company in St. Paul.", does: ["Check deliveries against packing lists", "Enter counts on a computer", "Print shipping labels"], needs: ["Basic computer skills", "Able to lift 40 pounds"] },
+    { no: "4440", title: "Assembler", city: "Blaine", pay: "$18.25 an hour", type: "Temp", posted: "3 days ago", shift: "1st shift, 6:00 am to 2:30 pm",
+      text: "Build small motors at a factory in Blaine.", does: ["Put parts together with hand tools", "Follow picture instructions", "Check your own work"], needs: ["Good with your hands", "Able to sit or stand for a full shift"] },
+    { no: "4436", title: "Production Line Lead", city: "Eagan", pay: "$23.00 an hour", type: "Direct hire", posted: "3 days ago", shift: "2nd shift, 2:30 pm to 11:00 pm",
+      text: "Lead a team of 12 workers on a food production line in Eagan.", does: ["Set up the line at the start of the shift", "Train new team members", "Fill out production reports"], needs: ["2 years of production experience", "1 year leading a team"] },
+    { no: "4428", title: "Machine Operator, 3rd Shift", city: "Shakopee", pay: "$21.00 an hour", type: "Temp to hire", posted: "4 days ago", shift: "3rd shift, 11:00 pm to 7:00 am",
+      text: "Run a plastic molding machine overnight at a plant in Shakopee.", does: ["Run and watch a molding machine", "Trim and pack parts", "Keep a count of good parts"], needs: ["6 months of machine experience", "Available overnight"] },
+    { no: "4414", title: "Sanitation Worker, Overnight", city: "Brooklyn Center", pay: "$20.00 an hour", type: "Temp", posted: "4 days ago", shift: "3rd shift, 11:00 pm to 7:00 am",
+      text: "Clean production equipment overnight at a meat plant in Brooklyn Center.", does: ["Clean machines and floors", "Use cleaning chemicals safely", "Check that every area passes inspection"], needs: ["Able to work in wet, cold areas", "Available overnight"] },
+    { no: "4402", title: "General Labor", city: "Brooklyn Center", pay: "$18.00 an hour", type: "Temp", posted: "5 days ago", shift: "1st and 2nd shift open",
+      text: "Help out wherever needed at a printing plant in Brooklyn Center.", does: ["Stack and wrap printed boxes", "Sweep and keep aisles clear", "Help load trucks"], needs: ["Able to lift 50 pounds", "Able to stand for a full shift"] },
+    { no: "4389", title: "Line Packer, Bakery", city: "Plymouth", pay: "$18.00 an hour", type: "Temp", posted: "5 days ago", shift: "3rd shift, 10:00 pm to 6:30 am",
+      text: "Pack bread and buns into trays at a bakery in Plymouth.", does: ["Pack bread on a moving line", "Stack trays on carts", "Follow food safety rules"], needs: ["Able to stand for a full shift", "Available overnight"] },
+    { no: "4377", title: "Custodian, Part Time", city: "St. Paul", pay: "$17.75 an hour", type: "Temp", posted: "1 week ago", shift: "Evenings, 5:00 pm to 9:00 pm",
+      text: "Clean offices in the evening at a business park in St. Paul.", does: ["Empty trash and recycling", "Vacuum and mop", "Clean restrooms"], needs: ["Available Monday to Friday evenings"] }
+  ];
+
+  /* Places people may type in the "ZIP code or city" box, with rough map points for measuring distance */
+  var PLACES = {
+    "plymouth": [45.011, -93.456], "blaine": [45.161, -93.235], "shakopee": [44.797, -93.527], "eagan": [44.804, -93.167], "brooklyn center": [45.076, -93.333],
+    "saint paul": [44.954, -93.090], "minneapolis": [44.978, -93.265], "brooklyn park": [45.094, -93.356], "maple grove": [45.073, -93.456], "bloomington": [44.841, -93.298],
+    "richfield": [44.883, -93.283], "edina": [44.890, -93.350], "golden valley": [45.010, -93.349], "new hope": [45.038, -93.387], "crystal": [45.033, -93.360],
+    "robbinsdale": [45.032, -93.339], "fridley": [45.086, -93.263], "coon rapids": [45.120, -93.288], "anoka": [45.198, -93.387], "andover": [45.233, -93.291],
+    "roseville": [45.006, -93.157], "new brighton": [45.066, -93.202], "burnsville": [44.768, -93.278], "apple valley": [44.732, -93.218], "lakeville": [44.650, -93.243],
+    "savage": [44.779, -93.336], "prior lake": [44.713, -93.423], "chaska": [44.789, -93.602], "eden prairie": [44.855, -93.471], "minnetonka": [44.913, -93.503],
+    "hopkins": [44.925, -93.463], "saint louis park": [44.948, -93.348], "wayzata": [44.974, -93.507], "woodbury": [44.924, -92.959], "maplewood": [44.953, -92.995],
+    "inver grove heights": [44.848, -93.043], "west saint paul": [44.916, -93.102], "south saint paul": [44.893, -93.035], "columbia heights": [45.041, -93.263],
+    "champlin": [45.189, -93.397], "osseo": [45.119, -93.402], "rogers": [45.189, -93.553], "shoreview": [45.079, -93.147], "white bear lake": [45.085, -93.010],
+    "mendota heights": [44.884, -93.138], "cottage grove": [44.828, -92.944], "hastings": [44.744, -92.852]
+  };
+  var NICK = { "mpls": "minneapolis", "stp": "saint paul", "st paul": "saint paul", "saint paul park": "cottage grove", "bp": "brooklyn park", "slp": "saint louis park" };
+  var ZIPS = {
+    "55441": "plymouth", "55442": "plymouth", "55446": "plymouth", "55447": "plymouth", "55434": "blaine", "55449": "blaine", "55379": "shakopee",
+    "55121": "eagan", "55122": "eagan", "55123": "eagan", "55429": "brooklyn center", "55430": "brooklyn center", "55443": "brooklyn park", "55444": "brooklyn park",
+    "55445": "brooklyn park", "55311": "maple grove", "55369": "maple grove", "55420": "bloomington", "55425": "bloomington", "55431": "bloomington", "55437": "bloomington",
+    "55438": "bloomington", "55423": "richfield", "55424": "edina", "55435": "edina", "55436": "edina", "55439": "edina", "55422": "robbinsdale", "55427": "new hope",
+    "55428": "crystal", "55432": "fridley", "55433": "coon rapids", "55448": "coon rapids", "55303": "anoka", "55304": "andover", "55113": "roseville", "55112": "new brighton",
+    "55337": "burnsville", "55124": "apple valley", "55044": "lakeville", "55378": "savage", "55372": "prior lake", "55318": "chaska", "55344": "eden prairie",
+    "55346": "eden prairie", "55347": "eden prairie", "55305": "minnetonka", "55345": "minnetonka", "55343": "hopkins", "55416": "saint louis park", "55426": "saint louis park",
+    "55391": "wayzata", "55125": "woodbury", "55129": "woodbury", "55109": "maplewood", "55119": "maplewood", "55076": "inver grove heights", "55077": "inver grove heights",
+    "55118": "west saint paul", "55075": "south saint paul", "55421": "columbia heights", "55316": "champlin", "55374": "rogers", "55126": "shoreview", "55110": "white bear lake",
+    "55120": "mendota heights", "55016": "cottage grove", "55033": "hastings"
+  };
+  var CITY_ORDER = Object.keys(PLACES);
+  function titleCase(s) { return s.replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/^Saint (Paul|Louis Park)$/, "St. $1").replace(/^(West|South) Saint Paul$/, "$1 St. Paul"); }
+  function placeKey(s) {
+    return String(s || "").toLowerCase().replace(/[‘’']/g, "").replace(/\bst\b\.?/g, "saint").replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\b(mn|minn|minnesota|usa|us)\b/g, " ").replace(/\s+/g, " ").trim();
+  }
+  /* What the "ZIP code or city" box means: a known place, an unknown one, or nothing typed.
+     "55441", "55441-1234", "Plymouth", "plymouth, mn", "St Paul" and "Saint Paul" all work. A city that's only partly typed ("plym") counts too. */
+  function findPlace(raw) {
+    var t = String(raw || "").trim();
+    if (!t) return null;
+    // A ZIP code anywhere in the box wins, so "Plymouth, MN 55441" works too
+    var z = t.match(/^\s*(\d{5})(?:-\d{4})?\s*$/) || t.match(/\b(\d{5})(?:-\d{4})?\b/);
+    if (z) {
+      var zip = z[1], name = ZIPS[zip] || (/^55[01]/.test(zip) ? "saint paul" : /^55[34]/.test(zip) ? "minneapolis" : "");
+      return name ? { known: true, label: zip, at: PLACES[name] } : { known: false, label: zip };
+    }
+    var k = placeKey(t);
+    k = NICK[k] || k;
+    if (PLACES[k]) return { known: true, label: titleCase(k), at: PLACES[k] };
+    if (k.length >= 3) for (var i = 0; i < CITY_ORDER.length; i++) if (CITY_ORDER[i].indexOf(k) === 0) return { known: true, label: titleCase(CITY_ORDER[i]), at: PLACES[CITY_ORDER[i]] };
+    return { known: false, label: t };
+  }
+  function cityAt(c) { return PLACES[placeKey(c)]; }
+  function milesBetween(a, b) {
+    var dy = (a[0] - b[0]) * 69.0, dx = (a[1] - b[1]) * 69.17 * Math.cos((a[0] + b[0]) / 2 * Math.PI / 180);
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function clean(s) { return String(s || "").toLowerCase().replace(/[‐-―]/g, "-").replace(/[^a-z0-9\s-]/g, " "); }
+  function digits(s) { return String(s).replace(/\D/g, ""); }
+  /* "4471", "#4471", "Job # 4471" and "job number 4471" all find the same job: the words job, number, no and id are skipped,
+     and a search that's only numbers is matched against the Job # digit by digit. */
+  function matches(j, kw) {
+    var q = clean(kw).replace(/\b(jobs?|ids?|numbers?|no|num)\b/g, " ").replace(/\s+/g, " ").trim();
+    if (!q) return true;
+    var idq = /^[\d\s-]+$/.test(q) ? digits(q) : "";
+    if (idq.length >= 3) return j.no.indexOf(idq) !== -1;
+    var hay = clean([j.title, j.no, j.city, j.city + " branch", j.type, j.shift, j.text, j.does.join(" "), j.needs.join(" ")].join(" "));
+    return q.split(" ").every(function (w) { return hay.indexOf(w) !== -1; });
+  }
+
+  var open = {}, wrong = {}, coachKey = "";
+  function results() {
+    var kw = P.val("kw"), place = findPlace(P.val("where")), miles = +P.val("miles") || 25;
+    var list = JOBS.filter(function (j) { return matches(j, kw); }).map(function (j) {
+      var d = place && place.known ? milesBetween(place.at, cityAt(j.city)) : null;
+      return { job: j, miles: d };
+    });
+    if (place) list = place.known ? list.filter(function (x) { return x.miles <= miles; }) : [];
+    return { list: list, place: place, miles: miles, kw: kw.trim() };
+  }
+  function awayText(m) { var r = Math.round(m); return r < 1 ? "Less than 1 mile away" : "About " + r + " " + P.plural(r, "mile") + " away"; }
+  function wrongNote(no) {
+    if (no === "4417") return "Practice note: look closely. This is " + NB + "4417. The job post said " + NB + TARGET + ". The same numbers, in a different order. This is a different job, in Blaine.";
+    var j = JOBS.filter(function (x) { return x.no === no; })[0];
+    return "Practice note: this isn’t the job from the job board. This is " + NB + no + (j ? ", in " + j.city : "") + ". Look for " + NB + TARGET + ", the number on the job post.";
+  }
+
+  function render() {
+    var r = results(), list = r.list, place = r.place, kw = r.kw, ul = P.byId("list"), count = P.byId("count");
+    var near = place ? place.label : "";
+    // the fake address bar shows the search, like a real site
+    var qs = [kw ? "q=" + encodeURIComponent(kw) : "", near ? "near=" + encodeURIComponent(near) + "&miles=" + r.miles : ""].filter(Boolean).join("&");
+    P.byId("url").innerHTML = "<b>brightwaystaffing.com</b>/jobs" + (qs ? "?" + esc(qs) : "");
+    P.byId("chips").innerHTML = (kw || place ? "<span>Filters:</span>" : "") +
+      (kw ? '<button type="button" class="chip-x" id="clearKw" aria-label="Remove keyword ' + esc(kw) + '">Keyword: ' + esc(kw) + ' <b aria-hidden="true">&times;</b></button>' : "") +
+      (place ? '<button type="button" class="chip-x" id="clearWhere" aria-label="Remove ZIP code or city ' + esc(near) + '">Near: ' + esc(near) + ' <b aria-hidden="true">&times;</b></button>' : "");
+    // The count line is a live region, so "No jobs match" is read out too, not only shown.
+    count.classList.toggle("is-empty", !list.length);
+    if (place && !place.known) count.textContent = "We can’t find “" + place.label + "”. Try a Twin Cities city, like Plymouth, or a ZIP code, like 55441. Or clear the ZIP code or city box.";
+    else if (!list.length) count.textContent = place ? "No jobs within " + r.miles + " miles of " + near + (kw ? " match your keyword" : "") + ". Choose a bigger distance, or clear the ZIP code or city box." : "No jobs match your search. Check the spelling, or try a different word.";
+    else count.textContent = "Showing " + list.length + " " + P.plural(list.length, "job") + (place ? " within " + r.miles + " miles of " + near : "");
+    ul.hidden = !list.length;
+    ul.innerHTML = list.map(function (x) {
+      var j = x.job, isOpen = !!open[j.no];
+      return '<li class="bw-job"><h2>' + esc(j.title) + "</h2>" +
+        '<p class="m">' + esc(j.city) + ", MN &middot; " + esc(j.pay) + " &middot; " + esc(j.type) + "</p>" +
+        '<p class="m2"><span class="bw-jobno">' + NB + esc(j.no) + "</span><span>" + esc(j.city) + " branch</span><span>Posted " + esc(j.posted.charAt(0).toLowerCase() + j.posted.slice(1)) + "</span>" +
+        (x.miles !== null ? "<span>" + awayText(x.miles) + "</span>" : "") + "</p>" +
+        '<div class="actions-row"><button class="btn btn-secondary" type="button" data-view="' + j.no + '" aria-expanded="' + isOpen + '">' + (isOpen ? "Hide details" : "View details") +
+        '<span class="visually-hidden">: ' + esc(j.title) + ", " + NB + esc(j.no) + "</span></button></div>" +
+        (isOpen ? '<div class="bw-detail"><p>' + esc(j.text) + "</p><p><b>Shift:</b> " + esc(j.shift) + "</p>" +
+          "<h3>What you’ll do</h3><ul>" + j.does.map(function (d) { return "<li>" + esc(d) + "</li>"; }).join("") + "</ul>" +
+          "<h3>What you need</h3><ul>" + j.needs.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+          (j.no === TARGET ? '<a class="btn btn-primary" href="./">Apply now<span class="visually-hidden">: ' + esc(j.title) + "</span></a>"
+            : '<button class="btn btn-primary" type="button" data-wrong="' + j.no + '">Apply now<span class="visually-hidden">: ' + esc(j.title) + "</span></button>" +
+              '<div id="note-' + j.no + '">' + (wrong[j.no] ? '<p class="bw-note" role="alert">' + esc(wrongNote(j.no)) + "</p>" : "") + "</div>") + "</div>" : "") + "</li>";
+    }).join("");
+    describe(r);
+    coachNotes(r);
+  }
+
+  /* What the coach is told about this screen: never what the learner typed, only which boxes are filled in and what the site shows */
+  function describe(r) {
+    var shownNos = r.list.map(function (x) { return x.job.no; });
+    var openNos = shownNos.filter(function (n) { return open[n]; }), bad = openNos.filter(function (n) { return wrong[n]; });
+    var s = "Brightway job search (“Find work”). Keyword box " + (r.kw ? "filled in" : "empty") + ". ZIP code or city box " + (r.place ? "filled in" : "empty") + ". Showing " + shownNos.length + " jobs" +
+      (shownNos.indexOf(TARGET) === -1 ? ", not Job # " + TARGET : ", including Job # " + TARGET) + ".";
+    if (bad.length) s += " Learner clicked Apply now on Job # " + bad[bad.length - 1] + ", the wrong job.";
+    else if (openNos.length) s += " Details open: Job # " + openNos.join(", ") + ".";
+    P.byId("card").setAttribute("data-step", s.slice(0, 200));
+  }
+
+  function coachNotes(r) {
+    // Is the job from the board hidden only because of the ZIP code or city box? Then the coach says so.
+    var hidden = !!r.place && r.list.every(function (x) { return x.job.no !== TARGET; }) && JOBS.some(function (j) { return j.no === TARGET && matches(j, r.kw); });
+    var key = hidden ? "far" : "base";
+    if (key === coachKey) return; // only redraw the note when it changes, so the coach column isn't read out again after every search
+    coachKey = key;
+    var notes = [
+      "This is Brightway’s job list. Agencies post many jobs at once, and some look alike.",
+      "Job titles can change from one website to another. The Job # stays the same. The job post said " + NB + TARGET + ".",
+      "Type " + TARGET + " in the Keyword box, or read the Job # on each job before you click “Apply now.”"
+    ];
+    if (hidden) notes.push("Right now you only see jobs near the place you typed. The job post said Plymouth. If it’s not showing, clear the ZIP code or city box, or choose a bigger distance.");
+    P.coach(notes);
+  }
+
+  P.byId("jobForm").addEventListener("submit", function (e) { e.preventDefault(); render(); });
+  P.byId("miles").addEventListener("change", render);
+  // After the browser's Back or Forward, draw the list again so it always matches the search boxes.
+  window.addEventListener("pageshow", function (e) { if (e.persisted) render(); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-view], [data-wrong], #clearKw, #clearWhere"); if (!b) return;
+    if (b.id === "clearKw") { P.byId("kw").value = ""; render(); P.byId("kw").focus(); return; }
+    if (b.id === "clearWhere") { P.byId("where").value = ""; render(); P.byId("where").focus(); return; }
+    if (b.dataset.view) {
+      if (e.detail > 1) return; // a double click counts as one
+      var no = b.dataset.view;
+      open[no] = !open[no]; if (!open[no]) delete wrong[no];
+      render();
+      var again = document.querySelector('[data-view="' + no + '"]'); if (again) again.focus();
+      return;
+    }
+    if (b.dataset.wrong) {
+      var n = b.dataset.wrong, box = P.byId("note-" + n);
+      wrong[n] = true;
+      // Empty it first, then fill it a moment later, so a screen reader reads it again on a second click
+      box.innerHTML = "";
+      setTimeout(function () { box.innerHTML = '<p class="bw-note" role="alert">' + esc(wrongNote(n)) + "</p>"; }, 60);
+      describe(results());
+    }
+  });
+  P.initBar();
+  render();
+})();
+</script>
+</body>
+</html>

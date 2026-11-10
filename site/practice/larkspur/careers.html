@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Careers at Larkspur Health (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a hospital careers site where many jobs look almost the same.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="lc-site">
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Larkspur Health is not a real health system. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Larkspur Health careers site (job search)">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url"><b>careers.larkspurhealth.org</b>/jobs</span></div>
+    <div class="site">
+      <header class="lc-head">
+        <div class="lc-logo"><svg width="22" height="26" viewBox="0 0 30 34" aria-hidden="true"><path d="M15 33V7" stroke="#BFE3D9" stroke-width="2" fill="none"/><path d="M15 29c-3.5-1-6-3.5-7-7M15 30c3.5-1 6-3.5 7-6.5" stroke="#BFE3D9" stroke-width="1.8" fill="none"/><circle cx="15" cy="4.5" r="2.6" fill="#fff"/><circle cx="11.2" cy="9.6" r="3" fill="#E4DDFB"/><circle cx="18.8" cy="12.2" r="3.2" fill="#fff"/><circle cx="10.8" cy="16.4" r="3.4" fill="#E4DDFB"/><circle cx="19.4" cy="19.6" r="3.5" fill="#fff"/></svg>Larkspur Health <span>Careers</span></div>
+        <nav aria-label="Careers site">
+          <ul>
+            <li><a href="#" data-nope>Why Larkspur</a></li>
+            <li><a href="#" data-nope>Benefits</a></li>
+            <li><a href="#" data-nope>Students and new grads</a></li>
+            <li><a href="home.html">larkspurhealth.org</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="lc-hero">
+        <h1>Careers at Larkspur Health</h1>
+        <p>Join 9,400 people who care for our community. Find work that matters, close to home.</p>
+      </div>
+      <div class="lc-body">
+        <section class="lc-search" aria-labelledby="searchTitle">
+          <h2 id="searchTitle">Search jobs</h2>
+          <form class="lc-form" id="lcForm" role="search">
+            <label>Keyword <input type="text" id="kw" placeholder="Job title, keyword or Req ID" autocomplete="off"></label>
+            <label>Location <select id="loc" autocomplete="off"></select></label>
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+        </section>
+        <section class="lc-cats" aria-labelledby="catTitle">
+          <h2 id="catTitle">Browse by category</h2>
+          <ul id="cats"></ul>
+        </section>
+        <div class="lc-chips" id="chips"></div>
+        <section class="lc-results" aria-labelledby="jobsTitle">
+          <h2 id="jobsTitle">Jobs</h2>
+          <p class="lc-count" id="lcCount" aria-live="polite"></p>
+          <ul class="lc-list" id="lcList"><li class="lc-empty js-note">Loading jobs… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</li></ul>
+          <div class="lc-more" id="more"></div>
+        </section>
+      </div>
+      <footer class="lc-foot"><p>&copy; 2026 Larkspur Health. Larkspur Health is an equal opportunity employer.</p></footer>
+      <div class="lk-toast-slot"><p class="lk-toast" id="toast" role="status"></p></div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc;
+  var TARGET = "R-10457", PAGE = 10;
+  var CATS = [["N", "Nursing"], ["C", "Clinical and allied health"], ["S", "Non-clinical and support"], ["L", "Leadership"]];
+  var CAT = {}; CATS.forEach(function (c) { CAT[c[0]] = c[1]; });
+  var LOCS = {
+    bl: { name: "Bloomington Clinic", city: "Bloomington, MN", addr: "9100 Meadow Lane, Bloomington, MN" },
+    ep: { name: "Eden Prairie Clinic", city: "Eden Prairie, MN", addr: "7700 Prairie Road, Eden Prairie, MN" },
+    lv: { name: "Lakeview Hospital", city: "Hopkins, MN", addr: "88 Lakeview Court, Hopkins, MN" },
+    mc: { name: "Larkspur Medical Center", city: "Minneapolis, MN", addr: "1200 Larkspur Way, Minneapolis, MN" },
+    mw: { name: "Maplewood Clinic", city: "Maplewood, MN", addr: "2400 Birch Street, Maplewood, MN" },
+    ne: { name: "Northeast Clinic", city: "Minneapolis, MN", addr: "1500 Elm Street NE, Minneapolis, MN" },
+    rh: { name: "Riverside Hospital", city: "St. Paul, MN", addr: "450 Riverside Drive, St. Paul, MN" }
+  };
+  // Newest first, the way the site lists them. The job from the job board (R-10457) is here as "Supervisor, Clinic Operations"
+  // at Bloomington Clinic, past the first 10. Look-alikes: the same title at Maplewood Clinic (R-10475, two digits swapped),
+  // "Supervisor, Patient Access" and "Manager, Clinic Operations" at Bloomington, and a "Coordinator, Clinic Operations".
+  var JOBS = [
+    { id: "R-10488", title: "Registered Nurse, Medical-Surgical", loc: "mc", cat: "N", days: 0, sched: "Full time, nights", pay: "$44.20 to $61.80 an hour",
+      text: "Care for adult patients after surgery and during short hospital stays on our 32-bed unit.", needs: ["Minnesota RN license", "BLS (CPR) certification", "1 year of hospital nursing preferred"] },
+    { id: "R-10486", title: "Nursing Assistant, Float Pool", loc: "rh", cat: "N", days: 0, sched: "Part time, rotating shifts", pay: "$20.75 to $25.10 an hour",
+      text: "Help patients with bathing, meals and moving around, on different units each week.", needs: ["Nursing assistant registration in Minnesota", "BLS (CPR) certification"] },
+    { id: "R-10475", title: "Supervisor, Clinic Operations", loc: "mw", cat: "L", days: 1, sched: "Full time, days (Monday to Friday)", pay: "$59,000 to $70,000 a year",
+      text: "Lead the front desk and scheduling team at our Maplewood Clinic. Keep the day running smoothly for patients and staff.",
+      does: ["Supervise and schedule a team of 9 patient service staff", "Solve patient and workflow problems as they come up", "Train new staff and track team goals"],
+      needs: ["2 or more years of supervisory or lead experience", "Experience in clinic, healthcare or customer service operations", "BLS (CPR) certification within 30 days of hire", "Associate’s or bachelor’s degree preferred, or equal experience"] },
+    { id: "R-10472", title: "Medical Assistant, Family Medicine", loc: "bl", cat: "C", days: 1, sched: "Full time, days", pay: "$21.50 to $26.00 an hour",
+      text: "Room patients, take vital signs and help doctors during visits in our family medicine clinic.", needs: ["Medical assistant certificate", "BLS (CPR) certification"] },
+    { id: "R-10470", title: "Patient Access Representative", loc: "bl", cat: "S", days: 1, sched: "Full time, days and evenings", pay: "$19.80 to $24.10 an hour",
+      text: "Check patients in, update insurance and answer questions at the front desk.", needs: ["1 year of customer service experience", "Comfortable with computers"] },
+    { id: "R-10449", title: "Supervisor, Patient Access", loc: "bl", cat: "L", days: 2, sched: "Full time, days and evenings", pay: "$55,000 to $64,000 a year",
+      text: "Lead the registration and insurance check team at Bloomington Clinic.",
+      does: ["Supervise 14 patient access representatives", "Check insurance and registration work for mistakes", "Cover the front desk on busy evenings"],
+      needs: ["2 or more years of patient registration or insurance experience", "1 year of lead experience", "Able to work some evenings and weekends"] },
+    { id: "R-10468", title: "Environmental Services Technician", loc: "rh", cat: "S", days: 2, sched: "Full time, evenings", pay: "$19.25 to $22.40 an hour",
+      text: "Clean and disinfect patient rooms and public areas to keep patients safe.", needs: ["Able to lift 35 pounds", "Able to stand for a full shift"] },
+    { id: "R-10461", title: "Coordinator, Clinic Operations", loc: "bl", cat: "S", days: 2, sched: "Full time, days", pay: "$22.60 to $27.90 an hour",
+      text: "Support daily clinic operations: supplies, room schedules and reports. Reports to the clinic operations supervisor.",
+      needs: ["1 year of office or healthcare experience", "Strong computer skills"] },
+    { id: "R-10464", title: "Registered Nurse, Emergency Department", loc: "lv", cat: "N", days: 2, sched: "Part time, evenings", pay: "$46.10 to $64.50 an hour",
+      text: "Care for patients of all ages in a busy emergency department.", needs: ["Minnesota RN license", "BLS and ACLS certification", "1 year of emergency nursing"] },
+    { id: "R-10459", title: "Pharmacy Technician, Outpatient Pharmacy", loc: "mc", cat: "C", days: 3, sched: "Full time, days", pay: "$21.80 to $27.40 an hour",
+      text: "Fill prescriptions and help patients at the pharmacy counter.", needs: ["Pharmacy technician registration in Minnesota", "Good attention to detail"] },
+    { id: "R-10466", title: "Manager, Clinic Operations", loc: "bl", cat: "L", days: 3, sched: "Full time, days (Monday to Friday)", pay: "$78,000 to $94,000 a year",
+      text: "Manage operations for the Bloomington and Eden Prairie clinics. Lead the clinic operations supervisors and coordinators.",
+      does: ["Lead 3 supervisors and their teams", "Plan the clinic budget and staffing", "Work with clinic doctors and nurse leaders"],
+      needs: ["5 or more years of healthcare operations experience", "3 or more years of people management", "Bachelor’s degree required"] },
+    { id: "R-10455", title: "Licensed Practical Nurse, Family Medicine", loc: "ep", cat: "N", days: 3, sched: "Full time, days", pay: "$29.40 to $36.80 an hour",
+      text: "Give shots, update charts and call patients with results in a family medicine clinic.", needs: ["Minnesota LPN license", "BLS (CPR) certification"] },
+    { id: "R-10457", title: "Supervisor, Clinic Operations", loc: "bl", cat: "L", days: 3, sched: "Full time, days (Monday to Friday)", pay: "$61,000 to $72,000 a year",
+      text: "Lead the front desk, check-in and scheduling team at our busy Bloomington Clinic. Keep the day running smoothly for patients and staff.",
+      does: ["Supervise and schedule a team of 12 patient service staff", "Solve patient and workflow problems as they come up", "Train new staff and track team goals", "Work with the clinic manager, nurses and doctors"],
+      needs: ["2 or more years of supervisory or lead experience", "Experience in clinic, healthcare or customer service operations", "BLS (CPR) certification within 30 days of hire", "Associate’s or bachelor’s degree preferred, or equal experience"] },
+    { id: "R-10458", title: "Physical Therapist, Outpatient Rehab", loc: "bl", cat: "C", days: 4, sched: "Full time, days", pay: "$41.00 to $52.50 an hour",
+      text: "Help patients get moving again after injuries and surgery.", needs: ["Minnesota physical therapist license", "BLS (CPR) certification"] },
+    { id: "R-10454", title: "Scheduler, Central Scheduling", loc: "mc", cat: "S", days: 4, sched: "Full time, days, can work from home", pay: "$19.50 to $23.75 an hour",
+      text: "Answer calls and book appointments for all Larkspur clinics.", needs: ["1 year of call center or customer service experience", "Typing and computer skills"] },
+    { id: "R-10451", title: "Medical Assistant, Pediatrics", loc: "ep", cat: "C", days: 5, sched: "Part time, days", pay: "$21.50 to $26.00 an hour",
+      text: "Help children and families during clinic visits. Take vital signs and give shots.", needs: ["Medical assistant certificate", "BLS (CPR) certification"] },
+    { id: "R-10447", title: "Interpreter, Somali and English", loc: "rh", cat: "S", days: 5, sched: "Full time, days", pay: "$23.10 to $28.60 an hour",
+      text: "Interpret between patients and care teams, in person and by video.", needs: ["Fluent in Somali and English", "Medical interpreter training or willing to finish it in 6 months"] },
+    { id: "R-10442", title: "Nurse Manager, Emergency Department", loc: "lv", cat: "L", days: 6, sched: "Full time, days, some weekends", pay: "$104,000 to $132,000 a year",
+      text: "Lead the nursing team in our emergency department.", needs: ["Minnesota RN license", "3 or more years of nurse leadership", "Bachelor’s degree in nursing"] },
+    { id: "R-10439", title: "Phlebotomist", loc: "ne", cat: "C", days: 6, sched: "Full time, early mornings", pay: "$19.90 to $24.30 an hour",
+      text: "Draw blood and collect lab samples from patients of all ages.", needs: ["Phlebotomy certificate or 6 months of experience"] },
+    { id: "R-10436", title: "Charge Nurse, Labor and Delivery", loc: "mc", cat: "N", days: 7, sched: "Full time, nights", pay: "$49.00 to $67.30 an hour",
+      text: "Lead the night shift on our birth center unit and care for patients in labor.", needs: ["Minnesota RN license", "2 years of labor and delivery nursing"] },
+    { id: "R-10433", title: "Food Service Worker, Nutrition Services", loc: "mc", cat: "S", days: 7, sched: "Part time, rotating shifts", pay: "$18.50 to $21.20 an hour",
+      text: "Prepare and deliver meals to patients and work in the hospital cafe.", needs: ["Food handler training (we can train you)", "Able to stand for a full shift"] },
+    { id: "R-10428", title: "Radiologic Technologist, Imaging", loc: "rh", cat: "C", days: 8, sched: "Full time, evenings", pay: "$32.60 to $43.90 an hour",
+      text: "Take X-rays and help patients feel at ease during imaging.", needs: ["Radiologic technologist license", "BLS (CPR) certification"] },
+    { id: "R-10424", title: "Medical Records Specialist, Health Information", loc: "ne", cat: "S", days: 9, sched: "Full time, days", pay: "$20.40 to $25.30 an hour",
+      text: "Keep patient records complete and handle records requests.", needs: ["1 year of office experience", "Careful with private information"] },
+    { id: "R-10421", title: "Registered Nurse, Care Coordination", loc: "mw", cat: "N", days: 10, sched: "Full time, days", pay: "$43.50 to $60.20 an hour",
+      text: "Help patients with long-term health problems plan their care between visits.", needs: ["Minnesota RN license", "2 years of clinic or hospital nursing"] },
+    { id: "R-10417", title: "Supervisor, Environmental Services, Nights", loc: "mc", cat: "L", days: 11, sched: "Full time, nights", pay: "$52,000 to $61,000 a year",
+      text: "Lead the night cleaning team at Larkspur Medical Center.", needs: ["2 years of lead or supervisor experience", "Experience in cleaning, hotels or facilities"] },
+    { id: "R-10413", title: "Respiratory Therapist", loc: "lv", cat: "C", days: 12, sched: "Full time, rotating shifts", pay: "$35.20 to $47.80 an hour",
+      text: "Help patients breathe easier with treatments and breathing equipment.", needs: ["Minnesota respiratory therapist license", "BLS (CPR) certification"] },
+    { id: "R-10409", title: "Billing Representative, Patient Financial Services", loc: "mc", cat: "S", days: 13, sched: "Full time, days, can work from home", pay: "$20.10 to $25.00 an hour",
+      text: "Answer patient questions about bills and set up payment plans.", needs: ["1 year of billing or customer service experience"] },
+    { id: "R-10404", title: "Security Officer", loc: "rh", cat: "S", days: 14, sched: "Full time, nights", pay: "$21.40 to $26.30 an hour",
+      text: "Keep patients, visitors and staff safe. Walk the building and help at the front entrance.", needs: ["High school diploma or GED", "Security experience preferred"] }
+  ];
+  var state = { cat: "", shown: PAGE, open: {}, noted: {}, lastOpen: "" };
+
+  // Location menu and category buttons come from the data, so the counts are always right.
+  P.byId("loc").innerHTML = '<option value="">All locations</option>' + Object.keys(LOCS).map(function (k) {
+    return '<option value="' + k + '">' + esc(LOCS[k].name + " (" + LOCS[k].city + ")") + "</option>";
+  }).join("");
+  P.byId("cats").innerHTML = CATS.map(function (c) {
+    var n = JOBS.filter(function (j) { return j.cat === c[0]; }).length;
+    return '<li><button class="lc-cat" type="button" data-cat="' + c[0] + '" aria-pressed="false"><b>' + esc(c[1]) + "</b> <span>" + n + " jobs</span></button></li>";
+  }).join("");
+
+  function clean(s) { return String(s || "").toLowerCase().replace(/[‐-―]/g, "-").replace(/[‘’']/g, "").replace(/[^a-z0-9\s-]/g, " "); }
+  function digits(s) { return String(s).replace(/\D/g, ""); }
+  function posted(d) { return d === 0 ? "Posted today" : d === 1 ? "Posted yesterday" : "Posted " + d + " days ago"; }
+  function where(j) { return LOCS[j.loc].name + " · " + LOCS[j.loc].city; }
+  function results() {
+    // "R-10457", "r10457", "Req ID R-10457" and "10457" all find the same job: the words req and id are skipped,
+    // and a number is compared digit by digit. Other words must all be somewhere in the job.
+    var q = clean(P.val("kw")).replace(/\b(jobs?|reqs?|ids?|requisition|number)\b/g, " ").trim(), loc = P.val("loc");
+    var words = q.split(/\s+/).filter(Boolean), idq = /^r?[\s-]*\d[\d\s-]*$/.test(q) ? digits(q) : "";
+    return JOBS.filter(function (j) {
+      if (loc && j.loc !== loc) return false;
+      if (state.cat && j.cat !== state.cat) return false;
+      if (idq.length >= 3) return digits(j.id).indexOf(idq) !== -1;
+      var hay = clean([j.title, LOCS[j.loc].name, LOCS[j.loc].city, CAT[j.cat], j.sched, j.id, j.text, (j.does || []).join(" "), j.needs.join(" ")].join(" "));
+      return words.every(function (w) {
+        return hay.indexOf(w) !== -1 || (w.length > 3 && /s$/.test(w) && hay.indexOf(w.slice(0, -1)) !== -1) ||
+          (digits(w).length >= 4 && digits(j.id).indexOf(digits(w)) !== -1);
+      });
+    });
+  }
+  function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+  function jobHtml(j) {
+    var isOpen = !!state.open[j.id], L = LOCS[j.loc], name = esc(j.title) + ", " + esc(L.name);
+    var h = '<li class="lc-job"><h3>' + esc(j.title) + '</h3><div class="where">' + esc(where(j)) + "</div>" +
+      '<div class="m">' + esc(CAT[j.cat]) + " · " + esc(j.sched.split(",")[0]) + ' · <span class="req">Req ID ' + esc(j.id) + "</span> · " + posted(j.days) + "</div>" +
+      '<div class="actions-row"><button class="btn btn-secondary" type="button" data-view="' + j.id + '" aria-expanded="' + isOpen + '">' + (isOpen ? "Hide details" : "View job") +
+      '<span class="visually-hidden">: ' + name + "</span></button></div>";
+    if (isOpen) {
+      h += '<div class="lc-detail"><p>' + esc(j.text) + "</p>" +
+        "<dl><dt>Pay</dt><dd>" + esc(j.pay) + "</dd><dt>Schedule</dt><dd>" + esc(j.sched.charAt(0).toUpperCase() + j.sched.slice(1)) + "</dd>" +
+        "<dt>Location</dt><dd>" + esc(L.name) + ", " + esc(L.addr) + "</dd><dt>Req ID</dt><dd class=\"nw\">" + esc(j.id) + "</dd></dl>" +
+        (j.does ? "<h4>What you’ll do</h4><ul>" + j.does.map(function (d) { return "<li>" + esc(d) + "</li>"; }).join("") + "</ul>" : "") +
+        "<h4>What you need</h4><ul>" + j.needs.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+        (j.id === TARGET ? '<a class="btn btn-primary" href="./">Apply<span class="visually-hidden">: ' + name + "</span></a>" :
+          '<button class="btn btn-primary" type="button" data-wrong="' + j.id + '">Apply<span class="visually-hidden">: ' + name + "</span></button>" +
+          '<div id="note-' + j.id + '">' + (state.noted[j.id] ? wrongNote(j, false) : "") + "</div>") + "</div>";
+    }
+    return h + "</li>";
+  }
+  // The kind note for a look-alike job. It is an alert only the moment it appears, so redrawing the list doesn't read it out again.
+  function wrongNote(j, fresh) {
+    return '<p class="lc-note"' + (fresh ? ' role="alert"' : "") + '>Practice note: this isn’t the job you picked on the job board. This one is Req ID <span class="nw">' + esc(j.id) +
+      "</span>, “" + esc(j.title) + "” at " + esc(LOCS[j.loc].name) + '. Look for Req ID <span class="nw">' + TARGET + "</span>.</p>";
+  }
+  function render() {
+    var all = results(), loc = P.val("loc"), kw = P.val("kw").trim(), list = all.slice(0, state.shown);
+    var params = [state.cat ? "category=" + slug(CAT[state.cat]) : "", loc ? "location=" + slug(LOCS[loc].name) : "", kw ? "q=" + esc(encodeURIComponent(kw)) : ""].filter(Boolean);
+    P.byId("url").innerHTML = "<b>careers.larkspurhealth.org</b>/jobs" + (params.length ? "?" + params.join("&amp;") : "");
+    document.querySelectorAll("[data-cat]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.cat === state.cat)); });
+    P.byId("chips").innerHTML = (state.cat || loc || kw ? "<span>Filters:</span>" : "") +
+      (state.cat ? '<button type="button" class="chip-x" id="clearCat" aria-label="Remove filter: category ' + esc(CAT[state.cat]) + '">Category: ' + esc(CAT[state.cat]) + ' <b aria-hidden="true">&times;</b></button>' : "") +
+      (loc ? '<button type="button" class="chip-x" id="clearLoc" aria-label="Remove filter: location ' + esc(LOCS[loc].name) + '">Location: ' + esc(LOCS[loc].name) + ' <b aria-hidden="true">&times;</b></button>' : "") +
+      (kw ? '<button type="button" class="chip-x" id="clearKw" aria-label="Remove keyword ' + esc(kw) + '"><span data-private>Keyword: ' + esc(kw) + '</span> <b aria-hidden="true">&times;</b></button>' : "");
+    // What the coach is told about this screen (never the keyword, which the learner typed)
+    var openJob = state.lastOpen && state.open[state.lastOpen] ? JOBS.filter(function (j) { return j.id === state.lastOpen; })[0] : null;
+    P.byId("card").setAttribute("data-step", ("Larkspur Health careers site (job search). Category: " + (state.cat ? CAT[state.cat] : "All") + ". Location: " + (loc ? LOCS[loc].name : "All locations") +
+      (all.length ? ". Showing " + list.length + " of " + all.length + " jobs." : ". No jobs match the search.") + (openJob ? " Details open: " + openJob.title + ", " + LOCS[openJob.loc].name + ", Req ID " + openJob.id : "")).slice(0, 200));
+    var count = P.byId("lcCount"), ul = P.byId("lcList"), more = P.byId("more");
+    count.classList.toggle("is-empty", !all.length);
+    count.textContent = all.length ? "Showing " + list.length + " of " + all.length + " " + P.plural(all.length, "job") : "No jobs match your search. Check the spelling, or try fewer words.";
+    ul.hidden = !all.length;
+    ul.innerHTML = list.map(jobHtml).join("");
+    more.innerHTML = !all.length ? '<button class="btn btn-secondary" type="button" id="clearAll">Clear all filters</button>' :
+      all.length > list.length ? '<button class="btn btn-secondary" type="button" id="showMore">Show more jobs</button>' : "";
+  }
+  function fresh() { state.shown = PAGE; render(); }
+  P.byId("lcForm").addEventListener("submit", function (e) { e.preventDefault(); fresh(); });
+  P.byId("loc").addEventListener("change", fresh);
+  // After the browser's Back or Forward, draw the list again so it always matches the boxes.
+  window.addEventListener("pageshow", render);
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-nope]");
+    if (a) { e.preventDefault(); nope(a); return; }
+    var b = e.target.closest("[data-view], [data-wrong], [data-cat], #clearCat, #clearLoc, #clearKw, #clearAll, #showMore, #showWhere"); if (!b) return;
+    if (b.id === "showWhere") {
+      var kw = P.byId("kw");
+      kw.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      kw.focus({ preventScroll: true });
+      return;
+    }
+    if (b.dataset.cat) { state.cat = state.cat === b.dataset.cat ? "" : b.dataset.cat; fresh(); var again = document.querySelector('[data-cat="' + b.dataset.cat + '"]'); if (again) again.focus(); return; }
+    if (b.id === "clearCat") { var was = state.cat; state.cat = ""; fresh(); document.querySelector('[data-cat="' + was + '"]').focus(); return; }
+    if (b.id === "clearLoc") { P.byId("loc").value = ""; fresh(); P.byId("loc").focus(); return; }
+    if (b.id === "clearKw") { P.byId("kw").value = ""; fresh(); P.byId("kw").focus(); return; }
+    if (b.id === "clearAll") { state.cat = ""; P.byId("loc").value = ""; P.byId("kw").value = ""; fresh(); P.byId("kw").focus(); return; }
+    if (b.id === "showMore") {
+      var from = state.shown; state.shown += PAGE; render();
+      var next = document.querySelectorAll("#lcList [data-view]")[from]; if (next) next.focus();
+      return;
+    }
+    if (b.dataset.view) {
+      if (e.detail > 1) return; // a double click counts as one
+      var id = b.dataset.view; state.open[id] = !state.open[id]; state.lastOpen = id; render();
+      var v = document.querySelector('[data-view="' + id + '"]'); if (v) v.focus();
+      return;
+    }
+    if (b.dataset.wrong) {
+      var j = JOBS.filter(function (x) { return x.id === b.dataset.wrong; })[0];
+      state.noted[j.id] = true;
+      var box = P.byId("note-" + j.id); box.innerHTML = ""; box.innerHTML = wrongNote(j, true);
+    }
+  });
+  // Links that aren't part of the practice say so instead of going nowhere.
+  var toast = P.byId("toast"), timer = null;
+  function nope(a) {
+    var text = "“" + a.textContent.trim() + "” isn’t part of this practice. Look for the job in the list.";
+    clearTimeout(timer); toast.textContent = "";
+    timer = setTimeout(function () {
+      toast.textContent = text;
+      timer = setTimeout(function () { toast.textContent = ""; }, 5000);
+    }, 80);
+  }
+  P.coach([
+    "This is Larkspur Health’s careers site. It’s a separate website just for jobs, so it looks different.",
+    "Hospitals often write job titles in a different order. The job board said “Clinic Operations Supervisor.” Here, look for “Supervisor, Clinic Operations.”",
+    "Some jobs look almost the same. Before you click “Apply,” check the Req ID (the job’s number, " + TARGET.replace("-", "‑") + ") and the location (Bloomington Clinic).",
+    "You can also type the Req ID in the Keyword box and click “Search.”"
+  ], '<p><button type="button" id="showWhere">Show me where</button></p>');
+  P.initBar();
+  render();
+})();
+</script>
+</body>
+</html>

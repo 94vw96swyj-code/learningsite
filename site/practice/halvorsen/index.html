@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Handler, Halvorsen &amp; Pike (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice big-company job application. Upload three practice résumés, catch what the system gets wrong, and finish the application. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<style>
+:root { --brand: #1E6B57; --brand-dark: #15503F; --brand-tint: #E7F1ED; }
+.posting-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem 1.5rem; margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 6px; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.posting h3 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; }
+.posting ul { margin: 0; padding-left: 1.25rem; }
+.posting li { margin: 0.2rem 0; }
+.req-tag { font-size: 0.8rem; font-weight: 600; color: var(--err); margin-left: 0.4rem; }
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.1rem 0.5rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: -0.25rem 0 1.5rem; }
+/* the real file box is hidden, so show its focus on the button people see */
+.drop:focus-within label[for="file"] { outline: 2px solid var(--brand); outline-offset: 2px; }
+.pw-ok { color: var(--ok); }
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice application">
+  <div class="inner">
+    <p><b>Practice application.</b> Halvorsen &amp; Pike is not a real company. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<header class="ats-head">
+  <div class="inner">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="15" height="15" rx="2" fill="#1E6B57"/><rect x="11" y="11" width="15" height="15" rx="2" fill="none" stroke="#15503F" stroke-width="2.5"/></svg>
+      Halvorsen &amp; Pike
+    </div>
+    <span class="careers">Careers</span>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+  <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+  <main class="card" id="card"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.HP_RESUMES;
+  var JOB = { title: "Material Handler, 2nd Shift", req: "24-0817", location: "Brooklyn Park, MN", pay: "$21.00 to $23.50 an hour", schedule: "Monday to Friday, 3:00 pm to 11:30 pm" };
+  var STEPS = ["Account", "Résumé", "Your information", "Questions", "Voluntary info", "Review"];
+  var PROG = { 1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 7: 6 };
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout");
+
+  function fresh() {
+    /* current/profile: the form being worked on. drafts: unfinished rounds the learner went Back from, by résumé.
+       The application itself always uses the last FINISHED round (see last()). */
+    return { step: 0, accountMode: "create", email: "", account: null, rounds: [], done: {}, current: null, profile: null,
+      drafts: {}, pending: null, restored: false, reading: false, returnToReview: false,
+      answers: {}, pay: "", heard: "", cert: false, sign: "", startedAt: null, finishedAt: null };
+  }
+  var S = fresh();
+
+  function remaining() { return RES.filter(function (r) { return !S.done[r.id]; }); }
+  function roundNo() { return S.rounds.length + 1; }
+  function last() { return S.rounds[S.rounds.length - 1]; }
+  function key(r) { return r.own ? "own:" + r.file : r.id; }
+  function firstName(r) { return r.own ? "your" : r.person.split(" ")[0] + "’s"; }
+
+  /* ---------- coach ---------- */
+  var COACH = {
+    0: ["You found it. Same Job ID as the job post, 24-0817. The job board called it Warehouse Associate, but it’s the same job.", "Read the whole posting before you click Apply.", "Write down three things: the pay, the schedule, and anything marked required. The questions later will ask about them."],
+    1: ["Most employers make you create an account on their own site, even if you already have one somewhere else.", "Make up a practice password here. On a real site, write it down. You'll need it to check on your application later."],
+    2: ["Three practice résumés are waiting, from cleanest to trickiest. Preview one to see what it looks like, then drag it onto the upload box or use its Upload button.", "Each one breaks in a different way when a system reads it."],
+    5: ["Some of these are knockout questions. Answer No and a real system may end your application on the spot.", "Always answer honestly.",
+      "“Reasonable accommodation” means a change at work that helps a person with a disability do the job, like a lifting tool or extra breaks. If you can do the lifting with that kind of help, the honest answer is Yes.",
+      "For pay, the posting said $21.00 to $23.50. A number inside that range is safe."],
+    6: ["This page is voluntary. By law it's kept separate from the people deciding who gets hired.", "“I don't wish to answer” is always a fine choice.", "This practice page doesn't save anything you pick here."],
+    7: ["Last chance to catch mistakes. Use Edit on anything that looks wrong.", "The signature has to match the name exactly."]
+  };
+  function renderCoach() {
+    if (S.step === 3 && S.current && !S.returnToReview) {
+      P.coach(["The system just read the résumé and guessed where everything goes."].concat(S.current.coach),
+        '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>');
+    } else if (S.step === 4) {
+      P.coach(remaining().length && S.rounds.length < 3 ? ["Try the next résumé. Each one breaks differently.", "Or continue with the application. You can stop after any round."] : ["That's all three. Now finish the application the way you would for real."]);
+    } else P.coach(COACH[S.step] || []);
+  }
+
+  /* ---------- dock ---------- */
+  function renderDock() {
+    var show = S.step >= 2 && S.step <= 4;
+    dock.hidden = !show;
+    layout.classList.toggle("with-dock", show);
+    if (show) dock.innerHTML = P.dockHtml(RES, S.done, { canUpload: S.step === 2 });
+  }
+  P.bindDock(dock);
+
+  /* ---------- views ---------- */
+  function progress() {
+    var n = PROG[S.step];
+    if (!n) return "";
+    return '<ol class="progress" aria-label="Application steps">' + STEPS.map(function (s, i) {
+      var k = i + 1;
+      return "<li" + (k < n ? ' class="done"' : "") + (k === n ? ' aria-current="step"' : "") + ">" + esc(s) + "</li>";
+    }).join("") + "</ol>";
+  }
+
+  var V = {};
+  V[0] = function () {
+    return '<article class="posting"><h1 tabindex="-1">' + esc(JOB.title) + "</h1>" +
+      '<p class="sub">Halvorsen &amp; Pike Distribution, ' + esc(JOB.location) + ". Job ID " + esc(JOB.req) + "</p>" +
+      '<dl class="posting-meta"><div><dt>Pay</dt><dd>' + esc(JOB.pay) + "</dd></div><div><dt>Schedule</dt><dd>" + esc(JOB.schedule) + "</dd></div><div><dt>Type</dt><dd>Full time</dd></div></dl>" +
+      '<button class="btn btn-primary" type="button" data-action="apply">Apply now</button>' +
+      "<h3>About the job</h3><p>Halvorsen &amp; Pike moves building supplies to hardware stores across the Upper Midwest. Our Brooklyn Park warehouse ships about 400 orders a night, and the 2nd shift team gets them out the door.</p>" +
+      "<h3>What you'll do</h3><ul><li>Pick and pack orders with a handheld scanner</li><li>Load and unload trucks</li><li>Count inventory and report damaged product</li><li>Keep aisles clear and safe</li></ul>" +
+      '<h3>What you need<span class="req-tag">Required</span></h3><ul><li>18 or older</li><li>Able to lift up to 50 pounds</li><li>Available for 2nd shift, Monday to Friday</li><li>Basic reading and math for order sheets</li></ul>' +
+      "<h3>Nice to have</h3><ul><li>Forklift experience (we'll certify you if you don't have it)</li><li>Warehouse or retail stocking experience</li></ul>" +
+      "<h3>Benefits</h3><ul><li>Health and dental after 30 days</li><li>Paid time off starting day one</li><li>Paid forklift certification</li></ul>" +
+      '<div class="actions"><button class="btn btn-primary" type="button" data-action="apply">Apply now</button></div></article>';
+  };
+
+  var PW_RULES = [
+    ["len", "At least 8 characters", function (v) { return v.length >= 8; }],
+    ["num", "At least one number", function (v) { return /\d/.test(v); }],
+    ["cap", "At least one capital letter", function (v) { return /[A-Z]/.test(v); }]
+  ];
+  V[1] = function () {
+    if (S.accountMode === "signin") {
+      return progress() + '<h1 tabindex="-1">Sign in</h1><p class="sub">' + (S.account ? "You already made an account. Sign in to continue your application." : "Sign in to continue your application.") + '</p><div id="signinMsg" aria-live="polite"></div>' +
+        P.textField("si-email", "Email", S.email, { type: "email", req: true, ac: "off" }) +
+        P.textField("si-pass", "Password", "", { type: "password", req: true, ac: "off" }) +
+        '<div class="actions"><button class="btn-link" type="button" data-action="mode-create">Create an account instead</button><button class="btn btn-primary" type="button" data-action="signin">Sign in</button></div>';
+    }
+    return progress() + '<h1 tabindex="-1">Create an account</h1><p class="sub">You need an account to apply for jobs at Halvorsen &amp; Pike.</p><div id="acctErr" aria-live="polite"></div>' +
+      P.textField("a-email", "Email", S.email, { type: "email", req: true, ac: "off" }) +
+      P.textField("a-pass", "Password", "", { type: "password", req: true, ac: "new-password", hint: "Practice only. Make one up. Don't use a real password." }) +
+      '<ul class="hint" id="pwRules" style="margin:-0.6rem 0 1.1rem;padding-left:1.1rem">' + PW_RULES.map(function (x) { return '<li data-r="' + x[0] + '">' + x[1] + '<span class="pw-ok"></span></li>'; }).join("") + "</ul>" +
+      '<p class="visually-hidden" id="pwLive" aria-live="polite"></p>' +
+      P.textField("a-pass2", "Confirm password", "", { type: "password", req: true, ac: "new-password" }) +
+      '<div class="field" id="f-a-terms"><label class="choice"><input type="checkbox" id="a-terms"> <span>I agree to the Terms of Use and Privacy Policy<span class="req" aria-hidden="true">*</span></span></label></div>' +
+      '<div class="actions"><span>Already have an account? <button class="btn-link" type="button" data-action="mode-signin">Sign in</button></span><button class="btn btn-primary" type="button" data-action="create">Create account</button></div>' +
+      '<div class="actions" style="margin-top:0.75rem"><button class="btn btn-secondary" type="button" data-action="back">Back to job posting</button></div>';
+  };
+
+  /* Every unfinished form, newest first, each with its own way back */
+  function draftKeys() {
+    var ks = Object.keys(S.drafts).reverse();
+    if (S.pending && ks.indexOf(S.pending) > 0) { ks.splice(ks.indexOf(S.pending), 1); ks.unshift(S.pending); }
+    return ks;
+  }
+  function draftsHtml() {
+    var ks = draftKeys(), L = last();
+    if (!ks.length) return "";
+    var owns = ks.filter(function (k) { return S.drafts[k].resume.own; }).length;
+    var btns = ks.map(function (k, i) {
+      var r = S.drafts[k].resume, many = r.own && owns > 1; // two of the learner's own files: add the file name, and keep it from the AI coach
+      return '<button class="btn ' + (i ? "btn-secondary" : "btn-primary") + '" type="button" data-action="resume-round" data-key="' + esc(k) + '"' + (many ? " data-private" : "") + ">Back to " + esc(firstName(r)) + " form" + (many ? " (" + esc(r.file) + ")" : "") + "</button>";
+    });
+    var who = ks.length === 1 ? esc(firstName(S.drafts[ks[0]].resume)) + " form" : ks.length + " forms";
+    return '<div class="alert alert-info"><p style="margin:0 0 0.75rem">You didn’t finish ' + who + ". Your changes are saved." +
+      (L ? " If you skip " + (ks.length === 1 ? "it" : "them") + ", your application uses the information from " + esc(L.resume.own ? "your own résumé" : L.person + "’s round") + "." : "") + "</p>" +
+      '<p style="margin:0;display:flex;flex-wrap:wrap;gap:0.5rem">' + btns.join("") + "</p></div>";
+  }
+  V[2] = function () {
+    return progress() + '<span class="round-tag">Round ' + roundNo() + " of 3</span>" +
+      '<h1 tabindex="-1">Upload your résumé</h1><p class="sub">We’ll use it to fill in your application.</p><div id="upErr" aria-live="polite"></div>' +
+      draftsHtml() +
+      '<div class="drop" id="drop"><p><b>Drag a résumé here</b></p><p class="hint">PDF, DOC or DOCX, up to 5 MB</p>' +
+      '<p style="margin-top:0.85rem"><label class="btn btn-secondary" for="file">Choose a file from this computer</label></p>' +
+      '<input class="visually-hidden" type="file" id="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>' +
+      '<p class="hint" style="margin-top:0.75rem">Your own file never leaves this computer. The site only looks at its name.</p>' +
+      (S.rounds.length ? '<div class="actions"><span></span><button class="btn btn-secondary" type="button" data-action="to-questions">Skip to the rest of the application</button></div>' : '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button></div>');
+  };
+
+  V[3] = function () {
+    var r = S.current, edit = S.returnToReview;
+    return progress() + (edit ? "" : '<span class="round-tag">Round ' + roundNo() + " of 3</span>") +
+      '<h1 tabindex="-1">Your information</h1>' +
+      (edit ? "" : '<div class="alert alert-info">' + (S.restored ? "Welcome back. The changes you made on this page were saved." : "We filled in this page from your résumé. Please review it before you continue.") + "</div>") +
+      '<p class="compare"><button class="btn btn-secondary" type="button" data-action="open-current"' + (r.own ? " data-private" : "") + ">Open " + esc(r.file) + "</button>" + // the learner's own file name never goes to the AI coach
+      '<span class="hint">Open it to compare with the form.</span></p>' +
+      '<div id="infoErr" aria-live="polite"></div>' + P.formHtml(S.profile) + '<div id="coachCheck"></div>' +
+      '<div class="actions">' + (edit ? '<span></span>' : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-info">' + (edit ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+
+  function resultList(results) {
+    return "<ul>" + results.map(function (x) {
+      return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? "Fixed" : "Missed") + "</span><span><b>" + esc(x.label) + ".</b> " + esc(x.why) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+
+  V[4] = function () {
+    var last = S.rounds[S.rounds.length - 1];
+    var more = remaining().length && S.rounds.length < 3;
+    return progress() + '<h1 tabindex="-1">Round ' + S.rounds.length + " done</h1>" +
+      '<p class="sub">' + esc(last.person) + " (" + esc(last.level) + ")</p>" +
+      '<section class="debrief" aria-label="Round results"><p class="score">You caught ' + last.fixed + " of " + last.total + "</p>" + resultList(last.results) + "</section>" +
+      '<div class="actions">' + (more ? '<button class="btn btn-primary" type="button" data-action="next-round">Try the next résumé</button>' : "<span></span>") +
+      '<button class="btn ' + (more ? "btn-secondary" : "btn-primary") + '" type="button" data-action="to-questions">Continue the application</button></div>';
+  };
+
+  var QUESTIONS = [
+    { id: "q18", text: "Are you at least 18 years old?", knockout: "No" },
+    { id: "qauth", text: "Are you legally authorized to work in the United States?", knockout: "No" },
+    { id: "qshift", text: "This role works 2nd shift, Monday to Friday, 3:00 pm to 11:30 pm. Can you work this schedule?", knockout: "No" },
+    { id: "qlift", text: "Can you lift up to 50 pounds repeatedly during a shift, with or without reasonable accommodation?", knockout: "No" },
+    { id: "qfork", text: "Do you have forklift experience?", knockout: null }
+  ];
+  V[5] = function () {
+    var a = S.answers, heard = ["", "Online job board", "Company website", "Friend or family", "Job fair", "Workforce or job training program", "Other"];
+    return progress() + '<h1 tabindex="-1">A few questions</h1><p class="sub">All questions are required.</p><div id="qErr" aria-live="polite"></div>' +
+      QUESTIONS.map(function (q) {
+        return '<fieldset id="f-' + q.id + '"><legend>' + esc(q.text) + '<span class="req" aria-hidden="true">*</span></legend><div class="inline-choices">' +
+          ["Yes", "No"].map(function (v) { return '<label class="choice"><input type="radio" name="' + q.id + '" value="' + v + '"' + (a[q.id] === v ? " checked" : "") + "> " + v + "</label>"; }).join("") + "</div></fieldset>";
+      }).join("") +
+      P.textField("q-pay", "Desired hourly pay", S.pay, { req: true, hint: "For example: 22.00" }) +
+      '<div class="field" id="f-q-heard"><label for="q-heard">How did you hear about this job?<span class="req" aria-hidden="true">*</span></label><select id="q-heard">' +
+      heard.map(function (x) { return "<option" + (x === S.heard ? " selected" : "") + ' value="' + esc(x) + '">' + (x || "Select") + "</option>"; }).join("") + "</select></div>" +
+      '<div class="actions">' + (S.returnToReview ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-q">' + (S.returnToReview ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+
+  var SELFID = [
+    { id: "s-gender", label: "Gender", opts: ["Male", "Female", "Another gender", "I don't wish to answer"] },
+    { id: "s-race", label: "Race or ethnicity", opts: ["Hispanic or Latino", "White", "Black or African American", "Asian", "Native Hawaiian or Other Pacific Islander", "American Indian or Alaska Native", "Two or more races", "I don't wish to answer"] },
+    { id: "s-vet", label: "Veteran status", opts: ["I am a protected veteran", "I am not a protected veteran", "I don't wish to answer"] },
+    { id: "s-dis", label: "Disability status", opts: ["Yes, I have a disability, or have had one in the past", "No, I don't have a disability", "I don't wish to answer"] }
+  ];
+  V[6] = function () {
+    return progress() + '<h1 tabindex="-1">Voluntary self-identification</h1>' +
+      '<p class="sub">Halvorsen &amp; Pike is an equal opportunity employer. Answering is voluntary and will not affect your application. Your answers are kept separate from your application.</p><div id="sErr" aria-live="polite"></div>' +
+      SELFID.map(function (f) {
+        return '<div class="field" id="f-' + f.id + '"><label for="' + f.id + '">' + esc(f.label) + '<span class="req" aria-hidden="true">*</span></label><select id="' + f.id + '"><option value="">Select</option>' +
+          f.opts.map(function (o) { return '<option value="' + esc(o) + '">' + esc(o) + "</option>"; }).join("") + "</select></div>";
+      }).join("") +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="next-s">Continue</button></div>';
+  };
+
+  V[7] = function () {
+    var pr = last().profile, c = pr.contact;
+    var jobs = pr.jobs.map(function (j) {
+      var end = j.current ? "Present" : P.fmtDate(j.endM, j.endY);
+      return "<dt>" + esc(j.title || "(no title)") + "</dt><dd>" + esc(j.employer) + (j.startM ? ", " + esc(P.fmtDate(j.startM, j.startY)) + (end ? " to " + esc(end) : "") : "") + "</dd>";
+    }).join("");
+    var qs = QUESTIONS.map(function (q) { return "<dt>" + esc(q.text) + "</dt><dd>" + esc(S.answers[q.id]) + "</dd>"; }).join("") +
+      "<dt>Desired hourly pay</dt><dd>" + esc(S.pay) + "</dd><dt>How you heard</dt><dd>" + esc(S.heard) + "</dd>";
+    var today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    return progress() + '<h1 tabindex="-1">Review and submit</h1><p class="sub">Make sure everything is correct. You can’t change your application after you submit it.</p>' +
+      '<div class="review-block"><div class="rb-head"><h3>Contact information</h3><button class="btn-link" type="button" data-action="edit" data-to="3">Edit<span class="visually-hidden"> contact information</span></button></div><dl>' +
+      "<dt>Name</dt><dd>" + esc(c.first + " " + c.last) + "</dd><dt>Email</dt><dd>" + esc(c.email) + "</dd><dt>Phone</dt><dd>" + esc(c.phone) + "</dd><dt>Location</dt><dd>" + esc(c.city + ", " + c.state + " " + c.zip) + "</dd></dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h3>Work experience</h3><button class="btn-link" type="button" data-action="edit" data-to="3">Edit<span class="visually-hidden"> work experience</span></button></div><dl>' + jobs + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h3>Questions</h3><button class="btn-link" type="button" data-action="edit" data-to="5">Edit<span class="visually-hidden"> answers to questions</span></button></div><dl>' + qs + "</dl></div>" +
+      '<div class="section"><h2>Signature</h2><div id="rErr" aria-live="polite"></div>' +
+      '<div class="field" id="f-r-cert"><label class="choice"><input type="checkbox" id="r-cert"' + (S.cert ? " checked" : "") + '> <span>I certify that the information in this application is true and complete.<span class="req" aria-hidden="true">*</span></span></label></div>' +
+      P.textField("r-sign", "Type your full name as your signature", S.sign, { req: true, ac: "off" }) + '<p class="hint">Date: ' + esc(today) + "</p></div>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="submit">Submit application</button></div>';
+  };
+
+  V[8] = function () {
+    var fixed = 0, total = 0;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var knocked = QUESTIONS.filter(function (q) { return q.knockout && S.answers[q.id] === q.knockout; });
+    var payNum = P.num(S.pay), payNote = "";
+    if (isNaN(payNum)) payNote = "The pay answer wasn’t a number. Many systems need digits only, like 22.00.";
+    else if (payNum > 23.5) payNote = "You asked for $" + payNum.toFixed(2) + ", above the posted range. Some systems quietly filter out anyone above the range, so match the posting unless you have a reason not to.";
+    else if (payNum < 21) payNote = "You asked for $" + payNum.toFixed(2) + ", below the posted range. You can ask for at least what the posting offers.";
+    var cd = P.code("HP", S.rounds.length, fixed, total);
+    return '<div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 tabindex="-1">Application submitted</h1>' +
+      "<p>Thanks, " + esc(last().profile.contact.first) + ". We received your application for " + esc(JOB.title) + " (Job ID " + esc(JOB.req) + "). We’ll contact you at " + esc(last().profile.contact.email) + " if your experience matches what we’re looking for.</p>" +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2>' +
+      "<p>You finished in about " + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Autofill mistakes caught: ' + fixed + " of " + total + " across " + S.rounds.length + " " + P.plural(S.rounds.length, "résumé") + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") + "</ul>" +
+      (S.rounds.some(function (r) { return r.fixed < r.total; }) ? "<h3>What slipped through</h3><ul class=\"plain\">" + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(x.label) + ".</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      (knocked.length ? "<h3>Knockout questions</h3><p>You answered No to: " + knocked.map(function (q) { return "“" + esc(q.text) + "”"; }).join(" ") + "</p><p>On a real site, an answer like that can end the application automatically. That’s fine when it’s true: it tells you this job may not fit, and that’s worth knowing before you spend time on it.</p>" : "") +
+      (payNote ? "<h3>Pay</h3><p>" + esc(payNote) + "</p>" : "") +
+      '<h3>What real sites do that this one didn’t</h3><ul class="plain">' +
+      "<li>Log you out after 20 or 30 minutes of no activity, and sometimes lose what you typed. Save as you go.</li>" +
+      "<li>Email you a link to an assessment. Check your spam folder.</li><li>Ask for references or a cover letter.</li>" +
+      "<li>Make you type your whole work history even after you upload a résumé.</li></ul>" +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      "<h3>For job coaches</h3><p>Run it once with coach notes on, then again with them off, and compare the scores.</p>" +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="restart">Try it again</button><a href="../">Back to job board</a></div></section>';
+  };
+
+  function render(focus) {
+    if (focus !== false) P.closeViewer(false); // same-step re-renders (Add another job, Remove) keep the résumé open
+    card.innerHTML = V[S.step]();
+    renderDock(); renderCoach(); bindStep();
+    // warn before leaving once there's real progress (an account or a round), but not on the finished screen
+    P.setInProgress(S.step !== 8 && !!(S.account || S.rounds.length || S.current));
+    if (focus !== false) {
+      var h = card.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+      window.scrollTo(0, 0);
+    }
+  }
+  function go(step) { S.step = step; render(); }
+
+  /* ---------- step behavior ---------- */
+  function bindStep() {
+    if (S.step === 1 && S.accountMode === "create") {
+      var pw = P.byId("a-pass"), pwHint = card.querySelector("#f-a-pass .hint"), live = P.byId("pwLive"), said = "";
+      // screen readers hear the rules with the password box, and hear when one is met
+      if (pwHint) pwHint.id = "a-pass-hint";
+      pw.setAttribute("aria-describedby", (pwHint ? "a-pass-hint " : "") + "pwRules");
+      pw.addEventListener("input", function () {
+        var v = pw.value, met = 0, need = [];
+        PW_RULES.forEach(function (x) {
+          var y = x[2](v), li = card.querySelector('#pwRules li[data-r="' + x[0] + '"]');
+          if (y) met++; else need.push(x[1].toLowerCase());
+          if (!li) return;
+          li.style.color = y ? "var(--ok)" : ""; li.style.fontWeight = y ? "600" : "";
+          li.querySelector(".pw-ok").innerHTML = y ? '<span aria-hidden="true"> &#10003;</span><span class="visually-hidden"> (done)</span>' : "";
+        });
+        var msg = !v ? "" : met === PW_RULES.length ? "All " + met + " password rules are met." :
+          met + " of " + PW_RULES.length + " password rules met. Still needed: " + need.join(", ") + ".";
+        if (msg !== said) { said = msg; live.textContent = msg; }
+      });
+    }
+    if (S.step === 2) {
+      var input = P.byId("file");
+      input.addEventListener("change", function () { if (input.files[0]) takeFile(input.files[0]); });
+      P.bindDrop(P.byId("drop"), { onResume: startRound, onFile: takeFile });
+    }
+  }
+
+  function takeFile(f) {
+    if (S.reading) return;
+    var box = P.byId("upErr"), ext = (f.name.match(/\.([^.]+)$/) || [, ""])[1].toLowerCase();
+    if (["pdf", "doc", "docx"].indexOf(ext) === -1) {
+      box.innerHTML = '<div class="alert alert-err" role="alert">This site only accepts PDF or Word files (.pdf, .doc, .docx). Your file is ' + (ext ? "a ." + esc(ext) + " file" : "missing a file type") + ". Save or export your résumé as a PDF and try again.</div>";
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) { box.innerHTML = '<div class="alert alert-err" role="alert">That file is larger than 5 MB. Try saving it as a PDF without pictures.</div>'; return; }
+    begin(window.HP_OWN(f.name)); // the file itself is never opened or read
+  }
+  function startRound(id) {
+    var r = RES.filter(function (x) { return x.id === id; })[0];
+    if (!r || S.done[r.id] || S.step !== 2) return;
+    begin(r);
+  }
+  function begin(r) {
+    if (S.reading) return; // ignore more uploads while "Reading…" is showing
+    var d = S.drafts[key(r)];
+    S.current = r; S.profile = P.clone(d ? d.profile : r.parsed); S.restored = !!d;
+    if (d) { go(3); return; } // same résumé again: bring back the learner's edits, not the planted mistakes
+    S.reading = true;
+    dock.querySelectorAll("[data-upload]").forEach(function (x) { x.disabled = true; });
+    dock.querySelectorAll(".rcard[draggable]").forEach(function (x) { x.removeAttribute("draggable"); });
+    card.innerHTML = '<div class="loading" role="status"' + (r.own ? " data-private" : "") + '><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(r.file) + "…</b></p><p class=\"hint\">This can take a moment.</p></div>";
+    setTimeout(function () { S.reading = false; go(3); }, 1300);
+  }
+
+  function rescore(R) {
+    R.results = P.score(R.resume, R.profile);
+    R.fixed = R.results.filter(function (x) { return x.fixed; }).length; R.total = R.results.length;
+    if (!R.resume.own) S.done[R.id] = { fixed: R.fixed, total: R.total };
+  }
+  function finishRound() {
+    var R = { id: S.current.id, person: S.current.person, level: S.current.level, resume: S.current, profile: P.clone(S.profile) };
+    rescore(R);
+    S.rounds.push(R);
+    delete S.drafts[key(S.current)];
+    if (S.pending === key(S.current)) S.pending = null;
+    go(4);
+  }
+  function collectReview() { if (S.step === 7) { S.cert = P.checked("r-cert"); S.sign = P.val("r-sign"); } }
+
+  function showWrong() {
+    S.profile = P.collect(S.profile.jobs.length);
+    var n = P.flag(P.score(S.current, S.profile)), out = P.byId("coachResult");
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks" : "look") + " off. They’re outlined in blue." : "Everything matches the résumé. Nice work.";
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload]");
+    if (!b) return;
+    if (b.dataset.preview) { P.openViewer(RES.filter(function (r) { return r.id === b.dataset.preview; })[0], b); return; }
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    var a = b.dataset.action;
+    switch (a) {
+      case "apply": S.startedAt = S.startedAt || Date.now(); go(1); break;
+      case "back":
+        if (S.step === 3) {
+          // keep the unfinished round as a draft; it never counts toward the application until it's finished
+          S.profile = P.collect(S.profile.jobs.length);
+          S.drafts[key(S.current)] = { resume: S.current, profile: P.clone(S.profile) };
+          S.pending = key(S.current);
+          go(2); break;
+        }
+        if (S.step === 5) { collectQ(); if (S.returnToReview) { S.returnToReview = false; go(7); break; } go(S.rounds.length ? 4 : 2); break; }
+        if (S.step === 7) collectReview();
+        go(S.step - 1); break;
+      case "resume-round": {
+        var dk = b.dataset.key || S.pending, dr = dk && S.drafts[dk];
+        if (!dr || S.reading) break;
+        S.current = dr.resume; S.profile = P.clone(dr.profile); S.restored = true;
+        go(3); break;
+      }
+      case "mode-signin": case "mode-create": {
+        var typed = P.byId("a-email") || P.byId("si-email");
+        if (typed) S.email = typed.value; // keep the email when switching
+        S.accountMode = a === "mode-signin" ? "signin" : "create"; render(); break;
+      }
+      case "signin": {
+        P.clearErrors();
+        S.email = P.val("si-email");
+        var msg = P.byId("signinMsg"), se = S.email.trim(), sn = 0;
+        msg.innerHTML = "";
+        if (!se) { P.markInvalid("si-email", "Enter your email."); sn++; }
+        if (!P.val("si-pass")) { P.markInvalid("si-pass", "Enter your password."); sn++; }
+        if (sn) { P.summary("signinMsg", sn); break; }
+        if (S.account && se.toLowerCase() === S.account.toLowerCase()) { go(2); break; } // the password is never kept, so any password works here
+        msg.innerHTML = '<div class="alert alert-err" role="alert">' + (S.account ?
+          "We couldn’t find an account with that email. Use the same email you used when you created your account." :
+          // nothing is stored, so an account made before a reload is gone
+          "We couldn’t find an account with that email. Practice accounts are cleared when the page reloads, and each company’s site needs its own account. Use “Create an account instead” to make a new one.") + "</div>";
+        break;
+      }
+      case "create": {
+        P.clearErrors();
+        var em = P.val("a-email"), p1 = P.val("a-pass"), p2 = P.val("a-pass2"), n = 0;
+        if (!P.validEmail(em)) { P.markInvalid("a-email", em.trim() ? "Enter a valid email, like name@example.com." : "Enter your email."); n++; }
+        if (p1.length < 8 || !/\d/.test(p1) || !/[A-Z]/.test(p1)) { P.markInvalid("a-pass", "Your password doesn’t meet the requirements listed below."); n++; }
+        else if (p1 !== p2) { P.markInvalid("a-pass2", "Passwords don’t match."); n++; }
+        if (!P.checked("a-terms")) { P.markInvalid("a-terms", "You must agree to the Terms of Use to continue."); n++; }
+        P.summary("acctErr", n);
+        if (!n) { S.email = S.account = em.trim(); S.accountMode = "signin"; go(2); } // the password is never kept
+        break;
+      }
+      case "open-current": P.openViewer(S.current, b); break;
+      case "add-job":
+        S.profile = P.collect(S.profile.jobs.length);
+        S.profile.jobs.push({ title: "", employer: "", location: "", startM: "", startY: "", endM: "", endY: "", current: false, desc: "" });
+        render(false);
+        var t = P.byId("j" + (S.profile.jobs.length - 1) + "-title"); if (t) t.focus();
+        break;
+      case "remove-job": {
+        S.profile = P.collect(S.profile.jobs.length); S.profile.jobs.splice(+b.dataset.i, 1); render(false);
+        var aj = P.byId("add-job"); if (aj) aj.focus();
+        break;
+      }
+      case "show-wrong": showWrong(); break;
+      case "next-info": {
+        S.profile = P.collect(S.profile.jobs.length);
+        if (!P.validateProfile(S.profile, "infoErr")) break;
+        if (S.returnToReview) {
+          // Review > Edit changes the profile being submitted, so score it again
+          var L = last(); L.profile = P.clone(S.profile); rescore(L);
+          S.returnToReview = false; go(7); break;
+        }
+        var bad = P.score(S.current, S.profile).filter(function (x) { return !x.fixed; });
+        if (P.hints() && bad.length) { // only "Continue anyway" skips the check
+          P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " on this page still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real site wouldn’t warn you.</p>" +
+            '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="continue-anyway" style="margin-left:1rem">Continue anyway</button></div>';
+          break;
+        }
+        finishRound(); break;
+      }
+      case "continue-anyway": S.profile = P.collect(S.profile.jobs.length); if (P.validateProfile(S.profile, "infoErr")) finishRound(); break;
+      case "next-round": go(2); break;
+      case "to-questions":
+        if (!S.rounds.length) break;
+        go(5); break;
+      case "next-q": {
+        collectQ(); P.clearErrors();
+        var m = 0;
+        QUESTIONS.forEach(function (q) { if (!S.answers[q.id]) { P.markInvalid(q.id, "Choose Yes or No."); m++; } });
+        var payN = P.num(S.pay);
+        if (!S.pay.trim()) { P.markInvalid("q-pay", "Enter your desired hourly pay."); m++; }
+        else if (isNaN(payN)) { P.markInvalid("q-pay", "Enter a number, like 22.00. Many systems only accept digits here."); m++; }
+        else if (payN < 1 || payN > 200) { P.markInvalid("q-pay", "Enter an hourly amount in dollars, like 22.00. The posting pays $21.00 to $23.50 an hour."); m++; }
+        if (!S.heard) { P.markInvalid("q-heard", "Choose an answer."); m++; }
+        P.summary("qErr", m);
+        if (!m) { if (S.returnToReview) { S.returnToReview = false; go(7); } else go(6); }
+        break;
+      }
+      case "next-s": {
+        P.clearErrors();
+        var k = 0;
+        SELFID.forEach(function (f) { if (!P.val(f.id)) { P.markInvalid(f.id, "Choose an option. “I don’t wish to answer” counts."); k++; } });
+        P.summary("sErr", k);
+        if (!k) go(7); // selections are discarded, never stored
+        break;
+      }
+      case "edit": {
+        collectReview();
+        S.returnToReview = true;
+        if (+b.dataset.to === 3) { var LE = last(); S.current = LE.resume; S.profile = P.clone(LE.profile); }
+        go(+b.dataset.to); break;
+      }
+      case "submit": {
+        collectReview(); P.clearErrors();
+        var LS = last(), pc = LS.profile.contact, r = 0, full = (pc.first + " " + pc.last).trim().replace(/\s+/g, " "), sig = S.sign.trim().replace(/\s+/g, " ");
+        // the profile being submitted must pass the same check as the Your information step
+        if (!P.validateProfile(LS.profile, "")) {
+          P.byId("rErr").innerHTML = '<div class="alert alert-err" role="alert">Something in your information is missing or incomplete. Use Edit next to Contact information to fix it.</div>';
+          break;
+        }
+        if (!S.cert) { P.markInvalid("r-cert", "Check the box to certify your application."); r++; }
+        if (!sig) { P.markInvalid("r-sign", "Type your full name."); r++; }
+        else if (!P.sameName(sig, full)) {
+          var t = LS.resume.truth, nameOff = (t && !P.sameName(full, t.contact.first + " " + t.contact.last)) ||
+            LS.results.some(function (x) { return !x.fixed && (x.fields.indexOf("c-first") !== -1 || x.fields.indexOf("c-last") !== -1); });
+          P.markInvalid("r-sign", nameOff ? "The name on this application is “" + full + "”, and it doesn’t look right. Use Edit next to Contact information to fix your name, then sign with the fixed name." :
+            "Your signature must match your name exactly: " + full);
+          r++;
+        }
+        P.summary("rErr", r);
+        if (!r) { S.finishedAt = Date.now(); go(8); }
+        break;
+      }
+      case "copy-code": {
+        var txt = P.byId("code").textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; });
+        break;
+      }
+      case "restart": S = fresh(); go(0); break;
+    }
+  });
+
+  function collectQ() {
+    QUESTIONS.forEach(function (q) { var el = card.querySelector('input[name="' + q.id + '"]:checked'); S.answers[q.id] = el ? el.value : ""; });
+    S.pay = P.val("q-pay"); S.heard = P.val("q-heard");
+  }
+
+  /* Coach notes off: take away the coach's box and blue outlines too, not just the side column */
+  P.onHints(function (on) {
+    if (on) return;
+    var cc = P.byId("coachCheck"), had = cc && cc.contains(document.activeElement);
+    if (cc) cc.innerHTML = "";
+    P.clearFlags();
+    if (had) { var nx = card.querySelector("[data-action=next-info]"); if (nx) nx.focus(); }
+  });
+
+  P.initBar();
+  render(false);
+})();
+</script>
+</body>
+</html>

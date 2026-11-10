@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faculty and staff, Tamarack State University (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a staff sign-in page that is only for people who already work at the university.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Tamarack State University is not a real university. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Tamarack faculty and staff sign-in page (only for people who already work there: a dead end)">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>my.tamarack.edu</b>/staff</span></div>
+    <div class="site">
+      <div class="ts-portal-head"><svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="5" fill="#1E3F6F"/><path d="M14 3.5L17.2 9.5H15.6L19 15.5H16.8L21 22H15.3V25H12.7V22H7L11.2 15.5H9L12.4 9.5H10.8Z" fill="#E4A82A"/></svg> Tamarack <span>Faculty and Staff Hub</span></div>
+      <div class="ts-wall">
+        <svg class="lock" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="22" fill="#E8EEF6"/><rect x="13" y="20" width="18" height="14" rx="2.5" fill="#1E3F6F"/><path d="M16.5 20v-4a5.5 5.5 0 0 1 11 0v4" fill="none" stroke="#1E3F6F" stroke-width="2.6"/><circle cx="22" cy="26.5" r="2" fill="#E4A82A"/></svg>
+        <h1>Faculty and staff</h1>
+        <p>This site is for Tamarack employees. Sign in to see your pay, time off, training and staff news.</p>
+        <button class="btn btn-primary" type="button" id="tidBtn">Sign in with TamarackID</button>
+        <p class="ts-new"><button class="btn-link" type="button" id="newBtn">New employee? Set up your TamarackID</button></p>
+        <div id="wallMsg" aria-live="polite"></div>
+        <p class="ts-out">Not a Tamarack employee? <a href="home.html" id="backHome">Back to tamarack.edu</a></p>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, box = P.byId("wallMsg"), timer = null;
+  var WAY_OUT = '<p class="ts-pnote">Practice note: This page is only for people who already work at Tamarack. You don’t need it to apply for a job. Go back to the home page and look for the job link in the small links at the very bottom.</p>' +
+    '<a class="btn btn-secondary" href="home.html">Back to tamarack.edu</a>';
+  var SAY = {
+    tidBtn: "<p><b>You need a TamarackID to sign in here.</b> Tamarack gives a TamarackID only to its own students and employees.</p>",
+    newBtn: "<p><b>New employees set up a TamarackID after they are hired.</b> Human Resources sends the steps by email on your first day.</p>"
+  };
+  // Fill the message a moment after clearing it, so a screen reader reads it again on a second click.
+  function show(which) {
+    clearTimeout(timer); box.innerHTML = "";
+    timer = setTimeout(function () { box.innerHTML = '<div class="ts-alert" role="alert">' + SAY[which] + WAY_OUT + "</div>"; }, 80);
+  }
+  P.byId("tidBtn").addEventListener("click", function () { show("tidBtn"); });
+  P.byId("newBtn").addEventListener("click", function () { show("newBtn"); });
+  P.coach([
+    "This is a sign-in page for people who already work at Tamarack. You can’t get in, and you don’t need to.",
+    "It’s a dead end. That happens on real sites too.",
+    "Use “Back to tamarack.edu.” Then scroll to the very bottom of the home page and look for “Employment.”"
+  ], '<p><button type="button" id="showWhere">Show me where</button></p>');
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#showWhere")) return;
+    var link = P.byId("backHome");
+    link.classList.add("found");
+    link.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    link.focus({ preventScroll: true });
+  });
+  P.initBar();
+})();
+</script>
+</body>
+</html>

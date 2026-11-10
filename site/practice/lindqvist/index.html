@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Coordinator, Lindqvist Freight (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice one-page job application on a company careers site. Check what autofill gets wrong on three professional résumés, then finish the application. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Lindqvist Freight is not a real company. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+  <main class="card site-frame" id="card" data-step="Lindqvist Freight job post (Project Coordinator), on the company’s careers site">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><svg width="11" height="12" viewBox="0 0 11 12"><rect x="1" y="5" width="9" height="6.5" rx="1.2" fill="#5B656D"/><path d="M3 5V3.6a2.5 2.5 0 015 0V5" fill="none" stroke="#5B656D" stroke-width="1.4"/></svg><span id="addrUrl"><b>jobs.lindqvistfreight.com</b>/project-coordinator</span></span></div>
+    <div class="lf-site">
+      <header class="lf-top">
+        <div class="lf-logo"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="5" fill="#23466E"/><path d="M8 8l6 6-6 6M14 8l6 6-6 6" fill="none" stroke="#E3A23B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Lindqvist Freight</div>
+        <span class="lf-careers">Careers</span>
+      </header>
+      <div class="lf-body" id="view"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></div>
+      <footer class="lf-foot"><p>&copy; 2026 Lindqvist Freight. Equal opportunity employer.</p><p>Hiring site powered by Lakeway Hire</p></footer>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.LF_RESUMES;
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout"), view = P.byId("view"), addrUrl = P.byId("addrUrl");
+  var PAY_LOW = 56000, PAY_HIGH = 63000;
+  /* The trap: the hiring software remembers answers from another company's application and fills them in */
+  var SAVED = { date: "August 22, 2026",
+    why: "I’m excited to apply for the Event Coordinator role at Harborview Conference Center. I love planning events that bring people together, and Harborview’s waterfront venue is a place I have admired for years.",
+    project: "At my last job I planned a two-day conference for 300 guests. I booked the speakers, managed the catering budget, and ran the schedule on the day of the event. I would bring that same energy to every event at Harborview." };
+  var SELFID = [
+    { id: "v-gender", label: "Gender", opts: ["Male", "Female", "Another gender", "I don't wish to answer"] },
+    { id: "v-race", label: "Race or ethnicity", opts: ["Hispanic or Latino", "White", "Black or African American", "Asian", "Native Hawaiian or Other Pacific Islander", "American Indian or Alaska Native", "Two or more races", "I don't wish to answer"] },
+    { id: "v-vet", label: "Veteran status", opts: ["I am a protected veteran", "I am not a protected veteran", "I don't wish to answer"] },
+    { id: "v-dis", label: "Disability status", opts: ["Yes, I have a disability, or have had one in the past", "No, I don't have a disability", "I don't wish to answer"] }
+  ];
+  var CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  /* Steps: 0 job post, 1 upload a résumé, 2 check the autofilled boxes, 3 round done,
+     4 the rest of the one-page form, 5 submitted.
+     a: answers on the rest of the form (salary, work questions, short answers, cover letter). Voluntary answers are never kept. */
+  function blankAnswers() { return { salary: "", auth: "", sponsor: "", why: "", project: "", useSaved: true, loaded: false, cover: { mode: "", file: "", text: "" } }; }
+  function fresh() {
+    return { step: 0, rounds: [], done: {}, current: null, profile: null, drafts: {}, pending: null, restored: false, reading: false,
+      descOpen: false, a: blankAnswers(), hourly: false, trap: null, startedAt: null, finishedAt: null };
+  }
+  var S = fresh(), readTimer = null;
+
+  function roundNo() { return S.rounds.length + 1; }
+  function last() { return S.rounds[S.rounds.length - 1]; }
+  function remaining() { return RES.filter(function (r) { return !S.done[r.id]; }); }
+  function resumeById(id) { return RES.filter(function (r) { return r.id === id; })[0]; }
+  function firstName(r) { return r.person.split(" ")[0] + "’s"; }
+  function money(n) { return Math.round(n).toLocaleString("en-US"); }
+  function sep() { return '<span class="sep" aria-hidden="true">·</span><span class="visually-hidden">, </span>'; }
+
+  /* What the coach is told about the step (data-step on #card) */
+  function stepName() {
+    switch (S.step) {
+      case 0: return "Lindqvist Freight job post (Project Coordinator), on the company’s careers site";
+      case 1: return "Apply for this job: upload a résumé (round " + roundNo() + " of 3)";
+      case 2: return "Apply for this job: check the boxes autofill filled in from the résumé (round " + roundNo() + " of 3)";
+      case 3: return "Round " + S.rounds.length + " done";
+      case 4: return "Apply for this job: the rest of the form (cover letter, questions, short answers, voluntary self-identification)";
+      default: return "Application submitted";
+    }
+  }
+
+  /* ---------- coach ---------- */
+  var COACH = {
+    0: ["You’re on the company’s own careers site. Look at the address bar: jobs.lindqvistfreight.com.", "Read the whole post before you apply. Note the pay range and what’s required.",
+      "The pay is a yearly salary, not an hourly wage. A question later asks about it."],
+    1: ["This company uses a one-page application. It starts with your résumé, and autofill fills in the form from it.",
+      "Three practice résumés are waiting, from cleanest to trickiest. Preview one, then drag it onto the upload box or use its Upload button.", "Professional résumés break in quieter ways. Look closely."],
+    4: ["Your details came from the last résumé you checked. Look them over once more.", "“Desired annual salary” means a yearly amount. The posting pays $56,000 to $63,000 a year.",
+      "Read every box the site filled in for you, not just the ones from the résumé.", "Answer the work questions truthfully. The voluntary section is optional, and this practice page doesn’t save it."]
+  };
+  function renderCoach() {
+    if (S.step === 2 && S.current) {
+      P.coach(["Autofill just read the résumé and guessed where everything goes."].concat(S.current.coach),
+        '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>');
+    } else if (S.step === 3) {
+      P.coach(remaining().length && S.rounds.length < 3 ? ["Try the next résumé. Each one breaks differently.", "Or continue the application. You can stop after any round."] : ["That’s all three. Now finish the application the way you would for real."]);
+    } else P.coach(COACH[S.step] || []);
+  }
+
+  /* ---------- dock ---------- */
+  function renderDock() {
+    var show = S.step >= 1 && S.step <= 3;
+    dock.hidden = !show;
+    layout.classList.toggle("with-dock", show);
+    if (show) dock.innerHTML = P.dockHtml(RES, S.done, { canUpload: S.step === 1 });
+  }
+  P.bindDock(dock);
+
+  /* ---------- pieces ---------- */
+  function postBody() {
+    return "<h2>About Lindqvist Freight</h2><p>Lindqvist Freight is a family-owned freight and logistics company, founded in 1958. Our trucks and cross-dock warehouses move freight for manufacturers and stores across Minnesota, Wisconsin and the Dakotas.</p>" +
+      "<h2>About the role</h2><p>The Operations Project Office keeps our big changes on track: new warehouse equipment, route changes, software rollouts and new customer launches. As Project Coordinator, you’ll keep the schedules, budgets and vendors for several projects moving at once.</p>" +
+      "<h2>What you’ll do</h2><ul><li>Build and update project schedules, and send weekly status reports</li><li>Track project budgets and vendor invoices in spreadsheets</li><li>Set up meetings, take notes and follow up on action items</li><li>Keep vendors, drivers and warehouse teams up to date on changes</li></ul>" +
+      '<h2>What you need<span class="req-tag">Required</span></h2><ul><li>2+ years coordinating projects, operations or events</li><li>Experience keeping schedules, budgets and vendor communication on track</li><li>Comfortable with spreadsheets and project tools</li></ul>' +
+      "<h2>Nice to have</h2><ul><li>CAPM or other project management training</li><li>Logistics or warehouse experience</li></ul>" +
+      "<h2>Pay and benefits</h2><ul><li>$56,000 to $63,000 a year, salaried, full time</li><li>Hybrid: 3 days a week in our Eagan office, 2 days from home</li><li>Health, dental and vision insurance</li><li>Retirement plan with a company match</li><li>Three weeks of paid time off to start</li><li>A yearly training budget</li></ul>" +
+      '<p class="lf-eeo">Lindqvist Freight is an equal opportunity employer.</p>';
+  }
+  /* The short job summary above the form. The full post opens in place. */
+  function jobSummary() {
+    return '<section class="lf-sum" aria-labelledby="jobTitle"><p class="lf-kicker">Operations Project Office</p><h1 id="jobTitle">Project Coordinator</h1>' +
+      '<p class="lf-meta">Lindqvist Freight' + sep() + "Eagan, MN (hybrid)" + sep() + "$56,000 to $63,000 a year</p>" +
+      '<button class="lf-toggle" type="button" data-action="toggle-desc" aria-expanded="' + S.descOpen + '" aria-controls="jobDesc"><span>' + (S.descOpen ? "Hide the job description" : "Show the job description") + "</span>" + CHEVRON + "</button>" +
+      '<div class="lf-desc" id="jobDesc"' + (S.descOpen ? "" : " hidden") + ">" + postBody() + "</div></section>";
+  }
+  function roundTag() { return '<span class="round-tag">Round ' + roundNo() + " of 3</span>"; }
+  function row(a, b) { return '<div class="row">' + a + b + "</div>"; }
+  function tf(id, label, v, o) { return P.textField(id, label, v, o); }
+  function yearSel(id, label, v) {
+    var o = '<option value="">Year</option>';
+    for (var y = 2030; y >= 1970; y--) o += '<option value="' + y + '"' + (String(v) === String(y) ? " selected" : "") + ">" + y + "</option>";
+    return '<div class="field" id="f-' + id + '"><label for="' + id + '">' + esc(label) + '</label><select id="' + id + '">' + o + "</select></div>";
+  }
+  function ta(id, label, v) {
+    return '<div class="field" id="f-' + id + '"><label for="' + id + '">' + esc(label) + '<span class="req" aria-hidden="true">*</span></label><textarea id="' + id + '" rows="5" required>' + esc(v) + "</textarea></div>";
+  }
+  function yn(name, label, v, hint) {
+    return '<fieldset id="f-' + name + '"' + (hint ? ' aria-describedby="h-' + name + '"' : "") + "><legend>" + esc(label) + '<span class="req" aria-hidden="true">*</span></legend>' +
+      (hint ? '<p class="hint" id="h-' + name + '">' + esc(hint) + "</p>" : "") + '<div class="inline-choices">' +
+      ["Yes", "No"].map(function (x) { return '<label class="choice"><input type="radio" name="' + name + '" value="' + x + '"' + (v === x ? " checked" : "") + "> " + x + "</label>"; }).join("") + "</div></fieldset>";
+  }
+  function volSel(f) {
+    return '<div class="field" id="f-' + f.id + '"><label for="' + f.id + '">' + esc(f.label) + '</label><select id="' + f.id + '"><option value="">Select</option>' +
+      f.opts.map(function (o) { return '<option value="' + esc(o) + '">' + esc(o) + "</option>"; }).join("") + "</select></div>";
+  }
+  function resumeField(r) {
+    return '<div class="field lf-resume"><p class="lf-label">Résumé</p><p class="compare"><button class="btn btn-secondary" type="button" data-action="open-current">Open ' + esc(r.file) + "</button>" +
+      '<span class="hint">Attached. Open it to compare with the form.</span></p></div>';
+  }
+  /* The part of the form that autofill fills in from the résumé */
+  function detailsHtml(p) {
+    var c = p.contact, w = p.work, e = p.education;
+    return "<h3>Your details</h3>" +
+      row(tf("c-first", "First name", c.first, { req: true, ac: "off" }), tf("c-last", "Last name", c.last, { req: true, ac: "off" })) +
+      row(tf("c-email", "Email", c.email, { type: "email", req: true, ac: "off" }), tf("c-phone", "Phone", c.phone, { type: "tel", req: true, ac: "off" })) +
+      row(tf("c-city", "Location (city)", c.city, { req: true, ac: "off" }), tf("l-profile", "Professional profile link", p.links.profile, { ac: "off", hint: "Optional. A link to your online work profile or portfolio." })) +
+      row(tf("w-company", "Current company", w.company, { ac: "off" }), tf("w-title", "Current title", w.title, { ac: "off" })) +
+      "<h3>Education</h3>" + tf("e-school", "School", e.school, { ac: "off" }) +
+      row(tf("e-degree", "Degree", e.degree, { ac: "off", hint: "For example: Associate of Arts" }), tf("e-field", "Field of study", e.field, { ac: "off", hint: "Your main subject, like Accounting." })) +
+      row(yearSel("e-start", "Start year", e.startY), yearSel("e-end", "End year (or expected)", e.endY));
+  }
+  function collectDetails() {
+    return {
+      contact: { first: P.val("c-first"), last: P.val("c-last"), email: P.val("c-email"), phone: P.val("c-phone"), city: P.val("c-city") },
+      work: { company: P.val("w-company"), title: P.val("w-title") },
+      links: { profile: P.val("l-profile") },
+      education: { school: P.val("e-school"), degree: P.val("e-degree"), field: P.val("e-field"), startY: P.val("e-start"), endY: P.val("e-end") }
+    };
+  }
+  /* Marks what a real site would refuse, and says how many */
+  function checkDetails(pr) {
+    var n = 0, c = pr.contact, e = pr.education;
+    function need(ok, id, msg) { if (!ok) { P.markInvalid(id, msg); n++; } }
+    need(c.first.trim(), "c-first", "Enter a first name.");
+    need(c.last.trim(), "c-last", "Enter a last name.");
+    need(P.validEmail(c.email), "c-email", c.email.trim() ? "Enter a valid email, like name@example.com." : "Enter an email.");
+    need(P.digits(c.phone).length >= 10, "c-phone", c.phone.trim() ? "Enter the whole phone number with the area code, like (612) 555-0147." : "Enter a phone number.");
+    need(c.city.trim(), "c-city", "Enter a city.");
+    need(!(e.startY && e.endY && +e.endY < +e.startY), "e-end", "The end year is before the start year.");
+    return n;
+  }
+
+  /* ---------- views ---------- */
+  var V = {};
+  V[0] = function () {
+    return '<article class="lf-post"><p class="lf-kicker">Operations Project Office</p><h1>Project Coordinator</h1>' +
+      '<p class="lf-meta">Eagan, MN' + sep() + "Hybrid" + sep() + "Full time</p>" +
+      '<button class="btn btn-primary" type="button" data-action="apply">Apply for this job</button>' +
+      '<dl class="posting-meta"><div><dt>Pay</dt><dd>$56,000 to $63,000 a year</dd></div><div><dt>Location</dt><dd>Eagan, MN (hybrid: 3 days in the office)</dd></div>' +
+      "<div><dt>Type</dt><dd>Full time, salaried</dd></div><div><dt>Job ID</dt><dd>LF-2614</dd></div></dl>" +
+      '<div class="lf-desc">' + postBody() + "</div>" +
+      '<div class="actions"><button class="btn btn-primary" type="button" data-action="apply">Apply for this job</button></div></article>';
+  };
+
+  /* Every unfinished form, newest first, each with its own way back */
+  function draftKeys() {
+    var ks = Object.keys(S.drafts).reverse();
+    if (S.pending && ks.indexOf(S.pending) > 0) { ks.splice(ks.indexOf(S.pending), 1); ks.unshift(S.pending); }
+    return ks;
+  }
+  function draftsHtml() {
+    var ks = draftKeys(), L = last();
+    if (!ks.length) return "";
+    var btns = ks.map(function (k, i) {
+      return '<button class="btn ' + (i ? "btn-secondary" : "btn-primary") + '" type="button" data-action="resume-round" data-key="' + esc(k) + '">Back to ' + esc(firstName(S.drafts[k].resume)) + " form</button>";
+    });
+    var who = ks.length === 1 ? esc(firstName(S.drafts[ks[0]].resume)) + " form" : ks.length + " forms";
+    return '<div class="alert alert-info"><p style="margin:0 0 0.75rem">You didn’t finish ' + who + ". Your changes are saved." +
+      (L ? " If you skip " + (ks.length === 1 ? "it" : "them") + ", your application uses the information from " + esc(L.person) + "’s round." : "") + "</p>" +
+      '<p style="margin:0;display:flex;flex-wrap:wrap;gap:0.5rem">' + btns.join("") + "</p></div>";
+  }
+  V[1] = function () {
+    return jobSummary() + '<section class="lf-apply" aria-labelledby="applyH">' + roundTag() + '<h2 id="applyH" data-focus>Apply for this job</h2>' +
+      '<p class="sub">Start with your résumé. We’ll use it to fill in the form for you.</p><div id="upErr" aria-live="polite"></div>' + draftsHtml() +
+      '<p class="lf-label" id="resLbl">Résumé<span class="req" aria-hidden="true">*</span></p>' +
+      '<div class="drop" id="drop" role="group" aria-labelledby="resLbl"><p><b>Drag a résumé here</b></p><p class="hint">PDF, DOC or DOCX</p>' +
+      '<p style="margin-top:0.85rem"><label class="btn btn-secondary" for="file">Attach a résumé</label></p>' +
+      '<input class="visually-hidden" type="file" id="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>' +
+      '<p class="hint lf-drop-or">Or use an Upload button in the Practice résumés list.</p>' +
+      (S.rounds.length ? '<div class="actions"><span></span><button class="btn btn-secondary" type="button" data-action="to-rest">Skip to the rest of the application</button></div>' :
+        '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back to the job post</button></div>') + "</section>";
+  };
+  V[2] = function () {
+    return jobSummary() + '<section class="lf-apply" aria-labelledby="applyH">' + roundTag() + '<h2 id="applyH" data-focus>Apply for this job</h2>' +
+      '<div class="alert alert-info">' + (S.restored ? "Welcome back. The changes you made on this form were saved." : "We filled in this form from your résumé. Please check every box before you continue.") + "</div>" +
+      resumeField(S.current) + '<div id="infoErr" aria-live="polite"></div>' + detailsHtml(S.profile) +
+      '<p class="lf-later">After your practice rounds, you’ll finish the rest of this form: cover letter, questions and short answers.</p>' +
+      '<div id="coachCheck"></div><div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button>' +
+      '<button class="btn btn-primary" type="button" data-action="next-info">Continue</button></div></section>';
+  };
+
+  function resultList(results) {
+    return "<ul>" + results.map(function (x) {
+      return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? "Fixed" : "Missed") + "</span><span><b>" + esc(x.label) + ".</b> " + esc(x.why) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+  V[3] = function () {
+    var L = last(), more = remaining().length && S.rounds.length < 3;
+    return jobSummary() + '<section class="lf-apply" aria-labelledby="doneH"><h2 id="doneH" data-focus>Round ' + S.rounds.length + " done</h2>" +
+      '<p class="sub">' + esc(L.person) + " (" + esc(L.level) + ")</p>" +
+      '<section class="debrief" aria-label="Round results"><p class="score">You caught ' + L.fixed + " of " + L.total + "</p>" + resultList(L.results) + "</section>" +
+      '<div class="actions">' + (more ? '<button class="btn btn-primary" type="button" data-action="next-round">Try the next résumé</button>' : "<span></span>") +
+      '<button class="btn ' + (more ? "btn-secondary" : "btn-primary") + '" type="button" data-action="to-rest">Continue the application</button></div></section>';
+  };
+
+  function coverInner() {
+    var c = S.a.cover;
+    if (c.mode === "file") return '<div class="lf-file-row"><span class="lf-chip"><span class="visually-hidden">Attached: </span><span data-private>' + esc(c.file) + "</span></span>" +
+      '<button class="btn-link" type="button" data-action="cover-remove">Remove the cover letter</button></div>';
+    if (c.mode === "text") return '<div class="field" id="f-cover-text"><label for="cover-text">Type your cover letter</label><textarea id="cover-text" rows="8">' + esc(c.text) + "</textarea></div>" +
+      '<p style="margin:-0.4rem 0 0"><button class="btn-link" type="button" data-action="cover-remove">Remove the cover letter</button></p>';
+    return '<div class="lf-cover-pick"><label class="btn btn-secondary" for="cover-file">Attach a file</label>' +
+      '<input class="visually-hidden" type="file" id="cover-file" accept=".pdf,.doc,.docx,.txt,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">' +
+      '<button class="btn btn-secondary" type="button" data-action="cover-type">Type it instead</button></div>';
+  }
+  function savedHtml() {
+    return '<div class="lf-saved"><label class="choice"><input type="checkbox" id="use-saved" aria-describedby="savedHint"' + (S.a.useSaved ? " checked" : "") + "> <span>Use my saved answers</span></label>" +
+      '<p class="hint" id="savedHint">Lakeway Hire fills in answers you saved on other applications. Last used ' + esc(SAVED.date) + ".</p>" +
+      '<p class="visually-hidden" id="savedLive" aria-live="polite"></p></div>';
+  }
+  V[4] = function () {
+    var L = last(), a = S.a;
+    return jobSummary() + '<section class="lf-apply" aria-labelledby="applyH"><h2 id="applyH" data-focus>Apply for this job</h2>' +
+      '<div class="alert alert-info">Your details come from your last practice round, ' + esc(L.person) + "’s résumé. Check them once more, finish the rest of the form, then submit.</div>" +
+      resumeField(L.resume) + '<div id="formErr" aria-live="polite"></div>' + detailsHtml(S.profile) +
+      '<h3>Cover letter</h3><p class="hint lf-sec-hint">Optional. Attach a file or type it here.</p><div id="coverBox">' + coverInner() + '</div><p class="visually-hidden" id="coverLive" aria-live="polite"></p>' +
+      "<h3>Questions</h3>" + tf("q-salary", "Desired annual salary", a.salary, { req: true, ac: "off", hint: "A yearly amount in dollars, like 60,000." }) +
+      yn("q-auth", "Are you legally authorized to work in the US?", a.auth) +
+      yn("q-sponsor", "Will you now or in the future require sponsorship?", a.sponsor, "Sponsorship means an employer helps you get or keep a visa to work in the US.") +
+      "<h3>Short answers</h3>" + savedHtml() +
+      ta("q-why", "Why are you interested in this role?", a.why) + ta("q-project", "Tell us about a project you coordinated from start to finish.", a.project) +
+      '<h3>Voluntary self-identification</h3><p class="hint lf-sec-hint">Optional. Lindqvist Freight is an equal opportunity employer. Answering will not affect your application, and your answers are kept separate from it.</p>' +
+      '<div class="lf-vol">' + row(volSel(SELFID[0]), volSel(SELFID[1])) + row(volSel(SELFID[2]), volSel(SELFID[3])) + "</div>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="submit">Submit application</button></div></section>';
+  };
+
+  /* Did the saved answers from the other company's application stay in? */
+  function trapResult() {
+    var both = (S.a.why + " " + S.a.project).toLowerCase();
+    return { label: "“Use my saved answers” filled in answers written for another company",
+      why: "Lakeway Hire filled in what you wrote for the Event Coordinator job at Harborview Conference Center. A hiring manager at Lindqvist Freight would read another company’s name. Turn saved answers off, or rewrite them for this job.",
+      fixed: !/harbor\s*view/.test(both) && S.a.why.toLowerCase().indexOf("event coordinator role") === -1 };
+  }
+  V[5] = function () {
+    var L = last(), c = L.profile.contact, a = S.a, fixed = 0, total = 0;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    total++; if (S.trap.fixed) fixed++;
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var cd = P.code("LF", S.rounds.length, fixed, total);
+    var pay = P.num(a.salary), payNote;
+    if (pay < PAY_LOW) payNote = "You asked for $" + money(pay) + " a year, below the posted range of $56,000 to $63,000. You can ask for at least what the posting offers.";
+    else if (pay > PAY_HIGH) payNote = "You asked for $" + money(pay) + " a year, above the posted range of $56,000 to $63,000. Some systems quietly screen out anyone above the range. Ask for more only if your experience backs it up, and be ready to say why.";
+    else payNote = "You asked for $" + money(pay) + " a year, inside the posted range of $56,000 to $63,000. That’s a safe answer.";
+    var slipped = S.rounds.some(function (r) { return r.fixed < r.total; });
+    return '<div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 class="lf-done-head" data-focus>Application submitted</h1>' +
+      "<p>Thank you, " + esc(c.first) + ". Lindqvist Freight received your application for Project Coordinator (Job ID LF-2614). We’ll email you at " + esc(c.email) + " about next steps.</p>" +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2>' +
+      "<p>You finished in about " + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Mistakes caught: ' + fixed + " of " + total + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") +
+      "<li><span>Saved answers</span><span>" + (S.trap.fixed ? 1 : 0) + " of 1</span></li></ul>" +
+      "<h3>Saved answers</h3>" + resultList([S.trap]) +
+      (slipped ? '<h3>What slipped through</h3><ul class="plain">' + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(x.label) + ".</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      "<h3>Pay</h3><p>" + esc(payNote) + "</p>" +
+      (S.hourly ? "<p>At first you typed an hourly amount in the yearly box. This site caught it. Many real sites won’t, and an answer like 28 can look like you want $28 a year.</p>" : "") +
+      (a.auth === "No" || a.sponsor === "Yes" ? "<h3>Work authorization</h3><p>Many systems screen on the two work authorization questions automatically. Always answer them truthfully. Your career navigator can help you find employers that fit your situation.</p>" : "") +
+      '<h3>Good to know about one-page applications</h3><ul class="plain">' +
+      "<li>A one-page form looks short, but autofill can fill a lot of boxes wrong. Check every box before you submit.</li>" +
+      "<li>Saved answers save time. Read them first. Each answer should name the company and the job you’re applying for now.</li>" +
+      "<li>Salaried jobs ask for a yearly amount. To compare with hourly pay, multiply the hourly rate by 2,080 (40 hours a week for a year).</li>" +
+      "<li>A short cover letter that names the job and the company can help on salaried jobs, even when it’s optional.</li></ul>" +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="restart">Try it again</button><a href="../">Back to job board</a></div></section>';
+  };
+
+  /* ---------- render ---------- */
+  function render(focus) {
+    if (focus !== false) P.closeViewer(false); // same-step re-renders keep the résumé open
+    card.setAttribute("data-step", stepName());
+    addrUrl.innerHTML = "<b>jobs.lindqvistfreight.com</b>/project-coordinator" + (S.step >= 1 && S.step <= 4 ? "#apply" : S.step === 5 ? "/thank-you" : "");
+    view.innerHTML = V[S.step]();
+    renderDock(); renderCoach(); bindStep();
+    // warn before leaving once there's real progress, but not on the finished screen
+    P.setInProgress(S.step !== 5 && !!(S.rounds.length || S.current));
+    if (focus !== false) {
+      var h = view.querySelector("[data-focus]") || view.querySelector("h1");
+      if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+      window.scrollTo(0, 0);
+    }
+  }
+  function go(step) { S.step = step; render(); }
+
+  /* Screen readers hear each box's hint with the box */
+  function linkHints() {
+    view.querySelectorAll(".field").forEach(function (f) {
+      var h = f.querySelector(":scope > .hint"), c = f.querySelector("input, select, textarea");
+      if (!h || !c || !c.id) return;
+      h.id = "hint-" + c.id;
+      var ids = (c.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+      if (ids.indexOf(h.id) === -1) ids.push(h.id);
+      c.setAttribute("aria-describedby", ids.join(" "));
+    });
+  }
+  function say(id, msg) { var el = P.byId(id); if (!el) return; el.textContent = ""; setTimeout(function () { el.textContent = msg; }, 60); }
+  function bindStep() {
+    linkHints();
+    if (S.step === 1) {
+      var input = P.byId("file");
+      input.addEventListener("change", function () { if (input.files[0]) ownFile(); input.value = ""; }); // the file itself is never opened or read
+      P.bindDrop(P.byId("drop"), { onResume: startRound, onFile: ownFile });
+    }
+    if (S.step === 4) { P.byId("use-saved").addEventListener("change", onSaved); bindCover(); }
+  }
+  function ownFile() {
+    var box = P.byId("upErr");
+    if (!box) return;
+    box.innerHTML = "";
+    setTimeout(function () { box.innerHTML = '<div class="alert alert-info" role="status">For this practice, use one of the practice résumés. Drag one here, or use its “Upload this one” button.</div>'; }, 60);
+  }
+
+  /* "Use my saved answers": on, it fills empty short-answer boxes; off, it takes back saved text nobody changed */
+  function onSaved(e) {
+    var on = e.target.checked, changed = 0, kept = 0;
+    [[P.byId("q-why"), SAVED.why], [P.byId("q-project"), SAVED.project]].forEach(function (x) {
+      var el = x[0], v = el.value.trim();
+      if (on) { if (!v) { el.value = x[1]; changed++; } else if (v !== x[1]) kept++; }
+      else if (v === x[1]) { el.value = ""; changed++; }
+      else if (v) kept++;
+    });
+    S.a.useSaved = on;
+    say("savedLive", on ? (changed ? "Saved answers added to the short answers." : "Your own answers are still here. Saved answers only fill empty boxes.") :
+      (kept ? "Saved answers turned off. We kept the answers you changed." : "Saved answers removed. Write your own answers."));
+  }
+  function bindCover() {
+    var fi = P.byId("cover-file");
+    if (fi) fi.addEventListener("change", function () {
+      var f = fi.files[0];
+      if (!f) return;
+      S.a.cover = { mode: "file", file: f.name, text: "" }; // only the name is shown; the file is never opened
+      drawCover("Cover letter attached.", "[data-action=cover-remove]");
+    });
+  }
+  function drawCover(msg, focusSel) {
+    var box = P.byId("coverBox");
+    if (!box) return;
+    box.innerHTML = coverInner(); bindCover();
+    if (msg) say("coverLive", msg);
+    var t = focusSel && box.querySelector(focusSel);
+    if (t) t.focus();
+  }
+
+  /* ---------- rounds ---------- */
+  function startRound(id) {
+    var r = resumeById(id);
+    if (!r || S.done[r.id] || S.step !== 1 || S.reading) return; // uploads are ignored while "Reading…" shows
+    var d = S.drafts[r.id];
+    S.current = r; S.profile = P.clone(d ? d.profile : r.parsed); S.restored = !!d;
+    P.setInProgress(true);
+    if (d) { go(2); return; } // the same résumé again: bring back the learner's changes, not the planted mistakes
+    S.reading = true;
+    dock.querySelectorAll("[data-upload]").forEach(function (x) { x.disabled = true; });
+    dock.querySelectorAll(".rcard[draggable]").forEach(function (x) { x.removeAttribute("draggable"); });
+    var sec = view.querySelector(".lf-apply");
+    sec.innerHTML = '<div class="loading" role="status" tabindex="-1" style="outline:none"><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(r.file) + "…</b></p><p class=\"hint\">Autofill is filling in the form. This can take a moment.</p></div>";
+    sec.querySelector(".loading").focus();
+    var run = S;
+    readTimer = setTimeout(function () { if (S !== run) return; S.reading = false; go(2); }, 1300);
+  }
+  function rescore(R) {
+    R.results = P.score(R.resume, R.profile);
+    R.fixed = R.results.filter(function (x) { return x.fixed; }).length; R.total = R.results.length;
+    S.done[R.id] = { fixed: R.fixed, total: R.total };
+  }
+  function finishRound() {
+    var R = { id: S.current.id, person: S.current.person, level: S.current.level, resume: S.current, profile: P.clone(S.profile) };
+    rescore(R);
+    S.rounds.push(R);
+    delete S.drafts[S.current.id];
+    if (S.pending === S.current.id) S.pending = null;
+    go(3);
+  }
+  /* The rest of the form starts from the last finished round */
+  function toRest() {
+    if (!S.rounds.length) return;
+    var L = last();
+    S.current = L.resume; S.profile = P.clone(L.profile);
+    if (!S.a.loaded) { S.a.why = SAVED.why; S.a.project = SAVED.project; S.a.useSaved = true; S.a.loaded = true; } // the site fills these in on its own
+    go(4);
+  }
+  function collectRest() {
+    if (S.step !== 4) return;
+    var a = S.a;
+    a.salary = P.val("q-salary");
+    ["auth", "sponsor"].forEach(function (k) { var x = view.querySelector('input[name="q-' + k + '"]:checked'); a[k] = x ? x.value : ""; });
+    a.why = P.val("q-why"); a.project = P.val("q-project"); a.useSaved = P.checked("use-saved");
+    if (P.byId("cover-text")) a.cover.text = P.val("cover-text");
+  }
+  /* Changes to the details on the last page count for the last round, like editing before you submit */
+  function keepRest() {
+    collectRest();
+    var L = last(); L.profile = collectDetails(); rescore(L);
+  }
+
+  function salaryMsg(s) {
+    s = String(s || "").trim();
+    if (!s) return "Enter the yearly salary you want, like 60,000.";
+    var x = P.num(s);
+    if (isNaN(x)) return "Enter a number, like 60,000.";
+    if (x >= 7 && x < 1000) {
+      S.hourly = true;
+      return "That looks like an hourly rate, which is easy to mix up. This box asks for a yearly amount. At 40 hours a week, $" + x.toFixed(2) + " an hour is about $" + money(x * 2080) + " a year.";
+    }
+    if (x < 7) return "Enter a yearly amount in dollars, like 60,000.";
+    if (x < 20000) return "That looks low for a yearly salary. If it’s a monthly amount, multiply it by 12. The posting pays $56,000 to $63,000 a year.";
+    if (x > 1000000) return "That number looks too big. Enter a yearly amount, like 60,000.";
+    return "";
+  }
+  function submit() {
+    collectRest(); S.profile = collectDetails(); P.clearErrors();
+    var a = S.a, n = checkDetails(S.profile);
+    function need(ok, id, msg) { if (!ok) { P.markInvalid(id, msg); n++; } }
+    var sm = salaryMsg(a.salary);
+    need(!sm, "q-salary", sm);
+    need(a.auth, "q-auth", "Choose Yes or No.");
+    need(a.sponsor, "q-sponsor", "Choose Yes or No.");
+    need(a.why.trim(), "q-why", "Write a short answer. A few sentences is enough.");
+    need(a.project.trim(), "q-project", "Write a short answer. A few sentences is enough.");
+    P.summary("formErr", n);
+    if (n) return;
+    var L = last(); L.profile = P.clone(S.profile); rescore(L);
+    S.trap = trapResult(); S.finishedAt = Date.now(); P.setInProgress(false);
+    go(5);
+  }
+
+  /* P.flag puts each note after the whole row of boxes. When the boxes stack (beside the résumé, on phones)
+     that lands under the wrong box, so move each note inside the box it is about. */
+  function placeNotes(results) {
+    var notes = [].slice.call(view.querySelectorAll(".flag-note"));
+    results.forEach(function (x) {
+      if (x.fixed) return;
+      var note = notes.filter(function (nt) { return nt.textContent === x.label + "."; })[0];
+      var first = P.byId(x.fields[0]), lastEl = P.byId(x.fields[x.fields.length - 1]);
+      if (!note || !lastEl || !lastEl.closest(".row")) return;
+      var f = (first && first.closest(".field")) || lastEl.closest(".field");
+      if (f) f.appendChild(note);
+    });
+  }
+  /* A mistake that covers two boxes outlines only the box that is still wrong (like North Harbor does) */
+  var HALF_OK = {
+    "c-email": function (v, t) { return v.trim().toLowerCase() === String(t.contact.email || "").toLowerCase(); },
+    "l-profile": function (v, t) { var u = function (x) { return String(x || "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, ""); }; return !!u(v) && u(v) === u(t.links && t.links.profile); },
+    "e-end": function (v, t) { return v.trim() === String(t.education.endY || ""); },
+    "e-start": function (v, t) { var s = v.trim(), want = String(t.education.startY || ""); return want ? s === want : (!s || (/^\d{4}$/.test(s) && +s < +t.education.endY)); }
+  };
+  function unflagFixedHalves(res) {
+    res.forEach(function (x) {
+      if (x.fixed || x.fields.length < 2) return;
+      x.fields.forEach(function (id) {
+        var el = P.byId(id);
+        if (el && HALF_OK[id] && HALF_OK[id](el.value, S.current.truth)) el.classList.remove("flagged");
+      });
+    });
+    var first = document.querySelector("#card .flagged");
+    if (first && first.focus) first.focus();
+  }
+  function showWrong() {
+    if (S.step !== 2) return;
+    S.profile = collectDetails();
+    var res = P.score(S.current, S.profile), n = P.flag(res), out = P.byId("coachResult");
+    unflagFixedHalves(res);
+    placeNotes(res);
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks off. It’s" : "look off. They’re") + " outlined in blue." : "Everything matches the résumé. Nice work.";
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload]");
+    if (!b) return;
+    if (b.dataset.preview) { P.openViewer(resumeById(b.dataset.preview), b); return; }
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    switch (b.dataset.action) {
+      case "apply": S.startedAt = S.startedAt || Date.now(); go(1); break;
+      case "toggle-desc": {
+        var d = P.byId("jobDesc");
+        if (!d) break;
+        S.descOpen = d.hidden; d.hidden = !S.descOpen;
+        b.setAttribute("aria-expanded", String(S.descOpen));
+        b.querySelector("span").textContent = S.descOpen ? "Hide the job description" : "Show the job description";
+        break;
+      }
+      case "back":
+        if (S.step === 2) {
+          // keep the unfinished round as a draft; it never counts toward the application until it's finished
+          S.profile = collectDetails();
+          S.drafts[S.current.id] = { resume: S.current, profile: P.clone(S.profile) };
+          S.pending = S.current.id;
+          go(1); break;
+        }
+        if (S.step === 4) { keepRest(); go(3); break; }
+        go(0); break;
+      case "resume-round": {
+        var dk = b.dataset.key, dr = dk && S.drafts[dk];
+        if (!dr || S.reading || S.step !== 1) break;
+        S.current = dr.resume; S.profile = P.clone(dr.profile); S.restored = true;
+        go(2); break;
+      }
+      case "open-current": P.openViewer(S.current, b); break;
+      case "show-wrong": showWrong(); break;
+      case "next-info": {
+        S.profile = collectDetails(); P.clearErrors();
+        var n = checkDetails(S.profile);
+        P.summary("infoErr", n);
+        if (n) break;
+        var bad = P.score(S.current, S.profile).filter(function (x) { return !x.fixed; });
+        if (P.hints() && bad.length) { // only "Continue anyway" skips the check
+          P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " on this form still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real site wouldn’t warn you.</p>" +
+            '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="continue-anyway" style="margin-left:1rem">Continue anyway</button></div>';
+          break;
+        }
+        finishRound(); break;
+      }
+      case "continue-anyway": {
+        S.profile = collectDetails(); P.clearErrors();
+        var n2 = checkDetails(S.profile);
+        P.summary("infoErr", n2);
+        if (!n2) finishRound();
+        break;
+      }
+      case "next-round": go(1); break;
+      case "to-rest": toRest(); break;
+      case "cover-type": S.a.cover = { mode: "text", file: "", text: "" }; drawCover("", "#cover-text"); break;
+      case "cover-remove": S.a.cover = { mode: "", file: "", text: "" }; drawCover("Cover letter removed.", "#cover-file"); break;
+      case "submit": submit(); break;
+      case "copy-code": {
+        var txt = P.byId("code").textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; });
+        break;
+      }
+      case "restart": clearTimeout(readTimer); S = fresh(); P.setInProgress(false); go(0); break;
+    }
+  });
+
+  /* Coach notes off: take away the coach's box and blue outlines too, not just the side column */
+  P.onHints(function (on) {
+    if (on) return;
+    var cc = P.byId("coachCheck"), had = cc && cc.contains(document.activeElement);
+    if (cc) cc.innerHTML = "";
+    P.clearFlags();
+    if (had) { var nx = view.querySelector("[data-action=next-info]"); if (nx) nx.focus(); }
+  });
+
+  /* The résumé viewer's page area scrolls, so keyboard users need to be able to reach it to scroll it.
+     (The shared viewer doesn't do this yet; this can go once it does.) */
+  if (window.MutationObserver) new MutationObserver(function () {
+    var vb = document.querySelector(".viewer-body:not([tabindex])");
+    if (vb) { vb.setAttribute("tabindex", "0"); vb.setAttribute("role", "region"); vb.setAttribute("aria-label", "Résumé pages"); }
+  }).observe(document.body, { childList: true, subtree: true });
+
+  P.initBar();
+  render(false);
+})();
+</script>
+</body>
+</html>

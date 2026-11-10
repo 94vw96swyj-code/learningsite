@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easy Apply: Northgate Outfitters (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice job board Easy Apply. Build a profile from three practice résumés, then catch what Easy Apply fills in for you. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<style>
+:root { --brand: #B5410F; --brand-dark: #8F3209; --brand-tint: #FDF0E8; }
+/* The practice bar is Drew's layer: it sits above the dimmed board and stays usable */
+.practice-bar { position: relative; z-index: 30; }
+
+/* The job board behind the window: a still copy of the board, dimmed.
+   Screen readers and the keyboard skip it (aria-hidden, inert, nothing in it can take focus). */
+.stage { position: relative; min-height: 100vh; }
+.behind { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.board-head { background: var(--card); border-bottom: 1px solid var(--line); }
+.board-head .inner { max-width: 84rem; margin: 0 auto; padding: 0.9rem 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.board-logo { font-weight: 800; font-size: 1.25rem; color: var(--brand-dark); display: flex; align-items: center; gap: 0.5rem; margin-right: auto; }
+.search { display: flex; gap: 0.5rem; flex: 1 1 26rem; max-width: 34rem; }
+.fake-input { flex: 1; border: 1px solid var(--field); border-radius: 4px; padding: 0.55rem 0.7rem; color: var(--muted); background: #fff; }
+.search .btn { padding: 0.55rem 1rem; }
+.behind-in { max-width: 84rem; margin: 0 auto; padding: 2rem 1rem; display: grid; gap: 1.5rem 2rem; justify-content: center; grid-template-columns: minmax(0, 44rem) 16rem; }
+.behind-in > * { grid-column: 1; }
+.behind .howto h2 { font-size: 1.15rem; }
+.results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 1rem; }
+.list-title { font-size: 1.35rem; font-weight: 700; }
+.jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
+.jobcard { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.25rem; display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 1.25rem; align-items: start; }
+.jobcard .jt { font-size: 1.15rem; font-weight: 700; }
+.jobcard .meta { color: var(--muted); font-size: 0.92rem; }
+.jobcard .how { margin-top: 0.5rem; display: inline-flex; font-size: 0.88rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.15rem 0.55rem; justify-self: start; }
+.jobcard .go { grid-column: 2; grid-row: 1 / span 4; align-self: center; }
+.scrim { position: fixed; inset: 0; z-index: 10; background: rgba(20, 28, 34, 0.58); }
+
+/* The Easy Apply window. It grows to fit what the step needs: the form and coach notes,
+   plus the practice résumés while you build your profile, and the whole width when a résumé is open beside the form. */
+.ea-wrap { position: relative; z-index: 20; padding: 5rem 1rem 1.5rem; }
+.ea-window { --eah: 4.6rem; margin: 0 auto; width: fit-content; max-width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 18px 50px rgba(10, 18, 24, 0.4); }
+body.viewing-docked .ea-window { width: 100%; max-width: 112rem; }
+/* Window top: stays in view while the form scrolls, so the close button is always there */
+.ea-head { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid var(--line); border-radius: 12px 12px 0 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "t s x"; align-items: center; gap: 0.25rem 1rem; padding: 0.7rem 0.6rem 0.75rem 1.5rem; }
+.ea-titles { grid-area: t; min-width: 0; }
+.ea-title { margin: 0; font-weight: 700; font-size: 1.12rem; line-height: 1.3; }
+.ea-job { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.ea-step { grid-area: s; margin: 0; color: var(--muted); font-size: 0.92rem; font-weight: 600; white-space: nowrap; }
+.ea-x { grid-area: x; width: 2.75rem; height: 2.75rem; font-size: 1.8rem; line-height: 1; background: none; border: 0; border-radius: 6px; cursor: pointer; color: var(--muted); }
+.ea-x:hover { background: #EEF1F3; color: var(--text); }
+.ea-bar { position: absolute; left: 0; right: 0; bottom: -1px; height: 4px; background: var(--brand-tint); }
+.ea-bar i { display: block; height: 100%; width: 0; background: var(--brand); transition: width 250ms; }
+@media (prefers-reduced-motion: reduce) { .ea-bar i { transition: none; } }
+/* Inside the window the form sits on the window itself, not on a second box */
+.ea-window #layout { max-width: none; padding: 1.5rem 1.5rem 1.25rem; }
+.ea-window #card { border: 0; border-radius: 0; padding: 0; }
+.ea-window .coach:empty { border-left: 0; }
+.ea-window h1 { font-size: 1.5rem; }
+/* Sticky columns line up under the window top instead of sliding behind it */
+.ea-window .coach, .ea-window .dock { top: calc(var(--eah) + 1rem); }
+@media (min-width: 861px) { .ea-window .coach { max-height: calc(100vh - var(--eah) - 2.5rem); } }
+.ea-window .viewer.docked { top: calc(var(--eah) + 0.75rem); height: calc(100vh - var(--eah) - 3.5rem); height: calc(100dvh - var(--eah) - 3.5rem); }
+
+.profile-warn { display: flex; gap: 0.75rem; align-items: flex-start; background: #FFF8E1; border: 1px solid #F1D98A; border-radius: 6px; padding: 0.75rem 1rem; margin: 0 0 1.25rem; font-size: 0.95rem; }
+.profile-warn svg { flex: none; margin-top: 0.1rem; }
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.1rem 0.5rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: -0.25rem 0 1.5rem; }
+.res-opt { display: flex; gap: 0.75rem; align-items: flex-start; border: 1.5px solid var(--line); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 0.65rem; cursor: pointer; }
+.res-opt:has(input:checked) { border-color: var(--brand); background: var(--brand-tint); }
+.res-opt input { margin-top: 0.3rem; accent-color: var(--brand); width: 1.05rem; height: 1.05rem; flex: none; }
+.res-opt small { display: block; color: var(--muted); }
+.fine { font-size: 0.9rem; background: #F7F8F9; border: 1px solid var(--line); border-radius: 6px; padding: 0.75rem 0.9rem; margin-top: 1.25rem; }
+.myjobs { width: 100%; border-collapse: collapse; font-size: 0.93rem; margin: 0.5rem 0 0; }
+.myjobs th, .myjobs td { text-align: left; padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.myjobs th { font-size: 0.8rem; color: var(--muted); }
+.status { font-weight: 600; color: var(--brand-dark); }
+.draft-note p { margin: 0 0 0.75rem; }
+/* "Show me what's off" notes: sit under the field they name, clear of the dashed outline */
+#card .field > .flag-note { margin: 0.6rem 0 0; }
+#card .btn + .flag-note { margin: 0.9rem 0 1rem; }
+
+@media (max-width: 860px) {
+  .behind-in { grid-template-columns: minmax(0, 1fr); }
+  .ea-wrap { padding-top: 1.5rem; }
+  .ea-window #layout { padding: 1.25rem 1.25rem 1.5rem; }
+}
+/* Phones: the window fills the screen, like Easy Apply in a phone browser */
+@media (max-width: 640px) {
+  body { background: #fff; }
+  .behind, .scrim { display: none; }
+  .ea-wrap { padding: 0; }
+  .ea-window { width: 100%; border-radius: 0; box-shadow: none; }
+  .ea-head { border-radius: 0; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "t x" "s x"; padding: 0.5rem 0.4rem 0.6rem 1rem; gap: 0 0.5rem; }
+  .ea-title { font-size: 1.05rem; }
+  .ea-job { display: none; }
+  .ea-step { font-size: 0.88rem; }
+  .ea-window #layout { padding: 1rem 1rem 2rem; }
+  .ea-window h1 { font-size: 1.35rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice application">
+  <div class="inner">
+    <p><b>Practice Easy Apply.</b> Corkboard Jobs and Northgate Outfitters are not real. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+<!-- A still copy of the job board, behind the window. Nothing here can be clicked or reached with the keyboard. -->
+<div class="behind" aria-hidden="true" inert>
+  <div class="board-head">
+    <div class="inner">
+      <span class="board-logo"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="3" width="24" height="20" rx="3" fill="#B5410F"/><circle cx="8" cy="10" r="2.2" fill="#FDF0E8"/><circle cx="18" cy="15" r="2.2" fill="#FDF0E8"/></svg>Corkboard Jobs</span>
+      <span class="search"><span class="fake-input">Job title or company</span><span class="btn btn-primary">Search</span></span>
+    </div>
+  </div>
+  <div class="behind-in">
+    <div class="howto"><div class="list-title" style="font-size:1.15rem">How this practice works</div><p>Pick a job below and click View job. Read the whole post, then click its Apply button.</p></div>
+    <div class="results">
+      <div class="results-head"><span class="list-title">Jobs near Minneapolis, MN</span></div>
+      <ul class="jobs">
+        <li class="jobcard"><span class="jt">Warehouse Associate, 2nd Shift</span><span>Halvorsen &amp; Pike</span><span class="meta">Brooklyn Park, MN. $21.00 to $23.50 an hour. Full time. Posted 2 days ago</span><span class="how">Apply on company site</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Retail Sales Associate</span><span>Northgate Outfitters</span><span class="meta">Roseville, MN. $17.50 an hour. Part time. Posted today</span><span class="how">Easy Apply</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Crew Member</span><span>Sunny Side Diner</span><span class="meta">Minneapolis, MN. $18.00 to $20.00 an hour. Full or part time. Posted 5 days ago</span><span class="how">Text JOBS to apply</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Production Worker</span><span>Brightway Staffing</span><span class="meta">Plymouth, MN. $19.00 an hour. Temp to hire. Posted 1 day ago</span><span class="how">Apply through a staffing agency</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Office Support Specialist</span><span>City of North Harbor</span><span class="meta">North Harbor, MN. $22.40 to $27.10 an hour. Full time. Posted 1 week ago</span><span class="how">Government application</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Program Coordinator</span><span>Tamarack State University</span><span class="meta">St. Paul, MN. $52,000 to $58,000 a year. Full time, salaried. Posted 3 days ago</span><span class="how">Apply on company site</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Clinic Operations Supervisor</span><span>Larkspur Health</span><span class="meta">Bloomington, MN. $61,000 to $72,000 a year. Full time, salaried. Posted 3 days ago</span><span class="how">Apply on company site</span><span class="btn btn-primary go">View job</span></li>
+        <li class="jobcard"><span class="jt">Project Coordinator</span><span>Lindqvist Freight</span><span class="meta">Eagan, MN. $56,000 to $63,000 a year. Full time, salaried, hybrid. Posted 3 days ago</span><span class="how">Apply on company site</span><span class="btn btn-primary go">View job</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="scrim" aria-hidden="true"></div>
+
+<div class="ea-wrap">
+  <div class="ea-window" id="eaWindow" role="dialog" aria-labelledby="eaTitle" aria-describedby="eaJob">
+    <div class="ea-head" id="eaHead">
+      <div class="ea-titles"><p class="ea-title" id="eaTitle">Apply to Northgate Outfitters</p><p class="ea-job" id="eaJob">Retail Sales Associate, Roseville, MN</p></div>
+      <p class="ea-step" id="eaStep"></p>
+      <button class="ea-x" type="button" data-action="close-window" aria-label="Close Easy Apply">&times;</button>
+      <div class="ea-bar" aria-hidden="true"><i id="eaBar"></i></div>
+    </div>
+    <div class="layout" id="layout">
+      <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+      <main class="card" id="card"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></main>
+      <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.NG_RESUMES;
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout"), win = P.byId("eaWindow"), head = P.byId("eaHead");
+  var ACCT_PHONE = "(612) 555-0100", OLD_FILE = "Resume_2021.docx", BOARD = "../";
+  var SIMILAR = [["Overnight Stocker", "BigBox Depot", "Overnight shift"], ["Cashier", "QuickFuel Gas", "Weekends required"], ["Stock Associate", "ValuMart", "Part time"],
+    ["Mall Kiosk Sales", "Phone Case Co.", "Commission only"], ["Customer Service Rep", "Call Center Plus", "Mandatory overtime"]];
+
+  /* Steps: 1 update your profile (upload), 2 review your profile, 3 profile saved,
+     4 to 7 the Easy Apply steps (contact info, résumé, questions, review), 8 application sent.
+     The learner clicked Easy Apply on the job board, so the window opens on step 1. */
+  var S;
+  function fresh() {
+    // drafts: unsaved profiles by résumé id, kept when the learner goes Back from Review your profile
+    // eaFor: the round Easy Apply's answers belong to, so leaving and coming back keeps them
+    S = { step: 1, rounds: [], done: {}, current: null, profile: null, drafts: {}, restored: false, reading: false, warned: false, eaFor: null,
+      ea: { first: "", last: "", email: "", phone: "", resume: "old", years: "", weekends: "", adult: "", mass: true }, startedAt: Date.now(), finishedAt: null };
+  }
+  fresh();
+  function remaining() { return RES.filter(function (r) { return !S.done[r.id]; }); }
+  function lastRound() { return S.rounds[S.rounds.length - 1]; }
+  function firstName(r) { return r.person.split(" ")[0]; }
+  function drafts() { return RES.filter(function (r) { return S.drafts[r.id] && !S.done[r.id]; }); }
+
+  var FIRST = ["Easy Apply is fast. That's the trap: it sends whatever your profile already says.", "This profile hasn't been updated in three years. Fix that first.",
+    "Job boards build your profile from your résumé. Three practice résumés are waiting, cleanest to trickiest. Preview one, then drag it onto the upload box or use its Upload button."];
+  var COACH = {
+    1: ["Job boards build your profile from your résumé. Three practice résumés are waiting, cleanest to trickiest.", "Preview one, then drag it onto the upload box or use its Upload button."],
+    4: ["These came from your account, not your résumé. Check every one.", "Is that phone number still the right one?"],
+    5: ["Look at which résumé is picked. The board chose one for you.", "Always send the newest version."],
+    6: ["When it asks how many, answer with a plain number.", "Count all customer-facing work, not just retail."],
+    7: ["Read everything above the Submit button. Is anything checked that you didn't choose?"]
+  };
+  function renderCoach() {
+    if (S.step === 1 && !S.rounds.length) P.coach(FIRST);
+    else if (S.step === 2 && S.current) {
+      P.coach(["The board just read the résumé and built a profile from it."].concat(S.current.coach),
+        '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>');
+    } else if (S.step === 3) {
+      P.coach(remaining().length && S.rounds.length < 3 ? ["Try the next résumé, or go on to Easy Apply. You can stop after any round."] : ["That's all three. Now apply with Easy Apply."]);
+    } else P.coach(COACH[S.step] || []);
+  }
+  function renderDock() {
+    var show = S.step >= 1 && S.step <= 3;
+    dock.hidden = !show; layout.classList.toggle("with-dock", show);
+    if (show) dock.innerHTML = P.dockHtml(RES, S.done, { canUpload: S.step === 1 });
+  }
+  P.bindDock(dock);
+  // The window top: where you are, and a bar that fills as you go
+  function renderHead() {
+    var s = S.step, ea = s >= 4 && s <= 7;
+    P.byId("eaStep").textContent = s <= 3 ? "Update your profile first" : ea ? "Step " + (s - 3) + " of 4" : "Done";
+    P.byId("eaBar").style.width = (s <= 3 ? 10 : ea ? (s - 3) * 25 : 100) + "%";
+  }
+
+  function stepHead(title) { return '<h1 tabindex="-1">' + esc(title) + "</h1>"; }
+  function yn(name, label, v) {
+    return '<fieldset id="f-' + name + '"><legend>' + esc(label) + '<span class="req" aria-hidden="true">*</span></legend><div class="inline-choices">' +
+      ["Yes", "No"].map(function (x) { return '<label class="choice"><input type="radio" name="' + name + '" value="' + x + '"' + (v === x ? " checked" : "") + "> " + x + "</label>"; }).join("") + "</div></fieldset>";
+  }
+  function resultList(results) {
+    return "<ul>" + results.map(function (x) {
+      return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? "Fixed" : "Missed") + "</span><span><b>" + esc(x.label) + ".</b> " + esc(x.why) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+
+  var V = {};
+  V[1] = function () {
+    var ds = drafts();
+    return '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>" +
+      '<h1 tabindex="-1">Update your profile from your résumé</h1><p class="sub">We’ll read your résumé and fill in your profile.</p>' +
+      (S.rounds.length ? "" : '<div class="profile-warn"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z" fill="#E0A800"/><path d="M12 10v5M12 17.5v.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><span>Your profile was last updated <b>3 years ago</b>. Easy Apply uses your profile.</span></div>') +
+      (ds.length ? '<div class="alert alert-info draft-note"><p>You didn’t save ' + ds.map(function (r) { return esc(firstName(r)) + "’s"; }).join(" or ") +
+        " profile yet. Your changes are kept." + (S.rounds.length ? " Easy Apply only uses profiles you saved." : "") + "</p>" +
+        ds.map(function (r) { return '<button class="btn btn-secondary" type="button" data-action="resume-draft" data-id="' + esc(r.id) + '">Back to ' + esc(firstName(r)) + "’s profile</button>"; }).join(" ") + "</div>" : "") +
+      '<div class="drop" id="drop"><p><b>Drag a résumé here</b></p><p class="hint">Or use an Upload button in the practice résumés.</p></div>' +
+      (S.rounds.length ? '<div class="actions"><span></span><button class="btn btn-secondary" type="button" data-action="to-ea">Go to Easy Apply</button></div>' : '<div class="actions"><a class="btn btn-secondary" href="' + BOARD + '" data-leave>Back to job board</a></div>');
+  };
+  V[2] = function () {
+    return '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>" +
+      '<h1 tabindex="-1">Review your profile</h1><div class="alert alert-info">' + (S.restored ? "Your changes are still here. Check the profile against the résumé, then save it." : "We built your profile from your résumé. Check it before you apply anywhere.") + "</div>" +
+      '<p class="compare"><button class="btn btn-secondary" type="button" data-action="open-current">Open ' + esc(S.current.file) + '</button><span class="hint">Open it to compare with the form.</span></p>' +
+      '<div id="infoErr" aria-live="polite"></div>' + P.formHtml(S.profile) + '<div id="coachCheck"></div>' +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="save-profile">Save profile</button></div>';
+  };
+  V[3] = function () {
+    var last = lastRound(), more = remaining().length && S.rounds.length < 3;
+    return '<h1 tabindex="-1">Profile saved</h1><p class="sub">Round ' + S.rounds.length + ": " + esc(last.person) + " (" + esc(last.level) + ")</p>" +
+      '<section class="debrief" aria-label="Round results"><p class="score">You caught ' + last.fixed + " of " + last.total + "</p>" + resultList(last.results) + "</section>" +
+      '<div class="actions">' + (more ? '<button class="btn btn-primary" type="button" data-action="next-round">Try the next résumé</button>' : "<span></span>") +
+      '<button class="btn ' + (more ? "btn-secondary" : "btn-primary") + '" type="button" data-action="to-ea">Go to Easy Apply</button></div>';
+  };
+  V[4] = function () {
+    var e = S.ea;
+    return stepHead("Contact info") + '<div id="eaErr" aria-live="polite"></div>' +
+      '<div class="row">' + P.textField("ea-first", "First name", e.first, { req: true }) + P.textField("ea-last", "Last name", e.last, { req: true }) + "</div>" +
+      P.textField("ea-email", "Email", e.email, { type: "email", req: true }) +
+      P.textField("ea-phone", "Mobile phone number", e.phone, { type: "tel", req: true, hint: "From your Corkboard account" }) +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="ea-back">Back</button><button class="btn btn-primary" type="button" data-action="ea-next">Next</button></div>';
+  };
+  V[5] = function () {
+    var last = lastRound();
+    return stepHead("Résumé") + '<p class="sub">Choose the résumé to send with this application.</p>' +
+      '<label class="res-opt"><input type="radio" name="ea-res" value="old"' + (S.ea.resume === "old" ? " checked" : "") + "><span><b>" + esc(OLD_FILE) + "</b><small>Uploaded 3 years ago</small></span></label>" +
+      '<label class="res-opt"><input type="radio" name="ea-res" value="new"' + (S.ea.resume === "new" ? " checked" : "") + "><span><b>" + esc(last.file) + "</b><small>Uploaded today</small></span></label>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="ea-back">Back</button><button class="btn btn-primary" type="button" data-action="ea-next">Next</button></div>';
+  };
+  V[6] = function () {
+    var e = S.ea;
+    return stepHead("Questions from the employer") + '<div id="eaErr" aria-live="polite"></div>' +
+      P.textField("ea-years", "How many years of retail or customer service experience do you have?", e.years, { req: true, hint: "Numbers only" }) +
+      yn("ea-weekends", "Are you available to work evenings and weekends?", e.weekends) +
+      yn("ea-adult", "Are you 18 or older?", e.adult) +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="ea-back">Back</button><button class="btn btn-primary" type="button" data-action="ea-next">Next</button></div>';
+  };
+  V[7] = function () {
+    var e = S.ea;
+    return stepHead("Review your application") +
+      '<div class="review-block"><dl><dt>Name</dt><dd>' + esc(e.first + " " + e.last) + "</dd><dt>Email</dt><dd>" + esc(e.email) + "</dd><dt>Phone</dt><dd>" + esc(e.phone) + "</dd>" +
+      "<dt>Résumé</dt><dd>" + esc(e.resume === "old" ? OLD_FILE : lastRound().file) + "</dd><dt>Years of experience</dt><dd>" + esc(e.years) + "</dd>" +
+      "<dt>Evenings and weekends</dt><dd>" + esc(e.weekends) + "</dd><dt>18 or older</dt><dd>" + esc(e.adult) + "</dd></dl></div>" +
+      '<div class="fine"><label class="choice"><input type="checkbox" id="ea-mass"' + (e.mass ? " checked" : "") + "> <span>Also apply to 5 similar jobs with my profile (recommended)</span></label></div>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="ea-back">Back</button><button class="btn btn-primary" type="button" data-action="submit">Submit application</button></div>';
+  };
+  V[8] = function () {
+    var e = S.ea, lr = lastRound(), truth = RES.filter(function (r) { return r.id === lr.id; })[0].truth;
+    var traps = [
+      { label: "Easy Apply filled in an old phone number from your account", why: "The résumé says " + truth.contact.phone + ". With the old number, the employer calls someone else.", fixed: P.digits(e.phone).slice(-10) === P.digits(truth.contact.phone).slice(-10) },
+      { label: "Easy Apply picked a résumé from three years ago", why: "The board defaults to whatever it has. Always choose the newest version.", fixed: e.resume === "new" },
+      { label: "“Apply to 5 similar jobs” was checked for you", why: "Those are jobs you never read. One is overnight, one is commission only.", fixed: !e.mass }
+    ];
+    var fixed = 0, total = 0;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    traps.forEach(function (t) { total++; if (t.fixed) fixed++; });
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var rows = [["Retail Sales Associate", "Northgate Outfitters", "You read this one"]].concat(e.mass ? SIMILAR : []);
+    var cd = P.code("NG", S.rounds.length, fixed, total);
+    return '<div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 tabindex="-1">Application sent</h1><p>Your application was sent to Northgate Outfitters' + (e.mass ? ", plus 5 similar jobs" : "") + ".</p>" +
+      '<h2 style="font-size:1.1rem;margin-top:1.5rem">My jobs</h2><table class="myjobs"><thead><tr><th scope="col">Job</th><th scope="col">Company</th><th scope="col">Note</th><th scope="col">Status</th></tr></thead><tbody>' +
+      rows.map(function (r) { return "<tr><td>" + esc(r[0]) + "</td><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + '</td><td class="status">Applied</td></tr>'; }).join("") + "</tbody></table>" +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2><p>You finished in about ' + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Mistakes caught: ' + fixed + " of " + total + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") + "</ul>" +
+      "<h3>Easy Apply traps</h3>" + resultList(traps) +
+      (S.rounds.some(function (r) { return r.fixed < r.total; }) ? '<h3>What slipped through on the résumés</h3><ul class="plain">' + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(x.label) + ".</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      '<h3>Good to know about Easy Apply</h3><ul class="plain"><li>Keep your job board profile current. Every Easy Apply sends it as-is.</li>' +
+      "<li>Easy means everyone applies. Dozens of people may hit the same button in an hour, so apply early and make your profile clean.</li>" +
+      "<li>Keep your own list of where you applied. The board’s list only shows its own jobs.</li></ul>" +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="restart">Try it again</button><a href="' + BOARD + '">Back to job board</a></div></section>';
+  };
+
+  function render(focus) {
+    if (focus !== false) P.closeViewer(false); // same-step re-renders (Add another job, Remove) keep the résumé open
+    S.warned = false; // every re-render drops the coach check box, so the next Save profile checks again
+    card.innerHTML = V[S.step]();
+    renderHead(); renderDock(); renderCoach(); bindStep();
+    if (focus !== false) { var h = card.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } window.scrollTo(0, 0); }
+  }
+  function go(step) { S.step = step; S.warned = false; render(); }
+  // The résumé the learner last opened. If it is the one going onto the form, keep it open there.
+  var openId = null;
+  function toForm() {
+    var keep = openId === S.current.id && !!document.querySelector(".viewer");
+    go(2);
+    if (!keep) return;
+    P.openViewer(S.current, card.querySelector("[data-action=open-current]"));
+    var v = document.querySelector(".viewer"), h = card.querySelector("h1");
+    if (v && v.classList.contains("docked") && h) h.focus({ preventScroll: true }); // beside the form: start reading at the heading
+  }
+
+  function bindStep() {
+    if (S.step === 1) P.bindDrop(P.byId("drop"), { onResume: startRound, onFile: function () {
+      if (P.byId("fileNote")) return;
+      P.byId("drop").insertAdjacentHTML("afterend", '<p class="alert alert-info" id="fileNote" role="status" style="margin-top:1rem">For this practice, use one of the practice résumés.</p>');
+    } });
+  }
+  function startRound(id) {
+    var r = RES.filter(function (x) { return x.id === id; })[0];
+    if (!r || S.done[r.id] || S.step !== 1 || S.reading) return; // uploads are ignored while "Reading…" shows
+    S.current = r; P.setInProgress(true);
+    // The same résumé again (or "Back to Maria's profile"): bring back the unsaved changes instead of starting over
+    if (S.drafts[r.id]) { S.profile = P.clone(S.drafts[r.id]); S.restored = true; toForm(); return; }
+    S.profile = P.clone(r.parsed); S.restored = false; S.reading = true;
+    card.innerHTML = '<div class="loading" role="status"><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(r.file) + "…</b></p></div>";
+    var run = S;
+    setTimeout(function () { if (S !== run) return; S.reading = false; toForm(); }, 1300);
+  }
+  function finishRound() {
+    var res = P.score(S.current, S.profile), f = res.filter(function (x) { return x.fixed; }).length;
+    S.rounds.push({ id: S.current.id, person: S.current.person, level: S.current.level, file: S.current.file, results: res, fixed: f, total: res.length, profile: P.clone(S.profile) });
+    S.done[S.current.id] = { fixed: f, total: res.length };
+    delete S.drafts[S.current.id]; S.restored = false;
+    go(3);
+  }
+  function startEA() {
+    if (!S.rounds.length) return; // Easy Apply only ever uses saved (finished) rounds
+    var lr = lastRound();
+    if (S.eaFor !== lr.id) { // first visit, or a new round since: start fresh from that person's saved profile
+      var c = lr.profile.contact;
+      S.ea = { first: c.first, last: c.last, email: c.email, phone: ACCT_PHONE, resume: "old", years: "", weekends: "", adult: "", mass: true };
+      S.eaFor = lr.id;
+    }
+    go(4);
+  }
+  function collectEA() {
+    if (S.step === 4) { S.ea.first = P.val("ea-first"); S.ea.last = P.val("ea-last"); S.ea.email = P.val("ea-email"); S.ea.phone = P.val("ea-phone"); }
+    if (S.step === 5) { var r = card.querySelector('input[name="ea-res"]:checked'); S.ea.resume = r ? r.value : "old"; }
+    if (S.step === 6) {
+      S.ea.years = P.val("ea-years");
+      var w = card.querySelector('input[name="ea-weekends"]:checked'), a = card.querySelector('input[name="ea-adult"]:checked');
+      S.ea.weekends = w ? w.value : ""; S.ea.adult = a ? a.value : "";
+    }
+    if (S.step === 7) S.ea.mass = P.checked("ea-mass");
+  }
+  // A plain number of years: "3", "1.5", ".5", "1." and "1,5" are all fine
+  var NUM = "(?:\\d+(?:[.,]\\d*)?|[.,]\\d+)";
+  function yearsNum(t) { return parseFloat(String(t).replace(",", ".")); }
+  function yearsMsg(s) {
+    s = String(s || "").trim();
+    if (!s) return "Enter a number, like 3.";
+    if (/(?:\d|\b)(?:months?|mos?|mths?|meses|mes)\b/i.test(s)) { // "6 months", "1 year 6 months": the question asks for years
+      var y = s.match(new RegExp("(" + NUM + ")\\s*(?:years?|yrs?)\\b", "i")), m = s.match(new RegExp("(" + NUM + ")\\s*(?:months?|mos?|mths?|meses|mes)\\b", "i"));
+      var t = (y ? yearsNum(y[1]) : 0) + (m ? yearsNum(m[1]) / 12 : 0);
+      if (!(t >= 1)) return "Less than a year? Type 0.";
+      var r = Math.round(t * 2) / 2;
+      return "Count in years, not months. That’s about " + r + " " + P.plural(r, "year") + ", so type " + r + ".";
+    }
+    if (new RegExp("^" + NUM + "$").test(s)) return yearsNum(s) > 60 ? "That’s more than 60 years. Check the number." : "";
+    var w = s.match(new RegExp("^(" + NUM + ")\\s*(?:years?|yrs?)\\.?$", "i")); // the only extra word is "years"
+    if (w) return "Type only the number, like " + yearsNum(w[1]) + ". Leave out any words.";
+    if (!/\d/.test(s)) return "Use digits for the number of years, like 3.";
+    return "Type only a number, like 3, with no other words or marks.";
+  }
+  function eaErrors(step) {
+    var out = [], e = S.ea;
+    function need(ok, id, msg) { if (!ok) out.push([id, msg]); }
+    if (step === 4) {
+      need(e.first.trim(), "ea-first", "Enter a first name."); need(e.last.trim(), "ea-last", "Enter a last name.");
+      need(P.validEmail(e.email), "ea-email", "Enter a valid email."); need(P.digits(e.phone).length >= 10, "ea-phone", "Enter a 10-digit phone number.");
+    }
+    if (step === 6) {
+      var ym = yearsMsg(e.years); need(!ym, "ea-years", ym);
+      need(e.weekends, "ea-weekends", "Choose Yes or No."); need(e.adult, "ea-adult", "Choose Yes or No.");
+    }
+    return out;
+  }
+  function validEA() {
+    P.clearErrors();
+    var bad = eaErrors(S.step);
+    bad.forEach(function (x) { P.markInvalid(x[0], x[1]); });
+    P.summary("eaErr", bad.length);
+    return !bad.length;
+  }
+  // P.flag puts each note after the whole row of fields. When the fields stack (beside the résumé, on phones)
+  // that lands under the wrong field, so move each note inside the field it is about.
+  function placeNotes(results) {
+    var notes = [].slice.call(card.querySelectorAll(".flag-note"));
+    results.forEach(function (x) {
+      if (x.fixed) return;
+      var note = notes.filter(function (n) { return n.textContent === x.label + "."; })[0];
+      var first = P.byId(x.fields[0]), last = P.byId(x.fields[x.fields.length - 1]);
+      if (!note || !last || !last.closest(".row, .row-3, .dates")) return;
+      var f = (first && first.closest(".field")) || last.closest(".field");
+      if (f) f.appendChild(note);
+    });
+  }
+  function showWrong() {
+    S.profile = P.collect(S.profile.jobs.length);
+    var res = P.score(S.current, S.profile), n = P.flag(res), out = P.byId("coachResult");
+    placeNotes(res);
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks off. It’s" : "look off. They’re") + " outlined in blue." :
+      "All the planted mistakes are fixed. Give it one more look against the résumé.";
+  }
+
+  /* Closing the window goes back to the job board. While an application is under way it asks first
+     (the same "Leave this application?" question as Back to job board). */
+  function closeWindow() { if (P.confirmLeave()) location.href = BOARD; }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload]");
+    if (!b) return;
+    if (b.dataset.preview) { openId = b.dataset.preview; P.openViewer(RES.filter(function (r) { return r.id === openId; })[0], b); return; }
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    switch (b.dataset.action) {
+      case "close-window": closeWindow(); break;
+      case "back": // Review your profile: keep the unsaved edits
+        if (S.step === 2) { S.profile = P.collect(S.profile.jobs.length); S.drafts[S.current.id] = P.clone(S.profile); go(1); }
+        break;
+      case "resume-draft": startRound(b.dataset.id); break;
+      case "open-current": openId = S.current.id; P.openViewer(S.current, b); break;
+      case "add-job":
+        S.profile = P.collect(S.profile.jobs.length);
+        S.profile.jobs.push({ title: "", employer: "", location: "", startM: "", startY: "", endM: "", endY: "", current: false, desc: "" });
+        render(false); var t = P.byId("j" + (S.profile.jobs.length - 1) + "-title"); if (t) t.focus(); break;
+      case "remove-job":
+        S.profile = P.collect(S.profile.jobs.length); S.profile.jobs.splice(+b.dataset.i, 1); render(false);
+        var addBtn = P.byId("add-job"); if (addBtn) addBtn.focus(); break;
+      case "show-wrong": showWrong(); break;
+      case "save-profile": {
+        S.profile = P.collect(S.profile.jobs.length);
+        if (!P.validateProfile(S.profile, "infoErr")) break;
+        var bad = P.score(S.current, S.profile).filter(function (x) { return !x.fixed; });
+        if (P.hints() && bad.length) { // only "Save anyway" skips the coach check
+          S.warned = true;
+          P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " here still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real job board wouldn’t warn you.</p>" +
+            '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="save-anyway" style="margin-left:1rem">Save anyway</button></div>';
+          break;
+        }
+        finishRound(); break;
+      }
+      case "save-anyway": S.profile = P.collect(S.profile.jobs.length); if (P.validateProfile(S.profile, "infoErr")) finishRound(); break;
+      case "next-round": go(1); break;
+      case "to-ea": startEA(); break;
+      case "ea-back": collectEA(); go(S.step === 4 ? 3 : S.step - 1); break;
+      case "ea-next": collectEA(); if (validEA()) go(S.step + 1); break;
+      case "submit": {
+        collectEA();
+        var stuck = [4, 6].filter(function (s) { return eaErrors(s).length; })[0]; // same checks as each step, before sending
+        if (stuck) { go(stuck); validEA(); break; }
+        S.finishedAt = Date.now(); P.setInProgress(false); go(8); break;
+      }
+      case "copy-code": { var txt = P.byId("code").textContent; if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; }); break; }
+      case "restart": fresh(); P.setInProgress(false); go(1); break;
+    }
+  });
+
+  /* Esc works like the window's ×, one layer at a time: an open résumé closes first, then the window.
+     It never fires while the learner is typing or choosing from a list, and it doesn't close the last page,
+     where the completion code is. */
+  function typing(el) {
+    if (!el) return false;
+    if (el.isContentEditable || el.tagName === "TEXTAREA" || el.tagName === "SELECT") return true;
+    return el.tagName === "INPUT" && !/^(checkbox|radio|button|submit|reset|file|range|color)$/i.test(el.type);
+  }
+  window.addEventListener("keydown", function (e) {
+    if ((e.key !== "Escape" && e.key !== "Esc") || e.defaultPrevented) return;
+    var a = document.activeElement, v = document.querySelector(".viewer");
+    if (typing(a)) return;
+    if (v) { if (!v.contains(a)) { e.preventDefault(); P.closeViewer(true); } return; } // with focus inside the résumé, engine.js closes it
+    if (S.step === 8) return;
+    e.preventDefault(); closeWindow();
+  }, true);
+
+  /* Keep Tab inside what's usable: the practice bar, the window and an open résumé. The board behind is inert.
+     Tab past the last of them comes back around to the first. */
+  var TABBABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  function tabbables() {
+    var roots = [document.querySelector(".practice-bar"), win], v = document.querySelector(".viewer.overlay"), out = [];
+    if (v) roots.push(v);
+    roots.forEach(function (r) {
+      if (!r) return;
+      [].forEach.call(r.querySelectorAll(TABBABLE), function (el) { if (el.offsetParent !== null || el.getClientRects().length) out.push(el); });
+    });
+    return out;
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab" || e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented) return;
+    var list = tabbables(), a = document.activeElement;
+    if (!list.length) return;
+    if (!e.shiftKey && a === list[list.length - 1]) { e.preventDefault(); list[0].focus(); }
+    else if (e.shiftKey && a === list[0]) { e.preventDefault(); list[list.length - 1].focus(); }
+  });
+
+  /* The window top stays in view: keep the sticky columns and the open résumé below it,
+     and keep fields that get focus from hiding behind it */
+  function measure() {
+    var h = head.offsetHeight;
+    if (!h) return;
+    win.style.setProperty("--eah", h + "px");
+    document.documentElement.style.scrollPaddingTop = (h + 12) + "px";
+  }
+  if (window.ResizeObserver) new ResizeObserver(measure).observe(head);
+  window.addEventListener("resize", measure);
+
+  P.initBar();
+  render();
+  measure();
+})();
+</script>
+</body>
+</html>

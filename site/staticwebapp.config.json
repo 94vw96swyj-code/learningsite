@@ -1,0 +1,233 @@
+{
+  "trailingSlash": "auto",
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    }
+  },
+  "routes": [
+    {
+      "route": "/practice/files/hp-alan.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Alan-Johnson-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/hp-jordan.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Jordan-Reyes-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/hp-marisol.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Marisol_Banks_Resume_2026.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ng-maria.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Maria-Gonzalez-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ng-tyler.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"TylerNguyen_Resume_Design.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ng-dana.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Scan_0042.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ss-darnell.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Darnell-Price-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ss-abdi.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Abdi Hassan resume FINAL.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ss-renee.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/bw-luis.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Luis-Ortega-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/bw-keisha.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Keisha_Brown_Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/bw-mike.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"MikeTurner.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/nh-grace.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Grace-Lee-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/nh-samuel.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Samuel_Okoro_Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/nh-rosa.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"R Delgado resume (2).pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-danielle.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Danielle-Okafor-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-tou.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"TouVang_Resume_2026.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-amina.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"AYusuf_Resume_final_v3.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-danielle-cl-larkspur.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Okafor_CoverLetter_LarkspurHealth.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-danielle-cl-tsu.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Okafor_CoverLetter_Tamarack_ProgramCoordinator.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-tou-cl-larkspur.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Vang_Tou_CoverLetter_ProgramCoord.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-tou-cl-tsu.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Vang_Tou_CoverLetter_TSU.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-tou-cl-advisor.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Vang_Tou_CoverLetter_TSU_Advising.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-amina-cl-larkspur.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Yusuf_Cover_Letter_Program_Coordinator (1).pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/ts-amina-cl-tsu.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Yusuf_Cover_Letter_Program_Coordinator.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/lh-nadia.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Nadia-Farah-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/lh-marcus.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Marcus_Odom_Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/lh-linh.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"LTran_Resume_FINAL.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/lf-denise.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Denise-Carlson-Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/lf-kevin.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"KevinThao_Resume.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/lf-selam.pdf",
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Selam_Haile_CAPM_Resume_2026.pdf\"",
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/practice/files/*",
+      "headers": {
+        "X-Robots-Tag": "noindex"
+      }
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+/* Tamarack State University website (practice): the pages a learner digs through between the
+   job board and the application. Shown inside a small browser frame, like the Halvorsen detour. */
+:root {
+  --brand: #1E3F6F; --brand-dark: #142B4D; --brand-tint: #E8EEF6;
+  --ts-night: #0F213C; --ts-gold: #E4A82A; --ts-gold-soft: #FBF1DA; --ts-ink: #1B2430; --ts-mist: #F2F5F8; --ts-rule: #DCE2EA;
+  --ts-serif: "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+}
+
+/* ---------- browser frame ---------- */
+.card.site-frame { padding: 0; overflow: hidden; }
+/* clip, not hidden: hidden would turn the frame into a scroll box and the sticky message would stop following the screen */
+@supports (overflow: clip) { .card.site-frame { overflow: clip; } }
+.addr { display: flex; align-items: center; gap: 0.6rem; background: #E9ECEF; border-bottom: 1px solid #D3D8DD; padding: 0.55rem 0.85rem; font-size: 0.9rem; color: #3D4750; }
+.addr .dots { display: flex; gap: 0.3rem; }
+.addr .dots i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #C4CBD2; display: block; }
+.addr .url { flex: 1; min-width: 0; background: #fff; border: 1px solid #D3D8DD; border-radius: 999px; padding: 0.3rem 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addr .url b { font-weight: 600; color: #1F2A27; }
+.site { color: var(--ts-ink); }
+.site a { color: var(--brand); }
+.site a.btn-primary, .site a.btn-primary:hover { color: #fff; } /* a link styled as a button keeps the button's colors */
+.site h1, .site h2, .site h3 { font-family: var(--ts-serif); font-weight: 600; letter-spacing: 0; }
+
+/* ---------- the university's logo and header ---------- */
+.ts-logo { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--brand-dark); text-decoration: none; font-family: var(--ts-serif); font-weight: 700; font-size: 1.12rem; line-height: 1.15; }
+.site a.ts-logo { color: var(--brand-dark); }
+.ts-logo svg { flex: none; }
+.ts-util { background: var(--ts-night); padding: 0.35rem 1.25rem; }
+.ts-util ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 1.1rem; font-size: 0.85rem; }
+.site .ts-util a { color: #D6DEEA; text-decoration: none; display: inline-block; padding: 0.3rem 0; }
+.site .ts-util a:hover { color: #fff; text-decoration: underline; }
+.ts-util a:focus-visible { outline-color: #fff; }
+.ts-head { display: flex; align-items: center; gap: 0.75rem 1.25rem; flex-wrap: wrap; padding: 0.95rem 1.25rem; border-bottom: 3px solid var(--ts-gold); }
+.ts-head .ts-logo { margin-right: auto; }
+.ts-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; }
+.site .ts-nav a { color: var(--ts-ink); text-decoration: none; font-weight: 600; font-size: 0.97rem; display: inline-block; padding: 0.25rem 0; }
+.site .ts-nav a:hover { color: var(--brand); text-decoration: underline; }
+.ts-unit { font-family: var(--ts-serif); font-size: 1.05rem; color: var(--brand); border-left: 1px solid var(--ts-rule); padding-left: 0.75rem; margin-right: auto; }
+.ts-head .ts-logo + .ts-unit { margin-left: -0.5rem; }
+.ts-head:has(.ts-unit) .ts-logo { margin-right: 0; }
+
+/* ---------- home page ---------- */
+.ts-hero { background: var(--brand-dark); color: #fff; padding: 2.4rem 1.5rem 0; position: relative; }
+.ts-hero h1 { font-size: 2.15rem; line-height: 1.12; margin: 0 0 0.6rem; max-width: 22rem; }
+.ts-hero p { margin: 0 0 1.25rem; max-width: 29rem; line-height: 1.5; color: #DCE5F2; }
+.ts-hero .ts-cta { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.75rem; }
+.ts-btn-gold, .ts-btn-line { display: inline-block; font-weight: 700; padding: 0.6rem 1.1rem; border-radius: 3px; text-decoration: none; }
+.site a.ts-btn-gold { background: var(--ts-gold); color: var(--ts-night); }
+.site a.ts-btn-gold:hover { background: #F0BC4E; }
+.site a.ts-btn-line { color: #fff; border: 1.5px solid #fff; padding: calc(0.6rem - 1.5px) calc(1.1rem - 1.5px); }
+.site a.ts-btn-line:hover { background: rgba(255,255,255,0.12); }
+.ts-hero a:focus-visible { outline-color: #fff; }
+.ts-trees { display: block; width: calc(100% + 3rem); margin: 0 -1.5rem; height: auto; min-height: 4.75rem; }
+.ts-band { background: var(--ts-gold-soft); border-bottom: 1px solid #EED9A6; padding: 0.75rem 1.5rem; margin: 0; font-size: 0.97rem; }
+.ts-sec { padding: 1.9rem 1.5rem; border-bottom: 1px solid var(--ts-rule); }
+.ts-sec.alt { background: var(--ts-mist); }
+.ts-sec h2 { font-size: 1.4rem; margin: 0 0 1rem; color: var(--brand-dark); }
+.ts-paths { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0 1.5rem; }
+.ts-paths li { border-top: 1px solid var(--ts-rule); }
+.ts-paths a { display: block; padding: 0.7rem 0; font-weight: 600; text-decoration: none; }
+.ts-paths a span { display: block; font-weight: 400; font-size: 0.9rem; color: #4F5B68; }
+.ts-paths a:hover { text-decoration: underline; }
+.ts-campuses { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem 1.5rem; }
+.ts-campus { border-left: 3px solid var(--ts-gold); padding: 0.1rem 0 0.1rem 0.85rem; }
+.ts-campus h3 { font-size: 1.05rem; margin: 0; }
+.ts-campus .city { margin: 0 0 0.25rem; font-size: 0.9rem; color: #4F5B68; }
+.ts-campus p { margin: 0; font-size: 0.95rem; line-height: 1.45; }
+.ts-news { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.ts-news li { line-height: 1.45; }
+.ts-news time { display: block; font-size: 0.85rem; color: #5B6673; }
+.ts-news a { font-weight: 600; }
+
+/* footer: big columns, then a line of very small links where Employment hides */
+.ts-foot { background: var(--ts-night); color: #C5D0DE; padding: 1.75rem 1.5rem 1.1rem; font-size: 0.88rem; }
+.ts-foot .ts-logo, .site .ts-foot a.ts-logo { color: #fff; font-size: 1.05rem; display: inline-flex; padding: 0; }
+.ts-foot .addr-line { margin: 0.5rem 0 1.4rem; line-height: 1.5; }
+.ts-foot .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 1.25rem; }
+.ts-foot h2 { font-family: inherit; color: #fff; font-size: 0.9rem; font-weight: 600; margin: 0 0 0.4rem; }
+.ts-foot ul { list-style: none; margin: 0; padding: 0; }
+.site .ts-foot a { color: #C5D0DE; text-decoration: none; display: inline-block; padding: 0.3rem 0; }
+.site .ts-foot a:hover { color: #fff; text-decoration: underline; }
+.ts-foot a:focus-visible { outline-color: #fff; color: #fff; }
+.ts-small { border-top: 1px solid #2A3D5C; margin-top: 1.4rem; padding-top: 0.75rem; font-size: 0.75rem; color: #98A6B9; }
+.ts-small ul { display: flex; flex-wrap: wrap; gap: 0 0.9rem; }
+.site .ts-small a { color: #98A6B9; padding: 0.35rem 0; }
+.ts-small p { margin: 0.35rem 0 0; }
+.site .found { outline: 3px solid var(--ts-gold); outline-offset: 3px; border-radius: 2px; }
+.site .ts-foot a.found { color: #fff; }
+
+/* "isn't part of this practice" message: a zero-height strip at the end of the page that sticks to the bottom of the screen */
+.ts-toast-slot { position: sticky; bottom: 0; height: 0; z-index: 5; }
+.ts-toast { position: absolute; left: 1rem; right: 1rem; bottom: 0.75rem; max-width: 34rem; margin: 0 auto; background: var(--pencil); color: #fff; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 0 0 1px rgba(255,255,255,0.5), 0 6px 18px rgba(0,0,0,0.3); }
+.ts-toast:empty { padding: 0; box-shadow: none; background: transparent; }
+@supports not (overflow: clip) { .ts-toast-slot { position: static; } .ts-toast { position: fixed; bottom: 1rem; z-index: 60; } }
+
+/* practice notes shown inside the fake site, in the coach's blue pencil */
+.ts-pnote { font-family: var(--coach); color: var(--pencil); font-size: 1.08rem; line-height: 1.4; margin: 0.5rem 0 0.75rem; }
+.ts-alert { background: #FFF6E0; border: 1px solid #F0D48A; border-radius: 4px; padding: 0.8rem 0.95rem; margin: 1rem 0 0; text-align: left; }
+.ts-alert p { margin: 0 0 0.5rem; }
+.ts-alert .btn { margin-top: 0.25rem; }
+
+/* ---------- staff portal (dead end) ---------- */
+.ts-portal-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: #2B3542; color: #fff; padding: 0.85rem 1.25rem; font-weight: 700; }
+.ts-portal-head span { font-weight: 400; color: #C9D2DC; border-left: 1px solid #5B6676; padding-left: 0.6rem; }
+.ts-wall { max-width: 27rem; margin: 0 auto; padding: 2.5rem 1.5rem 2.75rem; text-align: center; }
+.ts-wall .lock { display: block; margin: 0 auto 0.75rem; }
+.ts-wall h1 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+.ts-wall > p { color: #4A5563; margin: 0 0 1.25rem; line-height: 1.5; }
+.ts-wall .btn { width: 100%; }
+.ts-wall .ts-new { margin: 0.9rem 0 0; }
+.ts-wall .ts-out { border-top: 1px solid var(--ts-rule); margin-top: 1.75rem; padding-top: 1rem; font-size: 0.95rem; color: #4A5563; }
+.ts-wall .ts-out a { font-weight: 600; }
+
+/* ---------- Human Resources ---------- */
+.ts-hr-hero { background: var(--brand-tint); padding: 2.1rem 1.5rem 2rem; border-bottom: 1px solid var(--ts-rule); }
+.ts-hr-hero h1 { font-size: 2rem; margin: 0 0 0.5rem; color: var(--brand-dark); }
+.ts-hr-hero p { margin: 0 0 1.25rem; max-width: 30rem; line-height: 1.5; }
+.ts-perks { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem 1.5rem; }
+.ts-perks h3 { font-size: 1.05rem; margin: 0 0 0.2rem; }
+.ts-perks p { margin: 0; font-size: 0.95rem; line-height: 1.45; color: #3E4A57; }
+.ts-sec ul.ts-plain { margin: 0; padding-left: 1.2rem; line-height: 1.6; }
+.ts-sec .note { font-size: 0.92rem; color: #4F5B68; margin: 0.75rem 0 0; }
+.ts-find h2:focus { outline: none; }
+.ts-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.25rem; }
+.ts-opt { border: 1px solid var(--ts-rule); border-top: 4px solid var(--brand); border-radius: 4px; padding: 1rem 1.1rem 1.1rem; background: #fff; }
+.ts-opt p { margin: 0.65rem 0 0; font-size: 0.95rem; line-height: 1.45; color: #3E4A57; }
+.ts-opt-btn { display: block; width: 100%; text-align: center; font: inherit; font-weight: 700; font-size: 1.05rem; padding: 0.75rem 1rem; border-radius: 4px; cursor: pointer; text-decoration: none; background: var(--brand); color: #fff; border: 1px solid var(--brand); }
+.site a.ts-opt-btn { color: #fff; }
+.ts-opt-btn:hover { background: var(--brand-dark); }
+.ts-opt .ts-alert { margin-top: 0.85rem; }
+.ts-find .ts-student { margin: 1rem 0 0; font-size: 0.92rem; color: #4F5B68; }
+
+/* ---------- careers site: job search and sign-in ---------- */
+.ts-chead { display: flex; align-items: center; gap: 0.5rem 0.75rem; flex-wrap: wrap; background: var(--brand-dark); padding: 0.85rem 1.25rem; }
+.site .ts-chead a.ts-logo { color: #fff; font-size: 1.02rem; }
+.ts-chead .ts-cunit { color: #E9D29A; font-family: var(--ts-serif); border-left: 1px solid #4E6589; padding-left: 0.7rem; margin-right: auto; }
+.site .ts-chead a.ts-hrlink { color: #DCE5F2; font-size: 0.9rem; }
+.ts-chead a:focus-visible { outline-color: #fff; }
+.ts-cbody { padding: 1.4rem 1.5rem 2rem; }
+.ts-crumbs { font-size: 0.88rem; color: #5B6673; margin: 0 0 0.5rem; }
+.ts-cbody h1 { font-size: 1.6rem; margin: 0 0 0.9rem; color: var(--brand-dark); }
+.ts-search { background: var(--ts-mist); border: 1px solid var(--ts-rule); border-radius: 6px; padding: 1rem; }
+.ts-search label, .ts-sort label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+.ts-search input, .ts-search select, .ts-sort select { font: inherit; font-size: 1rem; width: 100%; padding: 0.5rem 0.6rem; border: 1px solid var(--field); border-radius: 4px; background: #fff; color: var(--text); min-width: 0; }
+.ts-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+.ts-sbtns { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.ts-rhead { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.75rem 1rem; flex-wrap: wrap; margin: 1.4rem 0 0.4rem; }
+.ts-rhead h2 { font-size: 1.2rem; margin: 0; }
+.ts-sort { min-width: 12rem; }
+.ts-count { margin: 0 0 0.75rem; font-size: 0.95rem; color: #4F5B68; }
+.ts-count.is-empty { border: 1px dashed var(--field); border-radius: 6px; padding: 1.1rem; text-align: center; color: var(--ts-ink); font-size: 1rem; }
+.ts-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ts-rule); }
+.ts-job { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.15rem 1rem; align-items: center; padding: 0.9rem 0.2rem; border-bottom: 1px solid var(--ts-rule); }
+.ts-job h3 { font-size: 1.1rem; margin: 0; color: var(--brand); }
+.ts-job p { margin: 0; font-size: 0.93rem; line-height: 1.45; color: #3E4A57; }
+.ts-job .dept { font-weight: 600; color: var(--ts-ink); }
+.ts-job .info { min-width: 0; }
+.ts-job .btn { padding: 0.5rem 1rem; white-space: nowrap; }
+.ts-list .js-note { padding: 1rem 0; }
+.ts-pager { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 1.1rem; }
+.ts-pager button { font: inherit; font-size: 0.95rem; min-width: 2.5rem; min-height: 2.5rem; padding: 0.3rem 0.65rem; border: 1px solid var(--field); border-radius: 4px; background: #fff; color: var(--brand-dark); cursor: pointer; }
+.ts-pager button:hover { border-color: var(--brand); }
+.ts-pager button[aria-current="page"] { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 700; }
+.ts-pager button[disabled] { color: #9AA4AE; border-color: #D6DBE0; cursor: default; }
+.ts-pager .of { font-size: 0.9rem; color: #5B6673; margin-left: 0.4rem; }
+
+/* job post */
+.ts-post .ts-back { margin: 0 0 0.9rem; }
+.ts-post h1 { margin-bottom: 0.15rem; }
+.ts-post .dept-big { font-size: 1.08rem; font-weight: 600; margin: 0 0 1rem; }
+.ts-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 0.6rem 1.25rem; margin: 0 0 1.1rem; padding: 0.9rem 1rem; background: var(--ts-mist); border: 1px solid var(--ts-rule); border-radius: 6px; }
+.ts-facts dt { font-size: 0.82rem; color: #5B6673; }
+.ts-facts dd { margin: 0; font-weight: 600; font-size: 0.97rem; }
+.ts-post h2 { font-size: 1.15rem; margin: 1.4rem 0 0.4rem; color: var(--brand-dark); }
+.ts-post p, .ts-post ul { line-height: 1.55; margin: 0 0 0.6rem; }
+.ts-post ul { padding-left: 1.2rem; }
+.ts-post .eeo { font-size: 0.88rem; color: #5B6673; border-top: 1px solid var(--ts-rule); padding-top: 0.9rem; margin-top: 1.5rem; }
+.ts-apply { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.ts-apply .btn-primary { min-width: 8rem; text-align: center; }
+
+/* sign in to apply */
+.ts-for { background: var(--ts-gold-soft); border: 1px solid #EED9A6; border-radius: 4px; padding: 0.7rem 0.9rem; margin: 0 0 1.25rem; font-size: 0.97rem; }
+.ts-box { border: 1px solid var(--ts-rule); border-radius: 6px; padding: 1.1rem 1.15rem 1.15rem; margin: 0 0 1rem; }
+.ts-box h2 { font-size: 1.15rem; margin: 0 0 0.25rem; color: var(--brand-dark); }
+.ts-box > p { margin: 0 0 0.9rem; color: #3E4A57; font-size: 0.97rem; }
+.ts-box .field:last-of-type { margin-bottom: 0.9rem; }
+.ts-box.new { border-color: #B9C8DD; background: #F7F9FC; }
+.ts-signin .ts-out { margin: 1.25rem 0 0; }
+.ts-signin .actions { margin-top: 1.25rem; }
+.pw-rules { margin: -0.6rem 0 1.1rem; padding-left: 1.1rem; }
+.pw-rules li.met { color: var(--ok); font-weight: 600; }
+.ts-done { text-align: center; padding: 2rem 0.5rem 1rem; }
+.ts-done .mark { width: 3rem; height: 3rem; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; margin: 0 auto 1rem; }
+
+@media (max-width: 640px) {
+  .ts-hero { padding: 1.75rem 1rem 0; }
+  .ts-hero h1 { font-size: 1.7rem; }
+  .ts-trees { width: calc(100% + 2rem); margin: 0 -1rem; }
+  .ts-sec, .ts-hr-hero, .ts-band, .ts-foot { padding-left: 1rem; padding-right: 1rem; }
+  .ts-util, .ts-head, .ts-chead, .ts-portal-head { padding-left: 1rem; padding-right: 1rem; }
+  .ts-util ul { justify-content: flex-start; }
+  .ts-hr-hero h1 { font-size: 1.65rem; }
+  .ts-choice { grid-template-columns: 1fr; }
+  .ts-cbody { padding: 1.1rem 1rem 1.5rem; }
+  .ts-filters { grid-template-columns: 1fr; }
+  .ts-job { grid-template-columns: 1fr; }
+  .ts-job .btn { justify-self: start; margin-top: 0.5rem; }
+  .ts-sort { min-width: 0; width: 100%; }
+  .ts-wall { padding: 2rem 1rem 2.25rem; }
+}
+
+/* The shared coach button hover (practice.css) is 4.1:1. On these pages, darken the text on hover so it passes 4.5:1. */
+.coach button:hover { color: #234C9E; }

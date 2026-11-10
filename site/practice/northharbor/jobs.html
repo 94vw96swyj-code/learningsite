@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Current job openings, City of North Harbor Careers Portal (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a city government careers portal where the job has its official title and a look-alike posting sits nearby.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="nh-portal">
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> The City of North Harbor is not a real city. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="City careers portal: job list">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url"><b>careers.northharbormn.gov</b>/jobs</span></div>
+    <div class="site portal">
+      <header class="pt-top">
+        <div class="pt-name"><svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12" fill="#fff"/><path d="M7 17c2.3-1.6 4.7-1.6 7 0s4.7 1.6 7 0" stroke="#26323D" stroke-width="2" fill="none"/><path d="M14 6v8M10 10h8" stroke="#26323D" stroke-width="2"/></svg><div><b>City of North Harbor</b><span>Careers Portal</span></div></div>
+        <a href="home.html">City website</a>
+      </header>
+      <div class="pt-body">
+        <div id="listView">
+          <h1 id="listH" tabindex="-1">Current job openings</h1>
+          <p class="pt-intro">Find a City job and apply online. Read the whole posting before you apply.</p>
+          <div class="pt-interest">
+            <a class="btn btn-secondary" href="interest.html" id="interestBtn">Job Interest Card</a>
+            <p>Don’t see the job you want? Fill out a Job Interest Card. We’ll email you when new jobs are posted.</p>
+          </div>
+          <form class="pt-filters" id="ptForm" role="search" aria-label="Search jobs">
+            <label class="kw">Search jobs <input type="text" id="kw" placeholder="Title or posting number" autocomplete="off"></label>
+            <label>Department <select id="dept" autocomplete="off"><option value="">All departments</option></select></label>
+            <label>Job type <select id="jtype" autocomplete="off"><option value="">All job types</option></select></label>
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+          <div class="pt-countrow">
+            <p class="pt-count" id="ptCount" aria-live="polite"></p>
+            <button class="btn-link" type="button" id="clearAll" hidden>Clear filters</button>
+          </div>
+          <table class="pt-table" role="table" id="ptTable">
+            <caption class="visually-hidden">Current job openings, sorted by closing date, soonest first</caption>
+            <thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Job title</th><th role="columnheader" scope="col">Department</th><th role="columnheader" scope="col">Job type</th><th role="columnheader" scope="col">Salary</th><th role="columnheader" scope="col">Posting number</th><th role="columnheader" scope="col">Closing date</th></tr></thead>
+            <tbody role="rowgroup" id="ptRows"><tr role="row"><td role="cell" colspan="6" class="js-note">Loading jobs… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</td></tr></tbody>
+          </table>
+        </div>
+        <div id="postView" hidden></div>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, card = P.byId("card");
+  var TARGET = "2026-0419", NB = TARGET.replace("-", "‑"); // a hyphen that never breaks the number across two lines
+  var FULL = ["Health and dental insurance", "A pension plan for retirement", "Paid vacation and sick time", "11 paid holidays a year", "Help paying for college classes"];
+  var PART = ["Paid sick time", "A pension plan if you work 15 or more hours a week", "Free use of the Harbor Pool and fitness room"];
+  var SEAS = ["Paid sick time"];
+  var LEVELS = "For these, choose the statement that best describes your experience, from A (I have not done this) to E (I have trained others to do this).";
+  // The job from the job board is here under its official class title. A look-alike from another department sits above it.
+  var JOBS = [
+    { id: "2026-0412", title: "Clerical Technician II (Police Records)", dept: "Police Department", type: "Full time", pay: "$22.40 to $27.10 an hour", close: 4,
+      where: "Police Department, 250 Harbor Street", sched: "Monday to Friday, 7:00 am to 3:30 pm",
+      about: "Keep police reports and records in order. Help people at the front window of the Police Department and answer requests for records.",
+      does: ["Enter police reports into the records system", "Help the public at the front window and on the phone", "Answer requests for copies of reports"],
+      quals: ["High school diploma or GED", "One year of office experience", "Pass a police background check"],
+      sq: ["Do you have a high school diploma or GED? (Yes or No)", "Do you have at least one year of office experience? (Yes or No)", "Are you willing to complete a police background check? (Yes or No)", "Entering information accurately into a records system. (Choose A to E)"], levels: true },
+    { id: "2026-0422", title: "Election Judge (Temporary)", dept: "City Clerk’s Office", type: "Temporary", pay: "$15.00 an hour", close: 5,
+      where: "Polling places across North Harbor", sched: "Election Day, 6:00 am to about 9:00 pm, plus a 2-hour training",
+      about: "Help voters on Election Day. Check in voters, hand out ballots and keep the polling place running.",
+      does: ["Check in voters and hand out ballots", "Help voters who have questions", "Count and sign off on ballots at the end of the day"],
+      quals: ["Registered to vote in Minnesota", "Able to work one full day", "Finish a 2-hour training"],
+      sq: ["Are you registered to vote in Minnesota? (Yes or No)", "Can you work a full day, about 15 hours, on Election Day? (Yes or No)"] },
+    { id: "2026-0405", title: "Equipment Operator", dept: "Public Works", type: "Full time", pay: "$26.30 to $31.75 an hour", close: 6,
+      where: "Public Works garage, 900 Industrial Road", sched: "Monday to Friday, 7:00 am to 3:30 pm. Snow shifts in winter.",
+      about: "Run trucks, loaders and plows to fix City streets and clear snow.",
+      does: ["Plow and sand streets in winter", "Patch potholes and fix curbs", "Check and clean equipment"],
+      quals: ["Class B commercial driver’s license", "Two years running heavy equipment"],
+      sq: ["Do you have a Class B commercial driver’s license? (Yes or No)", "How many years have you run heavy equipment? (Number)"] },
+    { id: "2026-0401", title: "Building Inspector", dept: "Community Development", type: "Full time", pay: "$34.10 to $42.60 an hour", close: 7,
+      where: "City Hall, 100 Harbor Street", sched: "Monday to Friday, 8:00 am to 4:30 pm",
+      about: "Inspect new homes and buildings to make sure they are safe and follow the building code.",
+      does: ["Inspect building work at job sites", "Review building plans", "Explain code rules to builders and homeowners"],
+      quals: ["Building official certificate, or able to get one within one year", "Three years in construction or inspections"],
+      sq: ["Do you have a building official certificate? (Yes or No)", "How many years have you worked in construction or inspections? (Number)"] },
+    { id: "2026-0409", title: "Maintenance Worker I (Parks)", dept: "Parks and Recreation", type: "Full time", pay: "$23.10 to $27.85 an hour", close: 8,
+      where: "Parks shop, 40 Pier Road", sched: "Monday to Friday, 7:00 am to 3:30 pm. Some weekends.",
+      about: "Keep City parks, trails and beaches clean and safe.",
+      does: ["Mow, trim and pick up litter", "Fix benches, fences and playground equipment", "Plow trails and clear ice rinks in winter"],
+      quals: ["Valid driver’s license", "Able to lift 50 pounds"],
+      sq: ["Do you have a valid driver’s license? (Yes or No)", "Can you lift 50 pounds? (Yes or No)"] },
+    { id: "2026-0416", title: "Utility Billing Clerk", dept: "Finance", type: "Full time", pay: "$21.60 to $25.90 an hour", close: 9,
+      where: "City Hall, 100 Harbor Street", sched: "Monday to Friday, 8:00 am to 4:30 pm",
+      about: "Send water and sewer bills, take payments and answer questions about bills.",
+      does: ["Take payments in person and by phone", "Answer questions about water and sewer bills", "Set up new accounts when people move in"],
+      quals: ["High school diploma or GED", "One year of cashier, billing or customer service experience"],
+      sq: ["Do you have a high school diploma or GED? (Yes or No)", "Do you have at least one year of cashier, billing or customer service experience? (Yes or No)", "Handling cash and payments accurately. (Choose A to E)"], levels: true },
+    { id: "2026-0419", title: "Clerical Technician II (Office Support Specialist)", dept: "City Clerk’s Office", type: "Full time", pay: "$22.40 to $27.10 an hour", close: 10,
+      where: "City Hall, 100 Harbor Street", sched: "Monday to Friday, 8:00 am to 4:30 pm",
+      about: "The City Clerk’s Office is the front desk of City Hall. In this job you greet the public, answer phones, schedule appointments and keep City records.",
+      does: ["Greet visitors at City Hall and answer phones", "Schedule appointments and keep records in City systems", "Type letters and enter data accurately"],
+      quals: ["High school diploma or GED", "One year of full-time office or customer service experience. Part-time experience counts toward this."],
+      sq: ["Do you have a high school diploma or GED? (Yes or No)", "Do you have at least one year of full-time office or customer service experience? (Yes or No)",
+        "Greeting the public in person or by phone and answering their questions. (Choose A to E)", "Scheduling appointments using a computer calendar or scheduling system. (Choose A to E)",
+        "Entering information accurately into a computer database. (Choose A to E)"], levels: true },
+    { id: "2026-0418", title: "Recreation Program Leader", dept: "Parks and Recreation", type: "Part time", pay: "$17.75 to $20.40 an hour", close: 11,
+      where: "Community Center, 15 Lake Street", sched: "Weekdays, 3:00 pm to 7:00 pm, about 20 hours a week",
+      about: "Lead after-school games, crafts and sports for kids ages 6 to 12.",
+      does: ["Plan and lead games and crafts", "Keep kids safe on the playground and in the gym", "Talk with parents at pickup"],
+      quals: ["16 or older", "Experience working with kids"],
+      sq: ["Are you 16 or older? (Yes or No)", "Describe your experience working with kids. (Short answer)"] },
+    { id: "2026-0415", title: "Community Service Officer", dept: "Police Department", type: "Part time", pay: "$19.80 to $22.15 an hour", close: 12,
+      where: "Police Department, 250 Harbor Street", sched: "Evenings and weekends, about 20 hours a week",
+      about: "Help police officers with traffic control, animal calls and parking. This is not a sworn police officer job.",
+      does: ["Direct traffic at events and crashes", "Answer animal calls", "Check parking and write parking tickets"],
+      quals: ["18 or older", "Valid driver’s license", "Pass a police background check"],
+      sq: ["Are you 18 or older? (Yes or No)", "Do you have a valid driver’s license? (Yes or No)", "Are you willing to complete a police background check? (Yes or No)"] },
+    { id: "2026-0421", title: "Library Aide", dept: "Library", type: "Part time", pay: "$17.25 to $19.60 an hour", close: 14,
+      where: "North Harbor Public Library, 300 Lake Street", sched: "Evenings and Saturdays, about 15 hours a week",
+      about: "Check out books, put books back on the shelves and help people find what they need.",
+      does: ["Check books in and out", "Put books back on the shelves in order", "Help people use the library computers"],
+      quals: ["High school diploma or GED, or in your last year of high school", "Basic computer skills"],
+      sq: ["Do you have a high school diploma or GED, or are you in your last year of high school? (Yes or No)", "Helping people use a computer. (Choose A to E)"], levels: true },
+    { id: "2026-0403", title: "Water Plant Operator", dept: "Utilities", type: "Full time", pay: "$29.40 to $35.70 an hour", close: 16,
+      where: "Water Plant, 5 Shore Road", sched: "Rotating shifts, including nights and weekends",
+      about: "Run the plant that cleans the City’s drinking water.",
+      does: ["Watch the plant’s equipment and controls", "Test water samples", "Keep records the state requires"],
+      quals: ["Water operator license, or able to get one within one year", "High school diploma or GED"],
+      sq: ["Do you have a water operator license? (Yes or No)", "Can you work nights and weekends? (Yes or No)"] },
+    { id: "2026-0398", title: "Accountant I", dept: "Finance", type: "Full time", pay: "$65,000 to $80,900 a year", close: 18,
+      where: "City Hall, 100 Harbor Street", sched: "Monday to Friday, 8:00 am to 4:30 pm",
+      about: "Keep the City’s books, pay the City’s bills and help with the yearly audit.",
+      does: ["Record payments and bills", "Balance accounts every month", "Help with the yearly audit"],
+      quals: ["Bachelor’s degree in accounting", "One year of accounting experience"],
+      sq: ["Do you have a bachelor’s degree in accounting? (Yes or No)", "How many years of accounting experience do you have? (Number)"] },
+    { id: "2026-0423", title: "Snowplow Driver (Seasonal)", dept: "Public Works", type: "Seasonal", pay: "$24.00 an hour", close: 20,
+      where: "Public Works garage, 900 Industrial Road", sched: "On call November to March, mostly nights and weekends",
+      about: "Plow City streets during snowstorms.",
+      does: ["Plow and sand City streets", "Check your truck before and after each shift"],
+      quals: ["Class B commercial driver’s license", "Able to work nights and weekends on short notice"],
+      sq: ["Do you have a Class B commercial driver’s license? (Yes or No)", "Can you come in on short notice at night? (Yes or No)"] },
+    { id: "2026-0425", title: "Lifeguard", dept: "Parks and Recreation", type: "Part time", pay: "$16.50 to $18.25 an hour", close: 21,
+      where: "Harbor Pool (indoor), 15 Lake Street", sched: "Evenings and weekends, 10 to 20 hours a week",
+      about: "Keep swimmers safe at the City’s indoor pool.",
+      does: ["Watch the pool and enforce pool rules", "Help swimmers in trouble", "Clean the pool deck"],
+      quals: ["15 or older", "Lifeguard certificate, or able to get one before you start. The City pays for the class."],
+      sq: ["Are you 15 or older? (Yes or No)", "Do you have a lifeguard certificate? (Yes or No)"] },
+    { id: "2026-0388", title: "Firefighter/EMT", dept: "Fire Department", type: "Full time", pay: "$28.90 to $36.40 an hour", close: null,
+      where: "Fire Station 1, 60 Harbor Street", sched: "24-hour shifts",
+      about: "Answer fire and medical calls and help keep the City safe.",
+      does: ["Answer fire, rescue and medical calls", "Check and clean fire equipment", "Teach fire safety in schools"],
+      quals: ["EMT certificate", "Firefighter I and II certificates", "Pass a physical ability test"],
+      sq: ["Do you have an EMT certificate? (Yes or No)", "Do you have Firefighter I and II certificates? (Yes or No)"] },
+    { id: "2026-0371", title: "Police Officer", dept: "Police Department", type: "Full time", pay: "$36.20 to $45.80 an hour", close: null,
+      where: "Police Department, 250 Harbor Street", sched: "Rotating 10-hour shifts",
+      about: "Patrol the City, answer calls for help and work with the community.",
+      does: ["Patrol North Harbor by car, bike and on foot", "Answer emergency and non-emergency calls", "Write reports"],
+      quals: ["Able to get a Minnesota peace officer license", "Two-year college degree or higher", "Pass a background check and a physical test"],
+      sq: ["Can you get a Minnesota peace officer license? (Yes or No)", "Do you have a two-year college degree or higher? (Yes or No)"] }
+  ];
+  var TYPES = ["Full time", "Part time", "Seasonal", "Temporary"];
+
+  /* Closing dates count from today, so the list never looks old. The real posting closes in 10 days, the same day the application says. */
+  function closeDate(n) {
+    if (n == null) return "Open until filled";
+    var d = new Date(); d.setDate(d.getDate() + n);
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  }
+  JOBS.sort(function (a, b) { return (a.close == null ? 999 : a.close) - (b.close == null ? 999 : b.close) || (a.title < b.title ? -1 : 1); });
+  function jobById(id) { return JOBS.filter(function (j) { return j.id === id; })[0]; }
+
+  /* ---------- the job list ---------- */
+  var depts = JOBS.map(function (j) { return j.dept; }).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort();
+  P.byId("dept").insertAdjacentHTML("beforeend", depts.map(function (d) { return "<option>" + esc(d) + "</option>"; }).join(""));
+  P.byId("jtype").insertAdjacentHTML("beforeend", TYPES.map(function (t) { return "<option>" + esc(t) + "</option>"; }).join(""));
+  function clean(s) { return String(s || "").toLowerCase().replace(/[‐-―]/g, "-").replace(/[’']/g, "").replace(/[^a-z0-9\s-]/g, " "); }
+  function digits(s) { return String(s).replace(/\D/g, ""); }
+  function results() {
+    // "2026-0419", "Job ID 2026-0419", "#2026-0419", "posting number 20260419" and "0419" all find the same job
+    var q = clean(P.val("kw")).replace(/\b(jobs?|ids?|posting|postings|number|no)\b/g, " ").trim(), dept = P.val("dept"), type = P.val("jtype");
+    var words = q.split(/\s+/).filter(Boolean), idq = /^[\d\s-]+$/.test(q) ? digits(q) : "";
+    return JOBS.filter(function (j) {
+      if (dept && j.dept !== dept) return false;
+      if (type && j.type !== type) return false;
+      if (idq.length >= 4) return digits(j.id).indexOf(idq) !== -1;
+      var hay = clean([j.title, j.dept, j.type, j.id, j.about, j.does.join(" ")].join(" "));
+      return words.every(function (w) { return hay.indexOf(w) !== -1 || (digits(w).length >= 4 && digits(j.id).indexOf(digits(w)) !== -1); });
+    });
+  }
+  function listStep() {
+    var dept = P.val("dept"), type = P.val("jtype");
+    card.setAttribute("data-step", "City careers portal: job list. Department: " + (dept || "All departments") + ". Job type: " + (type || "All job types") + (P.val("kw").trim() ? ". A search word is typed in the search box" : ""));
+  }
+  function renderList() {
+    var list = results(), dept = P.val("dept"), type = P.val("jtype"), kw = P.val("kw").trim();
+    var count = P.byId("ptCount"), rows = P.byId("ptRows"), any = !!(dept || type || kw);
+    P.byId("clearAll").hidden = !any;
+    count.classList.toggle("is-empty", !list.length);
+    count.textContent = list.length ? "Showing " + list.length + " " + P.plural(list.length, "job") + ", sorted by closing date (soonest first)." :
+      "No jobs match your search. Check the spelling, or try a shorter word. You can also choose “All departments” and “All job types.”";
+    P.byId("ptTable").hidden = !list.length;
+    rows.innerHTML = list.map(function (j) {
+      return '<tr role="row"><td role="cell" class="t" data-label="Job title"><a href="#' + j.id + '" data-open="' + j.id + '">' + esc(j.title) + "</a></td>" +
+        '<td role="cell" data-label="Department">' + esc(j.dept) + '</td><td role="cell" data-label="Job type" class="nw">' + esc(j.type) + "</td>" +
+        '<td role="cell" data-label="Salary">' + esc(j.pay) + '</td><td role="cell" data-label="Posting number" class="nw">' + esc(j.id) + "</td>" +
+        '<td role="cell" data-label="Closing date">' + esc(closeDate(j.close)) + "</td></tr>";
+    }).join("");
+    listStep();
+  }
+  P.byId("ptForm").addEventListener("submit", function (e) { e.preventDefault(); renderList(); });
+  P.byId("dept").addEventListener("change", renderList);
+  P.byId("jtype").addEventListener("change", renderList);
+  P.byId("clearAll").addEventListener("click", function () {
+    P.byId("kw").value = ""; P.byId("dept").value = ""; P.byId("jtype").value = "";
+    renderList(); P.byId("kw").focus();
+  });
+
+  /* ---------- one posting ----------
+     A posting opens at jobs.html#<posting number>, so the browser's Back button returns to the list. */
+  var TABS = ["Description", "Benefits", "Supplemental questions"];
+  var cur = null, tab = 0, wrongShown = false, fromList = false, lastOpened = "";
+  function ul(items) { return "<ul>" + items.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; }
+  function panelHtml(j, i) {
+    if (i === 0) return "<h2>About the job</h2><p>" + esc(j.about) + "</p><h2>What you’ll do</h2>" + ul(j.does) +
+      "<h2>Minimum qualifications</h2>" + ul(j.quals) + "<h2>Schedule and location</h2><p>" + esc(j.sched) + ".<br>" + esc(j.where) + ".</p>";
+    if (i === 1) {
+      var b = j.type === "Full time" ? FULL : j.type === "Part time" ? PART : SEAS;
+      return "<h2>Benefits for this job</h2>" + ul(b) + (j.type === "Full time" ? "<p>Benefits start the first day of the month after you start.</p>" : "<p>This job does not come with health insurance or paid holidays.</p>");
+    }
+    return "<h2>Supplemental questions</h2><p>When you apply, you will answer these questions. Your answers are scored, and HR checks them against your work history.</p>" +
+      "<ol>" + j.sq.map(function (q) { return "<li>" + esc(q) + "</li>"; }).join("") + "</ol>" +
+      (j.levels ? '<p class="sqnote">' + esc("Some questions say “Choose A to E.” " + LEVELS) + "</p>" : "");
+  }
+  function applyHtml(j, where) {
+    return '<div class="pt-actions">' + (j.id === TARGET ? '<a class="btn btn-primary" href="./">Apply</a>' : '<button class="btn btn-primary" type="button" data-wrong="' + where + '">Apply</button>') +
+      (where === "bottom" ? '<a href="#" data-list>Back to job list</a>' : "") + '</div><div id="note-' + where + '" role="alert"></div>';
+  }
+  function postStep() {
+    card.setAttribute("data-step", "City careers portal: job posting " + cur.id + ", " + cur.title + ". Tab: " + TABS[tab] + (wrongShown ? ". A practice note says this is not the job from the job board" : ""));
+  }
+  function renderPost(focus) {
+    var j = cur;
+    P.byId("postView").innerHTML =
+      '<a class="pt-back" href="#" data-list><span aria-hidden="true">&larr;</span> Back to job list</a>' +
+      '<h1 id="postH" tabindex="-1">' + esc(j.title) + '</h1><p class="pt-dept">City of North Harbor, ' + esc(j.dept) + "</p>" +
+      '<dl class="pt-meta"><div><dt>Salary</dt><dd>' + esc(j.pay) + "</dd></div><div><dt>Job type</dt><dd>" + esc(j.type) + "</dd></div>" +
+      "<div><dt>Posting number</dt><dd>" + esc(j.id) + "</dd></div><div><dt>Closing date</dt><dd>" + esc(closeDate(j.close)) + "</dd></div></dl>" +
+      applyHtml(j, "top") +
+      '<div class="pt-tabs" role="tablist" aria-label="Posting details">' + TABS.map(function (t, i) {
+        return '<button type="button" role="tab" id="tab-' + i + '" aria-controls="panel-' + i + '" aria-selected="' + (i === tab) + '" tabindex="' + (i === tab ? 0 : -1) + '">' + esc(t) + "</button>";
+      }).join("") + "</div>" +
+      TABS.map(function (t, i) { return '<div class="pt-panel" role="tabpanel" id="panel-' + i + '" aria-labelledby="tab-' + i + '" tabindex="0"' + (i === tab ? "" : " hidden") + ">" + panelHtml(j, i) + "</div>"; }).join("") +
+      '<div class="pt-bottom">' + applyHtml(j, "bottom") + "</div>";
+    if (focus) { P.byId("postH").focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  }
+  function selectTab(i, focusTab) {
+    tab = (i + TABS.length) % TABS.length;
+    TABS.forEach(function (t, k) {
+      var b = P.byId("tab-" + k), p = P.byId("panel-" + k);
+      b.setAttribute("aria-selected", String(k === tab)); b.tabIndex = k === tab ? 0 : -1; p.hidden = k !== tab;
+    });
+    if (focusTab) P.byId("tab-" + tab).focus();
+    postStep();
+  }
+  function coachList() {
+    P.coach([
+      "This is the City’s careers portal. It looks different from the City’s main website. Many cities use a separate system for jobs.",
+      "Cities use official job titles. The everyday name, like Office Support Specialist, is often in parentheses after the official title.",
+      "Two postings can look almost the same. Match the posting number to the Job ID on the job post: " + NB + ".",
+      "“Job Interest Card” only signs you up for emails about future jobs. It is not an application."
+    ]);
+  }
+  function coachPost() {
+    P.coach(wrongShown ? [
+      "That’s a different posting. Its number is " + cur.id.replace("-", "‑") + ", not " + NB + ".",
+      "Click “Back to job list” and look for " + NB + ". The title and the pay can look the same, so go by the number."
+    ] : [
+      "Check the posting number at the top. The Job ID on the job post was " + NB + ". If the numbers don’t match, use “Back to job list.”",
+      "Read all three tabs: “Description,” “Benefits” and “Supplemental questions.” The supplemental questions come later in the application, and they are scored.",
+      "When the posting number matches, click “Apply.”"
+    ]);
+  }
+
+  /* ---------- which view ---------- */
+  function route(focus) {
+    var j = jobById(decodeURIComponent(location.hash.replace(/^#/, "")).trim());
+    if (j) {
+      if (!cur || cur.id !== j.id) { tab = 0; wrongShown = false; }
+      cur = j; lastOpened = j.id;
+      P.byId("listView").hidden = true; P.byId("postView").hidden = false;
+      P.byId("url").innerHTML = "<b>careers.northharbormn.gov</b>/jobs/" + esc(j.id);
+      document.title = j.title + ", City of North Harbor Careers Portal (Practice)";
+      renderPost(focus); postStep(); coachPost();
+    } else {
+      cur = null; fromList = false;
+      P.byId("postView").hidden = true; P.byId("postView").innerHTML = ""; P.byId("listView").hidden = false;
+      P.byId("url").innerHTML = "<b>careers.northharbormn.gov</b>/jobs";
+      document.title = "Current job openings, City of North Harbor Careers Portal (Practice)";
+      renderList(); coachList();
+      if (focus) {
+        // back to the job that was open, or to the top of the list
+        var back = lastOpened && document.querySelector('[data-open="' + lastOpened + '"]');
+        if (back) back.focus(); else { P.byId("listH").focus({ preventScroll: true }); window.scrollTo(0, 0); }
+      }
+    }
+  }
+  window.addEventListener("hashchange", function () { route(true); });
+  // Coming back with the browser's Back or Forward button: draw the view the address asks for
+  window.addEventListener("pageshow", function (e) { if (e.persisted) route(false); });
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-open], [data-list], [data-wrong], [role=tab]");
+    if (!t) return;
+    if (t.dataset.open) { fromList = true; return; } // the link itself changes the address
+    if (t.hasAttribute("data-list")) {
+      e.preventDefault();
+      if (fromList) history.back(); else location.hash = "";
+      return;
+    }
+    if (t.getAttribute("role") === "tab") { selectTab(+t.id.replace("tab-", ""), false); return; }
+    if (t.dataset.wrong) {
+      if (e.detail > 1) return; // a double click counts as one
+      var box = P.byId("note-" + t.dataset.wrong), other = P.byId("note-" + (t.dataset.wrong === "top" ? "bottom" : "top"));
+      if (other) other.innerHTML = "";
+      // cleared first and filled a moment later, so a screen reader reads it again on a second click
+      box.innerHTML = "";
+      setTimeout(function () {
+        box.innerHTML = '<div class="pnote"><p>Practice note: this isn’t the job you picked on the job board. This is posting number ' + esc(cur.id) +
+          ". The job post had Job ID " + TARGET + '.</p><p><a href="#" data-list>Back to job list</a></p></div>';
+      }, 80);
+      if (!wrongShown) { wrongShown = true; coachPost(); }
+      postStep();
+    }
+  });
+  // Arrow keys move between the tabs, like tabs in other programs
+  document.addEventListener("keydown", function (e) {
+    var t = e.target;
+    if (!t || t.getAttribute("role") !== "tab") return;
+    var i = +t.id.replace("tab-", ""), k = e.key;
+    if (k === "ArrowRight" || k === "ArrowDown") selectTab(i + 1, true);
+    else if (k === "ArrowLeft" || k === "ArrowUp") selectTab(i - 1, true);
+    else if (k === "Home") selectTab(0, true);
+    else if (k === "End") selectTab(TABS.length - 1, true);
+    else return;
+    e.preventDefault();
+  });
+
+  P.initBar();
+  route(false);
+})();
+</script>
+</body>
+</html>

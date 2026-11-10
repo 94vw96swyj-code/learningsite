@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Office Support Specialist, City of North Harbor (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice government job application: detailed work history, minimum qualifications, and scored supplemental questions. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<style>
+:root { --brand: #2F5D50; --brand-dark: #1F4237; --brand-tint: #E6EFEC; }
+.gov-strip { background: #1F4237; color: #DDE8E4; font-size: 0.82rem; }
+.gov-strip .inner { max-width: 84rem; margin: 0 auto; padding: 0.3rem 1rem; }
+.posting-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem 1.5rem; margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 6px; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.posting h3 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; }
+.posting ul { margin: 0; padding-left: 1.25rem; }
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.1rem 0.5rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: -0.25rem 0 1.5rem; }
+.sq { border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.1rem 0.4rem; margin-bottom: 1.1rem; }
+.sq legend { padding: 0 0.3rem; }
+.levels .choice span b { display: inline-block; width: 1.2rem; }
+.sq textarea { min-height: 4.5rem; }
+.mq-note { background: #F7F8F9; border: 1px solid var(--line); border-radius: 6px; padding: 0.75rem 0.9rem; font-size: 0.92rem; margin: -0.5rem 0 1.25rem; }
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice application">
+  <div class="inner">
+    <p><b>Practice application.</b> The City of North Harbor is not a real city. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+<div class="gov-strip"><div class="inner">Practice site for an invented city government</div></div>
+<header class="ats-head">
+  <div class="inner">
+    <div class="logo" style="color:#1F4237">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12" fill="#2F5D50"/><path d="M7 17c2.3-1.6 4.7-1.6 7 0s4.7 1.6 7 0" stroke="#E6EFEC" stroke-width="2" fill="none"/><path d="M14 6v8M10 10h8" stroke="#E6EFEC" stroke-width="2"/></svg>
+      City of North Harbor
+    </div>
+    <span class="careers">Human Resources</span>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+  <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+  <main class="card" id="card"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.NH_RESUMES;
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout");
+  var STEPS = ["Résumé", "Work history", "Minimum qualifications", "Supplemental questions", "Review"];
+  var PROG = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 5 };
+  var LEVELS = [["A", "I have not done this."], ["B", "I have had training in this, but haven’t done it on the job."], ["C", "I have done this on the job with help from a supervisor."], ["D", "I have done this on the job on my own."], ["E", "I have trained others to do this."]];
+  var SKILLS = [{ id: "sq1", text: "Greeting the public in person or by phone and answering their questions." },
+    { id: "sq2", text: "Scheduling appointments using a computer calendar or scheduling system." },
+    { id: "sq3", text: "Entering information accurately into a computer database." }];
+  var GOV = { gov: true };
+  var closing = (function () { var d = new Date(); d.setDate(d.getDate() + 10); return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }); })();
+
+  var S, loadTimer = null;
+  /* current/profile: the work history on the form right now.
+     drafts: unfinished rounds the learner went Back from, kept by résumé id so nothing is lost.
+     app: the last finished round (résumé and profile). Only it goes into the application. */
+  function fresh() {
+    clearTimeout(loadTimer); loadTimer = null;
+    S = { step: 0, rounds: [], done: {}, current: null, profile: null, warned: false, returnToReview: false, restored: false, loading: false,
+      drafts: {}, app: null, switched: null,
+      mq: { diploma: "", exp: "" }, sq: {}, sw: {}, vet: "", cert: false, sign: "", startedAt: null, finishedAt: null };
+  }
+  fresh();
+  function remaining() { return RES.filter(function (r) { return !S.done[r.id]; }); }
+  function lastRound() { return S.rounds[S.rounds.length - 1]; }
+  function resumeById(id) { return RES.filter(function (r) { return r.id === id; })[0]; }
+  function openDrafts() { return RES.filter(function (r) { return S.drafts[r.id] && !S.done[r.id]; }); }
+
+  /* The same checks as the form step: the engine's required fields, plus hours and pay that read as real numbers */
+  function hoursNum(h) { return P.num(String(h || "").replace(/(^|[^\d])\.(\d)/g, function (m, a, d) { return a + "0." + d; })); } // ".5" is half an hour, not 5
+  function hoursMsg(h) {
+    var s = String(h || "").trim();
+    if (!s) return "";
+    // "2O" (letter O) or "l5" (letter l) would read as a different number; "20h", "20hrs" and "20 hours" are fine
+    var typo = /[a-z]\d/i.test(s) || (s.match(/\d[a-z]+/gi) || []).some(function (m) { return !/^\d(h|hrs?|hours?)$/i.test(m); });
+    if (typo) return "Type hours with number keys only, like 20 or 37.5. A letter O is not a zero.";
+    var x = hoursNum(s);
+    return x >= 1 && x <= 80 ? "" : "Enter hours per week as one number from 1 to 80, like 20 or 37.5.";
+  }
+  function hoursOk(h) { return String(h || "").trim() !== "" && !hoursMsg(h); }
+  // Pay is optional. Unpaid or volunteer work can say 0, Unpaid or Volunteer.
+  function payOk(w) { var s = String(w || "").trim(); return !s || P.num(s) >= 0 || /\b(unpaid|volunteer(ed)?|none|no pay)\b/i.test(s); }
+  function checkInfo(pr, boxId) {
+    var ok = P.validateProfile(pr, boxId, GOV), extra = 0;
+    pr.jobs.forEach(function (j, i) {
+      var hm = hoursMsg(j.hours);
+      if (hm) { P.markInvalid("j" + i + "-hours", hm); extra++; }
+      if (!payOk(j.wage)) { P.markInvalid("j" + i + "-wage", "Enter pay as a number, like $18.50 an hour. For unpaid or volunteer work, type 0 or leave Pay blank."); extra++; }
+    });
+    if (extra) P.summary(boxId, Math.max(extra, card.querySelectorAll(".field.invalid").length));
+    return ok && !extra;
+  }
+  function sqOk(id) { var v = S.sq[id] || ""; return v && ("CDE".indexOf(v) === -1 || String(S.sw[id] || "").trim()); }
+
+  /* When a later round finishes, the application switches to that person's work history.
+     Answers already given may name the old person's jobs, so say so, clear those, and clear the signature. */
+  var COMMON = ["with", "from", "work", "worked", "this", "that", "company", "city"];
+  function words(s) {
+    return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/)
+      .filter(function (w) { return w.length >= 4 && COMMON.indexOf(w) === -1; });
+  }
+  function jobWords(app) {
+    var o = {};
+    app.profile.jobs.concat(app.r.truth.jobs).forEach(function (j) { words(j.title + " " + j.employer).forEach(function (w) { o[w] = true; }); });
+    return o;
+  }
+  function switchPerson(prev) {
+    var started = S.mq.diploma || S.mq.exp || S.vet || S.cert || S.sign || SKILLS.some(function (q) { return S.sq[q.id] || S.sw[q.id]; });
+    if (!started) { S.switched = null; return; } // nothing answered yet, so nothing to check
+    var oldW = jobWords(prev), newW = jobWords(S.app), only = {}, cleared = 0;
+    Object.keys(oldW).forEach(function (w) { if (!newW[w]) only[w] = true; });
+    SKILLS.forEach(function (q) {
+      if (words(S.sw[q.id]).some(function (w) { return only[w]; })) { S.sw[q.id] = ""; cleared++; }
+    });
+    var signed = !!String(S.sign || "").trim();
+    S.sign = "";
+    S.switched = { person: S.app.r.person, old: prev.r.person, sw: cleared, sign: signed };
+  }
+  function switchNote() {
+    var w = S.switched;
+    if (!w) return "";
+    return '<div class="alert alert-info" role="status"><p style="margin:0">Your application now uses ' + esc(w.person) + "’s work history. Check your answers." +
+      (w.sw ? " We cleared " + (w.sw === 1 ? "a “Where did you do this?” answer" : "the “Where did you do this?” answers") + " that named " + esc(w.old) + "’s jobs." : "") +
+      (w.sign ? " Your signature was cleared. Sign again with the name on your application." : "") + "</p></div>";
+  }
+
+  var COACH = {
+    0: ["You found it. Same number as the job post, Job ID 2026‑0419. The City’s careers portal called it Clerical Technician II (Office Support Specialist), but it’s the same job.", "Government postings spell out the minimum qualifications. Read them like a checklist.", "Note the closing date. Late applications aren’t accepted."],
+    1: ["Three practice résumés are waiting. Government forms ask for more than most: hours per week and a supervisor for every job.", "Preview one, then drag it onto the upload box or use its Upload button."],
+    4: ["These are knockout questions. Answer No and the application usually stops here.", "Part-time counts. Two years at 20 hours a week is about one year of full-time experience."],
+    5: ["Your answers here are scored like a test, and HR checks them against your work history.", "Rate yourself honestly, and name the job where you did it."],
+    6: ["Last check. Government applications are hard to change after you submit."]
+  };
+  function renderCoach() {
+    if (S.step === 2 && S.current && !S.returnToReview) {
+      P.coach(["The city’s system just read the résumé."].concat(S.current.coach),
+        '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>');
+    } else if (S.step === 3) {
+      P.coach(remaining().length && S.rounds.length < 3 ? ["Try the next résumé, or continue the application. You can stop after any round."] : ["That's all three. Now finish the application."]);
+    } else P.coach(COACH[S.step] || []);
+  }
+  function renderDock() {
+    var show = S.step >= 1 && S.step <= 3;
+    dock.hidden = !show; layout.classList.toggle("with-dock", show);
+    if (show) dock.innerHTML = P.dockHtml(RES, S.done, { canUpload: S.step === 1 });
+  }
+  P.bindDock(dock);
+
+  function progress() {
+    var n = PROG[S.step];
+    if (!n) return "";
+    return '<ol class="progress" aria-label="Application steps">' + STEPS.map(function (s, i) {
+      var k = i + 1;
+      return "<li" + (k < n ? ' class="done"' : "") + (k === n ? ' aria-current="step"' : "") + ">" + esc(s) + "</li>";
+    }).join("") + "</ol>";
+  }
+  function resultList(results) {
+    return "<ul>" + results.map(function (x) {
+      return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? "Fixed" : "Missed") + "</span><span><b>" + esc(x.label) + ".</b> " + esc(x.why) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+  function yn(name, label, v) {
+    return '<fieldset id="f-' + name + '"><legend>' + esc(label) + '<span class="req" aria-hidden="true">*</span></legend><div class="inline-choices">' +
+      ["Yes", "No"].map(function (x) { return '<label class="choice"><input type="radio" name="' + name + '" value="' + x + '"' + (v === x ? " checked" : "") + "> " + x + "</label>"; }).join("") + "</div></fieldset>";
+  }
+
+  var V = {};
+  V[0] = function () {
+    return '<article class="posting"><h1 tabindex="-1">Office Support Specialist</h1><p class="sub">City of North Harbor, Human Resources. Job ID 2026-0419</p>' +
+      '<dl class="posting-meta"><div><dt>Pay</dt><dd>$22.40 to $27.10 an hour</dd></div><div><dt>Schedule</dt><dd>Full time, Monday to Friday, 8:00 am to 4:30 pm</dd></div><div><dt>Closes</dt><dd>' + esc(closing) + ", 11:59 pm</dd></div></dl>" +
+      '<button class="btn btn-primary" type="button" data-action="apply">Apply</button>' +
+      "<h3>What you’ll do</h3><ul><li>Greet the public at City Hall and answer phones</li><li>Schedule appointments and keep records in city systems</li><li>Type letters and enter data accurately</li></ul>" +
+      "<h3>Minimum qualifications</h3><ul><li>High school diploma or GED</li><li>One year of full-time office or customer service experience. Part-time experience counts toward this.</li></ul>" +
+      "<h3>How you’ll be scored</h3><p>Your answers to the supplemental questions are your exam. Qualified applicants are ranked on an eligible list, and hiring managers interview from the top of the list.</p></article>";
+  };
+  V[1] = function () {
+    return progress() + '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>" +
+      '<h1 tabindex="-1">Upload your résumé</h1><p class="sub">We’ll use it to start your work history. You’ll still need to complete every field.</p>' +
+      openDrafts().map(function (r) {
+        return '<div class="alert alert-info"><p style="margin:0 0 0.6rem">You didn’t finish ' + esc(r.person) + "’s work history. Your changes are kept, so you can pick up where you left off.</p>" +
+          '<button class="btn btn-secondary" type="button" data-action="resume-draft" data-id="' + esc(r.id) + '">Back to ' + esc(r.person) + "’s work history</button></div>";
+      }).join("") +
+      '<div class="drop" id="drop"><p><b>Drag a résumé here</b></p><p class="hint">Or use an Upload button in the practice résumés.</p></div>' +
+      (S.rounds.length ? '<div class="actions"><span></span><button class="btn btn-secondary" type="button" data-action="to-mq">Continue the application</button></div>' : '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button></div>');
+  };
+  V[2] = function () {
+    var edit = S.returnToReview;
+    return progress() + (edit ? "" : '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>") +
+      '<h1 tabindex="-1">Work history</h1>' + (edit ? "" : '<div class="alert alert-info">' + (S.restored ? "Your changes from before are still here." : "We filled in what we could from your résumé.") + " Every job needs hours per week and a supervisor.</div>") +
+      '<p class="compare"><button class="btn btn-secondary" type="button" data-action="open-current">Open ' + esc(S.current.file) + '</button><span class="hint">It opens beside the form so you can compare.</span></p>' +
+      '<div id="infoErr" aria-live="polite"></div>' + P.formHtml(S.profile, GOV) + '<div id="coachCheck"></div>' +
+      '<div class="actions">' + (edit ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-info">' + (edit ? "Save and return to review" : "Save and continue") + "</button></div>";
+  };
+  V[3] = function () {
+    var last = lastRound(), more = remaining().length && S.rounds.length < 3;
+    return progress() + '<h1 tabindex="-1">Round ' + S.rounds.length + ' done</h1><p class="sub">' + esc(last.person) + " (" + esc(last.level) + ")</p>" + switchNote() +
+      '<section class="debrief" aria-label="Round results"><p class="score">You caught ' + last.fixed + " of " + last.total + "</p>" + resultList(last.results) + "</section>" +
+      '<div class="actions">' + (more ? '<button class="btn btn-primary" type="button" data-action="next-round">Try the next résumé</button>' : "<span></span>") +
+      '<button class="btn ' + (more ? "btn-secondary" : "btn-primary") + '" type="button" data-action="to-mq">Continue the application</button></div>';
+  };
+  V[4] = function () {
+    return progress() + '<h1 tabindex="-1">Minimum qualifications</h1><p class="sub">Answer based on the work history you entered.</p>' + switchNote() + '<div id="mErr" aria-live="polite"></div>' +
+      yn("mq-diploma", "Do you have a high school diploma or GED?", S.mq.diploma) +
+      yn("mq-exp", "Do you have at least one year of full-time office or customer service experience?", S.mq.exp) +
+      '<p class="mq-note">Part-time counts. Add up your hours: 2,080 hours is one year full time. For example, two years at 20 hours a week is about one year.</p>' +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="next-mq">Save and continue</button></div>';
+  };
+  V[5] = function () {
+    var edit = S.returnToReview;
+    return progress() + '<h1 tabindex="-1">Supplemental questions</h1><p class="sub">Choose the statement that best describes your experience. For C, D or E, tell us where you did it.</p>' + switchNote() + '<div id="sErr" aria-live="polite"></div>' +
+      SKILLS.map(function (q, i) {
+        return '<fieldset class="sq" id="f-' + q.id + '"><legend><b>' + (i + 1) + ".</b> " + esc(q.text) + '<span class="req" aria-hidden="true">*</span></legend><div class="levels">' +
+          LEVELS.map(function (l) { return '<label class="choice"><input type="radio" name="' + q.id + '" value="' + l[0] + '"' + (S.sq[q.id] === l[0] ? " checked" : "") + "> <span><b>" + l[0] + "</b> " + esc(l[1]) + "</span></label>"; }).join("") + "</div>" +
+          '<div class="field" id="f-sw-' + q.id + '" style="margin-top:0.75rem"><label for="sw-' + q.id + '">Where did you do this? Name the job.</label><textarea id="sw-' + q.id + '">' + esc(S.sw[q.id] || "") + "</textarea></div></fieldset>";
+      }).join("") +
+      '<div class="actions">' + (edit ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-sq">' + (edit ? "Save and return to review" : "Save and continue") + "</button></div>";
+  };
+  V[6] = function () {
+    var c = S.app.profile.contact;
+    var jobs = S.app.profile.jobs.map(function (j) {
+      var end = j.current ? "Present" : P.fmtDate(j.endM, j.endY);
+      return "<dt>" + esc(j.title) + "</dt><dd>" + esc(j.employer) + ", " + esc(P.fmtDate(j.startM, j.startY)) + (end ? " to " + esc(end) : "") + ". Hours per week: " + esc(String(j.hours).trim()) + ". Supervisor: " + esc(j.supervisor) + "</dd>";
+    }).join("");
+    var today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    return progress() + '<h1 tabindex="-1">Review and submit</h1>' + switchNote() +
+      '<div class="review-block"><div class="rb-head"><h3>Contact information</h3><button class="btn-link" type="button" data-action="edit" data-to="2">Edit</button></div><dl>' +
+      "<dt>Name</dt><dd>" + esc(c.first + " " + c.last) + "</dd><dt>Email</dt><dd>" + esc(c.email) + "</dd><dt>Phone</dt><dd>" + esc(c.phone) + "</dd></dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h3>Work history</h3><button class="btn-link" type="button" data-action="edit" data-to="2">Edit</button></div><dl>' + jobs + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h3>Supplemental questions</h3><button class="btn-link" type="button" data-action="edit" data-to="5">Edit</button></div><dl>' +
+      SKILLS.map(function (q) { return "<dt>" + esc(q.text) + "</dt><dd>" + esc(S.sq[q.id]) + (S.sw[q.id] ? ": " + esc(S.sw[q.id]) : "") + "</dd>"; }).join("") + "</dl></div>" +
+      '<div class="section"><div id="rErr" aria-live="polite"></div>' +
+      '<div class="field" id="f-vet"><label for="vet">Veteran’s preference<span class="req" aria-hidden="true">*</span></label><select id="vet"><option value="">Select</option>' +
+      ["I am not claiming veteran’s preference", "I am claiming veteran’s preference (proof will be requested)"].map(function (v) { return "<option" + (S.vet === v ? " selected" : "") + ">" + esc(v) + "</option>"; }).join("") + "</select></div>" +
+      '<h2>Signature</h2><div class="field" id="f-r-cert"><label class="choice"><input type="checkbox" id="r-cert"' + (S.cert ? " checked" : "") + '> <span>I certify that everything in this application is true. I understand false statements can disqualify me or end my employment.<span class="req" aria-hidden="true">*</span></span></label></div>' +
+      P.textField("r-sign", "Type your full name as your signature", S.sign, { req: true, ac: "off" }) + '<p class="hint">Date: ' + esc(today) + "</p></div>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="submit">Submit application</button></div>';
+  };
+  V[7] = function () {
+    var fixed = 0, total = 0;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    // months count both ends: June 2020 to August 2022 is 27 months
+    var hrs = S.app.profile.jobs.reduce(function (sum, j) {
+      var h = hoursOk(j.hours) ? hoursNum(j.hours) : 0, start = P.ym(j.startM, j.startY), end = j.current ? P.ym(new Date().getMonth() + 1, new Date().getFullYear()) : P.ym(j.endM, j.endY);
+      var months = end >= start ? end - start + 1 : 0;
+      return sum + (months || 0) * h * 4.33;
+    }, 0);
+    var yrs = (hrs / 2080).toFixed(1), yrsText = yrs + " " + (yrs === "1.0" ? "year" : "years");
+    var expWrongNo = S.mq.exp === "No" && +yrs >= 1, notes = [];
+    if (S.mq.diploma === "No" || (S.mq.exp === "No" && !expWrongNo)) notes.push("You answered No to a minimum qualification. On a real city site, the application usually stops being considered there. That’s useful to know before you spend an hour on one.");
+    notes.push("Your work history adds up to about " + yrsText + " of full-time experience, counting part-time hours. HR does this math too, using the hours you entered.");
+    if (expWrongNo) notes.push("You answered No to the one-year experience question, but your work history adds up to about " + yrsText + ", so you actually qualify. Add up your hours before you answer. On a real city site, that No would have ended this application.");
+    var es = SKILLS.filter(function (q) { return S.sq[q.id] === "E"; });
+    if (es.length) notes.push("You chose E, trained others, on " + es.length + " " + P.plural(es.length, "question") + ". HR will look for that in your work history, so make sure a job description backs it up.");
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var cd = P.code("NH", S.rounds.length, fixed, total);
+    return '<div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 tabindex="-1">Application received</h1><p>Thank you, ' + esc(S.app.profile.contact.first) + ". Your application for Office Support Specialist (Job ID 2026-0419) was received.</p>" +
+      '<div class="review-block"><h3 style="margin-bottom:0.4rem">What happens next</h3><ol style="margin:0;padding-left:1.2rem"><li>After the closing date, HR checks the minimum qualifications.</li><li>Your supplemental answers are scored.</li><li>Qualified applicants are ranked on an eligible list. Interviews come from the top of the list.</li></ol><p class="hint" style="margin-top:0.5rem">This can take several weeks. Watch your email, including spam.</p></div>' +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2><p>You finished in about ' + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Résumé mistakes caught: ' + fixed + " of " + total + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") + "</ul>" +
+      (S.rounds.some(function (r) { return r.fixed < r.total; }) ? '<h3>What slipped through</h3><ul class="plain">' + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(x.label) + ".</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      '<h3>Qualifications and scoring</h3><ul class="plain">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+      '<h3>Good to know about government jobs</h3><ul class="plain"><li>Keep a notes sheet with hours, pay, supervisors and phone numbers for every job. You’ll use it on every government application.</li>' +
+      "<li>Postings close on a set date and time. Start early. Some sites log you out, so save as you go.</li>" +
+      "<li>Volunteer work often counts. List it.</li></ul>" +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="restart">Try it again</button><a href="../">Back to job board</a></div></section>';
+  };
+
+  function render(focus) {
+    if (focus !== false) P.closeViewer(false); // same-step re-renders (Add another job, Remove) keep the résumé open
+    S.warned = false; // a re-render wipes the coach check, so the next save checks again
+    card.innerHTML = V[S.step]();
+    renderDock(); renderCoach(); bindStep();
+    if (focus !== false) { var h = card.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } window.scrollTo(0, 0); }
+  }
+  function go(step) { S.step = step; render(); }
+  function bindStep() {
+    if (S.step === 1) P.bindDrop(P.byId("drop"), { onResume: startRound, onFile: function () {
+      var old = P.byId("fileNote"); if (old) old.remove(); // dropping a file again replaces the notice instead of stacking a second one
+      P.byId("drop").insertAdjacentHTML("afterend", '<p class="alert alert-info" id="fileNote" role="status" style="margin-top:1rem">For this practice, use one of the practice résumés.</p>');
+    } });
+  }
+  function startRound(id) {
+    var r = resumeById(id);
+    if (!r || S.done[r.id] || S.step !== 1 || S.loading) return;
+    P.setInProgress(true);
+    if (S.drafts[r.id]) { resumeDraft(r.id); return; } // uploading the same résumé again brings back the changes
+    S.current = r; S.profile = P.clone(r.parsed); S.restored = false; S.loading = true;
+    card.innerHTML = '<div class="loading" role="status" tabindex="-1" style="outline:none"><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(r.file) + "…</b></p></div>";
+    card.querySelector(".loading").focus({ preventScroll: true });
+    dock.querySelectorAll("[data-upload]").forEach(function (x) { x.disabled = true; });
+    dock.querySelectorAll("[draggable]").forEach(function (x) { x.removeAttribute("draggable"); });
+    loadTimer = setTimeout(function () { loadTimer = null; S.loading = false; go(2); }, 1300);
+  }
+  function resumeDraft(id) {
+    var r = resumeById(id);
+    if (!r || !S.drafts[id] || S.done[id] || S.step !== 1 || S.loading) return;
+    S.current = r; S.profile = S.drafts[id]; S.restored = true; S.returnToReview = false;
+    go(2);
+  }
+  function finishRound() {
+    var res = P.score(S.current, S.profile), f = res.filter(function (x) { return x.fixed; }).length;
+    S.rounds.push({ id: S.current.id, person: S.current.person, level: S.current.level, results: res, fixed: f, total: res.length });
+    S.done[S.current.id] = { fixed: f, total: res.length };
+    delete S.drafts[S.current.id];
+    var prev = S.app;
+    S.app = { r: S.current, profile: P.clone(S.profile) }; // only a finished, checked round goes into the application
+    if (prev && prev.r.id !== S.app.r.id) switchPerson(prev);
+    go(3);
+  }
+  /* Review > Edit changes the work history being submitted, so score that round again */
+  function saveEdit() {
+    S.app.profile = P.clone(S.profile);
+    var R = S.rounds.filter(function (x) { return x.id === S.app.r.id; }).pop();
+    if (R) {
+      R.results = P.score(S.app.r, S.app.profile);
+      R.fixed = R.results.filter(function (x) { return x.fixed; }).length; R.total = R.results.length;
+      S.done[R.id] = { fixed: R.fixed, total: R.total };
+    }
+    S.returnToReview = false; go(6);
+  }
+  function collectSQ() {
+    SKILLS.forEach(function (q) { var x = card.querySelector('input[name="' + q.id + '"]:checked'); S.sq[q.id] = x ? x.value : ""; S.sw[q.id] = P.val("sw-" + q.id); });
+  }
+  /* Supplemental answers only reach Review once they pass these checks */
+  function saveSQ() {
+    collectSQ(); P.clearErrors(); var m = 0;
+    SKILLS.forEach(function (q) {
+      if (!S.sq[q.id]) { P.markInvalid(q.id, "Choose a statement."); m++; }
+      else if (!sqOk(q.id)) { P.markInvalid("sw-" + q.id, "For C, D or E, name the job where you did this."); m++; }
+    });
+    P.summary("sErr", m);
+    if (!m) { S.returnToReview = false; go(6); }
+  }
+  function collectMQ() {
+    ["diploma", "exp"].forEach(function (k) { var x = card.querySelector('input[name="mq-' + k + '"]:checked'); S.mq[k] = x ? x.value : ""; });
+  }
+  function collectReview() {
+    if (!P.byId("vet")) return;
+    S.vet = P.val("vet"); S.cert = P.checked("r-cert"); S.sign = P.val("r-sign");
+  }
+  /* Edit from Review works on a copy of the application's work history; saving it puts it back */
+  function editInfo() {
+    S.current = S.app.r; S.profile = P.clone(S.app.profile); S.returnToReview = true;
+    go(2);
+  }
+  /* Answers on Minimum qualifications and Review are kept as soon as they change, so Back and Edit never lose them */
+  function keepAnswer(e) {
+    var t = e.target;
+    if (!t || !card.contains(t)) return;
+    if (S.step === 4 && /^mq-/.test(t.name || "")) collectMQ();
+    else if (S.step === 6 && /^(vet|r-cert|r-sign)$/.test(t.id)) collectReview();
+  }
+  card.addEventListener("change", keepAnswer);
+  card.addEventListener("input", keepAnswer);
+  /* Outline what's still off. A mistake that covers two boxes (Samuel's two supervisors) only outlines the box that's still wrong. */
+  function flagWrong() {
+    var res = P.score(S.current, S.profile), n = P.flag(res);
+    S.current.errors.forEach(function (er, k) {
+      var checks = [].concat(er.check);
+      if (res[k].fixed || checks.length < 2 || checks.length !== er.fields.length) return;
+      var still = er.fields.filter(function (id, i) {
+        var ok = P.score({ truth: S.current.truth, errors: [{ label: er.label, why: "", fields: [id], check: checks[i] }] }, S.profile)[0].fixed;
+        var el = P.byId(id); if (ok && el) el.classList.remove("flagged");
+        return !ok;
+      });
+      var last = P.byId(still[still.length - 1]), host = last && (last.closest(".row, .row-3, .dates") || last.closest(".field") || last);
+      var note = [].filter.call(card.querySelectorAll(".flag-note"), function (p) { return p.textContent === er.label + "."; })[0];
+      if (note && host && host.parentNode && host.nextSibling !== note) host.parentNode.insertBefore(note, host.nextSibling); // keep the note next to the box that's still wrong
+    });
+    var first = card.querySelector(".flagged"); if (first && document.activeElement !== first) first.focus();
+    return n;
+  }
+  function showWrong() {
+    S.profile = P.collect(S.profile.jobs.length);
+    var n = flagWrong(), out = P.byId("coachResult");
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks off. It’s" : "look off. They’re") + " outlined in blue." : "Everything matches the résumé. Nice work.";
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload]");
+    if (!b) return;
+    if (b.dataset.preview) { P.openViewer(resumeById(b.dataset.preview), b); return; }
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    switch (b.dataset.action) {
+      case "apply": S.startedAt = S.startedAt || Date.now(); go(1); break;
+      case "back":
+        if (S.step === 2) {
+          // keep the unfinished round as a draft; it never goes into the application until it's saved
+          S.profile = P.collect(S.profile.jobs.length);
+          if (S.returnToReview) { if (checkInfo(S.profile, "infoErr")) saveEdit(); break; }
+          S.drafts[S.current.id] = S.profile; go(1); break;
+        }
+        if (S.step === 5) { if (S.returnToReview) { saveSQ(); break; } collectSQ(); go(4); break; }
+        if (S.step === 4) { collectMQ(); go(S.rounds.length ? 3 : 1); break; }
+        if (S.step === 6) { collectReview(); go(5); break; }
+        go(0); break;
+      case "resume-draft": resumeDraft(b.dataset.id); break;
+      case "open-current": P.openViewer(S.current, b); break;
+      case "add-job":
+        S.profile = P.collect(S.profile.jobs.length);
+        S.profile.jobs.push({ title: "", employer: "", location: "", startM: "", startY: "", endM: "", endY: "", current: false, desc: "", hours: "", wage: "", supervisor: "", supervisorPhone: "", mayContact: "", reason: "" });
+        render(false); var t = P.byId("j" + (S.profile.jobs.length - 1) + "-title"); if (t) t.focus(); break;
+      case "remove-job": {
+        S.profile = P.collect(S.profile.jobs.length); S.profile.jobs.splice(+b.dataset.i, 1); render(false);
+        var add = P.byId("add-job"); if (add) add.focus();
+        break;
+      }
+      case "show-wrong": showWrong(); break;
+      case "next-info": {
+        S.profile = P.collect(S.profile.jobs.length);
+        if (!checkInfo(S.profile, "infoErr")) break;
+        if (S.returnToReview) { saveEdit(); break; }
+        var bad = P.score(S.current, S.profile).filter(function (x) { return !x.fixed; });
+        if (P.hints() && bad.length && !S.warned) {
+          S.warned = true;
+          P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " here still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real city site wouldn’t warn you.</p>" +
+            '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="continue-anyway" style="margin-left:1rem">Continue anyway</button></div>';
+          break;
+        }
+        finishRound(); break;
+      }
+      case "continue-anyway": S.profile = P.collect(S.profile.jobs.length); if (checkInfo(S.profile, "infoErr")) finishRound(); break;
+      case "next-round": go(1); break;
+      case "to-mq": if (S.rounds.length && S.app) go(4); break;
+      case "next-mq": {
+        collectMQ(); P.clearErrors(); var n = 0;
+        ["diploma", "exp"].forEach(function (k) { if (!S.mq[k]) { P.markInvalid("mq-" + k, "Choose Yes or No."); n++; } });
+        P.summary("mErr", n);
+        if (!n) go(5);
+        break;
+      }
+      case "next-sq": saveSQ(); break;
+      case "edit":
+        collectReview();
+        if (b.dataset.to === "2") editInfo(); else { S.returnToReview = true; go(+b.dataset.to); }
+        break;
+      case "submit": {
+        collectReview(); P.clearErrors();
+        // what gets submitted must pass the same checks as the form steps
+        if (!checkInfo(S.app.profile, null)) { editInfo(); checkInfo(S.profile, "infoErr"); break; }
+        if (!SKILLS.every(function (q) { return sqOk(q.id); })) { S.returnToReview = true; go(5); saveSQ(); break; }
+        P.clearErrors();
+        var c = S.app.profile.contact, t = S.app.r.truth.contact, r = 0;
+        var full = (c.first + " " + c.last).trim().replace(/\s+/g, " "), sig = S.sign.trim().replace(/\s+/g, " ");
+        if (!S.vet) { P.markInvalid("vet", "Choose an option."); r++; }
+        if (!S.cert) { P.markInvalid("r-cert", "Check the box to certify your application."); r++; }
+        if (!sig) { P.markInvalid("r-sign", "Type your full name."); r++; }
+        else if (!P.sameName(sig, full)) {
+          P.markInvalid("r-sign", P.sameName(sig, t.first + " " + t.last) ?
+            "Your application has your name as “" + full + "”, so the signature doesn’t match. Use Edit next to Contact information to fix your name, then sign again." :
+            "Your signature must match the name on your application: " + full + ". If that name is wrong, use Edit next to Contact information to fix it.");
+          r++;
+        }
+        P.summary("rErr", r);
+        if (!r) { S.finishedAt = Date.now(); S.switched = null; P.setInProgress(false); go(7); }
+        break;
+      }
+      case "copy-code": { var txt = P.byId("code").textContent; if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; }); break; }
+      case "restart": fresh(); P.setInProgress(false); go(0); break;
+    }
+  });
+
+  P.initBar();
+  render(false);
+})();
+</script>
+</body>
+</html>

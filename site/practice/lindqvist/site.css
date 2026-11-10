@@ -1,0 +1,89 @@
+/* Lindqvist Freight careers site (practice): a one-page job post and application,
+   shown inside a small browser frame. Shared engine styles come from ../assets/practice.css. */
+:root { --brand: #23466E; --brand-dark: #17314F; --brand-tint: #EAF0F6; --lf-amber: #E3A23B; --lf-ink: #1C2733; --lf-soft: #F5F7FA; }
+
+/* ---------- the browser frame ---------- */
+.card.site-frame { padding: 0; overflow: hidden; }
+@supports (overflow: clip) { .card.site-frame { overflow: clip; } }
+body.viewing-docked .card.site-frame { padding: 0; }
+.addr { display: flex; align-items: center; gap: 0.6rem; background: #E9ECEF; border-bottom: 1px solid #D3D8DD; padding: 0.55rem 0.85rem; font-size: 0.9rem; color: #3D4750; }
+.addr .dots { display: flex; gap: 0.3rem; flex: none; }
+.addr .dots i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #C4CBD2; display: block; }
+.addr .url { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.4rem; background: #fff; border: 1px solid #D3D8DD; border-radius: 999px; padding: 0.3rem 0.8rem; white-space: nowrap; overflow: hidden; }
+.addr .url svg { flex: none; }
+.addr .url span { overflow: hidden; text-overflow: ellipsis; }
+.addr .url b { font-weight: 600; color: #1F2A27; }
+
+.lf-site { color: var(--lf-ink); }
+.lf-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 2rem; border-bottom: 1px solid #E3E7EC; }
+.lf-logo { display: flex; align-items: center; gap: 0.55rem; font-weight: 800; font-size: 1.12rem; letter-spacing: 0.01em; color: var(--brand-dark); }
+.lf-logo svg { flex: none; }
+.lf-top .lf-careers { color: var(--muted); font-size: 0.95rem; }
+.lf-body { padding: 1.75rem 2rem 2rem; }
+.lf-foot { border-top: 1px solid #E3E7EC; background: var(--lf-soft); padding: 0.9rem 2rem; font-size: 0.85rem; color: #4F5B67; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.25rem 1rem; }
+.lf-foot p { margin: 0; }
+
+/* ---------- job post ---------- */
+.lf-kicker { margin: 0 0 0.2rem; font-size: 0.9rem; font-weight: 600; color: var(--brand); letter-spacing: 0.02em; }
+.lf-post h1, .lf-sum h1 { font-size: 1.75rem; margin: 0 0 0.3rem; }
+.lf-meta { margin: 0 0 1.1rem; color: var(--muted); }
+.lf-meta .sep { margin: 0 0.35rem; }
+.posting-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1.5rem; margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 6px; }
+.posting-meta div { margin: 0; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.lf-desc h2 { font-size: 1.15rem; margin: 1.5rem 0 0.4rem; }
+.lf-desc p { margin: 0 0 0.6rem; line-height: 1.55; }
+.lf-desc ul { margin: 0; padding-left: 1.25rem; }
+.lf-desc li { margin: 0.2rem 0; line-height: 1.5; }
+.req-tag { font-size: 0.8rem; font-weight: 600; color: var(--err); margin-left: 0.4rem; }
+.lf-eeo { margin-top: 1.5rem !important; font-size: 0.9rem; color: var(--muted); }
+
+/* the short job summary above the form, with the full post one click away */
+.lf-sum { padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
+.lf-sum h1 { font-size: 1.4rem; }
+.lf-sum .lf-meta { margin-bottom: 0.5rem; }
+.lf-toggle { font: inherit; font-size: 0.95rem; color: var(--brand); background: none; border: 0; padding: 0.35rem 0; cursor: pointer; text-decoration: underline; display: inline-flex; align-items: center; gap: 0.35rem; }
+.lf-toggle svg { flex: none; transition: transform 150ms; }
+.lf-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.lf-sum .lf-desc { margin-top: 0.5rem; padding: 0.25rem 1.1rem 1rem; background: var(--lf-soft); border-radius: 6px; }
+
+/* ---------- application form ---------- */
+.lf-apply h2 { font-size: 1.45rem; margin: 0 0 0.5rem; }
+.lf-apply h3 { font-size: 1.1rem; margin: 1.75rem 0 0.9rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+.lf-apply h3.first { border-top: 0; padding-top: 0; margin-top: 1.25rem; }
+.lf-label { display: block; font-weight: 600; font-size: 0.95rem; margin: 0 0 0.3rem; }
+.lf-sec-hint { margin: -0.5rem 0 1rem; }
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.1rem 0.5rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 0; }
+.compare .btn { overflow-wrap: anywhere; text-align: left; }
+.lf-resume { margin-bottom: 0.5rem; }
+.lf-later { margin: 1.5rem 0 0; padding: 0.75rem 0.9rem; border: 1px dashed var(--field); border-radius: 6px; color: var(--muted); font-size: 0.95rem; }
+.lf-drop-or { margin: 0.75rem 0 0; }
+/* the real file boxes are hidden, so show their focus on the buttons people see */
+.drop:focus-within label[for="file"], .lf-cover-pick:focus-within label[for="cover-file"] { outline: 2px solid var(--brand); outline-offset: 2px; }
+.lf-cover-pick { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.lf-cover-pick .btn { margin: 0; }
+.lf-chip { display: inline-flex; align-items: center; gap: 0.45rem; max-width: 100%; background: var(--lf-soft); border: 1px solid var(--line); border-radius: 6px; padding: 0.45rem 0.7rem; overflow-wrap: anywhere; }
+.lf-file-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+.lf-saved { background: var(--lf-soft); border: 1px solid var(--line); border-radius: 6px; padding: 0.7rem 0.9rem 0.75rem; margin: 0 0 1.1rem; }
+.lf-saved .choice { margin: 0; font-weight: 600; }
+.lf-saved .hint { margin: 0.15rem 0 0 1.55rem; }
+.lf-apply textarea { min-height: 6.5rem; }
+.lf-apply fieldset .hint { margin: -0.15rem 0 0.35rem; }
+.lf-vol select { max-width: 100%; }
+/* "Show me what's off" notes: under the field they name, clear of the dashed outline */
+#card .field > .flag-note { margin: 0.6rem 0 0; }
+
+/* ---------- thank-you page ---------- */
+.lf-done-head { margin-bottom: 0.5rem; }
+
+@media (max-width: 560px) {
+  .posting-meta { grid-template-columns: minmax(0, 1fr); }
+  .lf-top, .lf-foot { padding-left: 1rem; padding-right: 1rem; }
+  .lf-body { padding: 1.25rem 1rem 1.5rem; }
+  .lf-top .lf-careers { display: none; }
+  .lf-post h1 { font-size: 1.5rem; }
+  .lf-sum .lf-desc { padding: 0.25rem 0.8rem 0.9rem; }
+}
+@media (prefers-reduced-motion: reduce) { .lf-toggle svg { transition: none; } }

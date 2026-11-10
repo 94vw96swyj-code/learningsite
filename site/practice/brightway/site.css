@@ -1,0 +1,142 @@
+/* Brightway Staffing company website (practice): the pages a learner passes through
+   between the job board and the application (home.html, hire.html, jobs.html).
+   Shown inside a small browser frame, like the Halvorsen & Pike detour. */
+:root {
+  --brand: #24479A; --brand-dark: #1A3577; --brand-tint: #E8EEFA;
+  --bw-navy: #14275A; --bw-sun: #F5C518; --bw-ink: #18223A; --bw-cream: #FFF8E1; --bw-line: #DDE3EE; --bw-soft: #4A5568;
+}
+
+/* ---------- browser frame ---------- */
+.card.site-frame { padding: 0; overflow: hidden; }
+/* clip, not hidden: hidden would turn the frame into a scroll box and the home page's sticky message would stop following the screen */
+@supports (overflow: clip) { .card.site-frame { overflow: clip; } }
+.addr { display: flex; align-items: center; gap: 0.6rem; background: #E9ECEF; border-bottom: 1px solid #D3D8DD; padding: 0.55rem 0.85rem; font-size: 0.9rem; color: #3D4750; }
+.addr .dots { display: flex; gap: 0.3rem; }
+.addr .dots i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #C4CBD2; display: block; }
+.addr .url { flex: 1; min-width: 0; background: #fff; border: 1px solid #D3D8DD; border-radius: 999px; padding: 0.3rem 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addr .url b { font-weight: 600; color: #1F2A27; }
+.site { color: var(--bw-ink); }
+.site a { color: var(--brand); }
+.site a.btn-primary, .site a.btn-primary:hover { color: #fff; } /* a link styled as a button keeps the button's colors */
+
+/* ---------- site header (every page) ---------- */
+.bw-top { display: flex; align-items: center; gap: 0.5rem 1.25rem; flex-wrap: wrap; padding: 0.8rem 1.5rem; background: #fff; border-bottom: 1px solid var(--bw-line); }
+.site a.bw-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.15rem; color: var(--brand-dark); text-decoration: none; margin-right: auto; letter-spacing: -0.01em; }
+.bw-logo svg { flex: none; }
+.bw-nav { display: flex; flex-wrap: wrap; gap: 0 1.1rem; font-size: 0.98rem; }
+.site .bw-nav a { color: var(--bw-ink); font-weight: 600; text-decoration: none; display: inline-block; padding: 0.4rem 0 0.25rem; border-bottom: 3px solid transparent; }
+.site .bw-nav a:hover { color: var(--brand); text-decoration: underline; }
+.site .bw-nav a[aria-current="page"] { border-bottom-color: var(--bw-sun); color: var(--brand-dark); }
+
+/* ---------- home page ---------- */
+.bw-hero { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--bw-navy) 0%, #24479A 100%); color: #fff; padding: 2.75rem 1.5rem 2.6rem; }
+.bw-hero .sun { position: absolute; right: -3.5rem; top: -3rem; width: 17rem; height: 17rem; pointer-events: none; }
+.bw-hero .kicker { position: relative; margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bw-sun); }
+.bw-hero h1 { position: relative; font-size: 2.15rem; line-height: 1.1; margin: 0 0 0.8rem; max-width: 23rem; font-weight: 800; letter-spacing: -0.01em; }
+.bw-hero p.lead { position: relative; max-width: 27rem; margin: 0 0 1.6rem; line-height: 1.5; color: #E6ECFA; }
+.bw-ctas { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem 1.1rem; }
+.site .bw-big { background: var(--bw-sun); color: var(--bw-navy); font-size: 1.3rem; font-weight: 800; padding: 1rem 2rem; border-radius: 999px; border: 0; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28); }
+.site .bw-big:hover { background: #FFD83D; color: var(--bw-navy); }
+.site .bw-ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255, 255, 255, 0.75); font-size: 0.95rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 999px; }
+.site .bw-ghost:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.bw-hero a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.bw-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--bw-sun); color: var(--bw-navy); }
+.bw-stats p { margin: 0; padding: 0.85rem 0.75rem; text-align: center; font-size: 0.88rem; line-height: 1.3; }
+.bw-stats b { display: block; font-size: 1.3rem; font-weight: 800; }
+.bw-sec { padding: 2rem 1.5rem; border-bottom: 1px solid #EEF1F6; }
+.bw-sec.alt { background: var(--bw-cream); }
+.bw-sec h2 { font-size: 1.35rem; margin: 0 0 0.5rem; font-weight: 800; }
+.bw-sec > p { margin: 0 0 1.1rem; max-width: 34rem; line-height: 1.5; }
+.bw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.9rem; }
+.bw-grid.pairs { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); } /* four tiles: two rows of two, not three and one */
+.bw-tile { background: #fff; border: 1px solid var(--bw-line); border-radius: 10px; padding: 0.95rem 1rem; }
+.bw-tile h3 { font-size: 1.02rem; margin: 0 0 0.3rem; }
+.bw-tile p { margin: 0; font-size: 0.95rem; color: var(--bw-soft); line-height: 1.45; }
+.bw-seek { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+.bw-seek ul { margin: 0; padding-left: 1.2rem; line-height: 1.6; }
+.bw-foot { background: #101C3D; color: #C4CDE3; padding: 1.75rem 1.5rem 1.25rem; font-size: 0.85rem; }
+.bw-foot .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 1.25rem; }
+.bw-foot h2 { color: #EEF2FB; font-size: 0.82rem; margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.bw-foot ul { list-style: none; margin: 0; padding: 0; }
+.bw-foot li { margin: 0; }
+.site .bw-foot a { color: #C4CDE3; text-decoration: none; display: inline-block; padding: 0.35rem 0; }
+.site .bw-foot a:hover { color: #fff; text-decoration: underline; }
+.bw-foot a:focus-visible { outline-color: #fff; color: #fff; }
+.bw-foot .legal { border-top: 1px solid #2A3A63; margin: 1.25rem 0 0; padding-top: 0.9rem; color: #A3AECB; }
+/* "Show me where": a ring around the link the coach is pointing at */
+.site .bw-found { outline: 3px solid var(--pencil); outline-offset: 4px; box-shadow: 0 0 0 9px rgba(245, 197, 24, 0.55); }
+.site .bw-hero .bw-found { outline-color: var(--bw-sun); box-shadow: 0 0 0 9px rgba(245, 197, 24, 0.35); }
+/* "isn't part of this practice" message: a zero-height strip at the end of the page that sticks to the bottom of the screen,
+   so the message shows wherever the learner clicked and never pushes the page around */
+.bw-toast-slot { position: sticky; bottom: 0; height: 0; z-index: 5; }
+.bw-toast { position: absolute; left: 1rem; right: 1rem; bottom: 0.75rem; max-width: 34rem; margin: 0 auto; background: var(--pencil); color: #fff; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3); }
+.bw-toast:empty { padding: 0; box-shadow: none; background: transparent; }
+/* older browsers without overflow: clip: pin the message to the screen instead */
+@supports not (overflow: clip) { .bw-toast-slot { position: static; } .bw-toast { position: fixed; bottom: 1rem; z-index: 60; } }
+
+/* ---------- page band (businesses page, job search) ---------- */
+.bw-band { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--bw-navy) 0%, #24479A 100%); color: #fff; padding: 1.6rem 1.5rem 1.5rem; }
+.bw-band .sun { position: absolute; right: -2.75rem; top: -2.75rem; width: 10rem; height: 10rem; pointer-events: none; }
+.bw-band .kicker { position: relative; margin: 0 0 0.3rem; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bw-sun); }
+.bw-band h1 { position: relative; font-size: 1.75rem; line-height: 1.15; margin: 0 0 0.4rem; font-weight: 800; }
+.bw-band p.lead { position: relative; margin: 0; max-width: 30rem; color: #E6ECFA; line-height: 1.5; }
+.bw-body { padding: 1.5rem 1.5rem 2rem; }
+
+/* ---------- businesses page (Request workers) ---------- */
+.bw-cross { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; background: var(--bw-cream); border: 1px solid #EBD38A; border-radius: 8px; padding: 0.75rem 1rem; margin: 0 0 1.5rem; }
+.bw-cross p { margin: 0; }
+.bw-form h2 { font-size: 1.15rem; margin: 0 0 1rem; }
+.bw-form input[type=date], .bw-form input[type=number] { width: 100%; font: inherit; color: var(--text); background: #fff; border: 1px solid var(--field); border-radius: 4px; padding: 0.5rem 0.7rem; min-height: 2.6rem; }
+.bw-form .actions { margin-top: 1.25rem; justify-content: flex-start; }
+.bw-msg { border: 2px solid var(--brand); background: var(--brand-tint); border-radius: 8px; padding: 1rem 1.1rem; margin: 1.5rem 0 0; }
+.bw-msg:focus { outline: none; }
+.bw-msg:focus-visible { outline: 2px solid var(--brand-dark); outline-offset: 3px; }
+.bw-msg h2 { font-size: 1.15rem; margin: 0 0 0.4rem; }
+.bw-msg p { margin: 0 0 0.6rem; line-height: 1.5; }
+.bw-msg p:last-child { margin-bottom: 0; }
+
+/* ---------- job search (Find work) ---------- */
+.bw-search { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, 11.5rem) auto; gap: 0.75rem 0.6rem; align-items: end; background: #F4F6FB; border: 1px solid var(--bw-line); border-radius: 10px; padding: 1rem; }
+.bw-search .kw { grid-column: 1 / -1; } /* Keyword gets the whole first row; the place, distance and Search share the second */
+.bw-search label { display: grid; gap: 0.25rem; font-size: 0.9rem; font-weight: 600; min-width: 0; }
+.bw-search input, .bw-search select { font: inherit; font-size: 1rem; padding: 0.55rem 0.65rem; border: 1px solid var(--field); border-radius: 6px; background: #fff; min-width: 0; width: 100%; }
+.bw-search .btn { white-space: nowrap; }
+@container card (max-width: 38rem) { .bw-search { grid-template-columns: minmax(0, 1fr); } }
+@supports not (container-type: inline-size) { @media (max-width: 680px) { .bw-search { grid-template-columns: minmax(0, 1fr); } } }
+.bw-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin: 1rem 0 0.25rem; font-size: 0.92rem; color: var(--muted); }
+.bw-chips:empty { display: none; }
+.chip-x { display: inline-flex; align-items: center; gap: 0.35rem; background: var(--brand-tint); color: var(--brand-dark); border: 1px solid #BCCBEA; border-radius: 999px; padding: 0.2rem 0.4rem 0.2rem 0.75rem; font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; max-width: 100%; text-align: left; overflow-wrap: anywhere; }
+.chip-x b { font-size: 1.1rem; line-height: 1; padding: 0 0.25rem; }
+.bw-count { margin: 0.9rem 0 0.75rem; font-size: 0.95rem; color: var(--muted); }
+.bw-count.is-empty { border: 1px dashed var(--field); border-radius: 6px; padding: 1.25rem; text-align: center; color: var(--bw-ink); font-size: 1rem; }
+.bw-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.bw-empty { border: 1px dashed var(--field); border-radius: 6px; padding: 1.25rem; text-align: center; color: var(--muted); }
+.bw-job { border: 1px solid var(--bw-line); border-left: 4px solid var(--brand); border-radius: 8px; padding: 0.95rem 1.1rem 1rem; background: #fff; }
+.bw-job h2 { font-size: 1.12rem; margin: 0 0 0.3rem; color: var(--brand-dark); }
+.bw-job .m { margin: 0; font-size: 0.95rem; color: #3F4A5C; line-height: 1.45; }
+.bw-job .m2 { margin: 0.35rem 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.9rem; font-size: 0.9rem; color: #4A5568; }
+.bw-jobno { font-weight: 700; color: var(--bw-ink); background: #EEF1F6; border-radius: 4px; padding: 0.05rem 0.45rem; font-variant-numeric: tabular-nums; }
+.bw-job .actions-row { margin-top: 0.75rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.bw-detail { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed #D3D9E4; }
+.bw-detail h3 { font-size: 0.98rem; margin: 0.6rem 0 0.25rem; }
+.bw-detail h3:first-child { margin-top: 0; }
+.bw-detail p, .bw-detail ul { margin: 0 0 0.6rem; line-height: 1.5; }
+.bw-detail ul { padding-left: 1.2rem; }
+.bw-note { margin-top: 0.75rem; background: #FFF6E0; border: 1px solid #F0D48A; border-radius: 4px; padding: 0.6rem 0.8rem; font-size: 0.95rem; line-height: 1.45; }
+
+@media (max-width: 640px) {
+  .bw-hero { padding: 2rem 1.1rem 2rem; }
+  .bw-hero h1 { font-size: 1.7rem; }
+  .bw-hero .sun, .bw-band .sun { display: none; } /* no room beside the words on a phone */
+  .site .bw-big { font-size: 1.15rem; padding: 0.9rem 1.6rem; }
+  .bw-top, .bw-sec, .bw-band, .bw-body, .bw-foot { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .bw-band h1 { font-size: 1.5rem; }
+  .bw-stats p { font-size: 0.8rem; padding: 0.75rem 0.4rem; }
+  .bw-stats b { font-size: 1.1rem; }
+  .bw-grid.branches { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+  .bw-grid.branches .bw-tile { padding: 0.8rem; }
+  .bw-grid.branches .bw-tile p { font-size: 0.9rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .site .bw-found { transition: box-shadow 0.25s; }
+}

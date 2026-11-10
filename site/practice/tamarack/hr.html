@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Work at Tamarack, Human Resources (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a university Human Resources site where you choose between current employees and external applicants.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Tamarack State University is not a real university. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Work at Tamarack (Human Resources page). Choose Current employees or External applicants">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>hr.tamarack.edu</b></span></div>
+    <div class="site">
+      <header class="ts-head">
+        <a class="ts-logo" href="home.html"><svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="5" fill="#142B4D"/><path d="M14 3.5L17.2 9.5H15.6L19 15.5H16.8L21 22H15.3V25H12.7V22H7L11.2 15.5H9L12.4 9.5H10.8Z" fill="#E4A82A"/></svg>Tamarack State University</a>
+        <span class="ts-unit">Human Resources</span>
+        <nav class="ts-nav" aria-label="Human Resources">
+          <ul>
+            <li><a href="#why">Working here</a></li>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="#find">Find a job</a></li>
+            <li><a href="#" data-nope>Contact HR</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <section class="ts-hr-hero">
+        <h1>Work at Tamarack</h1>
+        <p>More than 9,000 faculty and staff teach, do research and keep four campuses running. Find a job that fits your life.</p>
+        <a class="btn btn-primary" href="#find">Find a job</a>
+      </section>
+
+      <section class="ts-sec" id="why">
+        <h2 tabindex="-1">Why work here</h2>
+        <ul class="ts-perks">
+          <li><h3>Free classes</h3><p>Take up to 6 credits each term at no cost, and get a discount for your family.</p></li>
+          <li><h3>Health coverage</h3><p>Health, dental and vision plans for full-time staff and their families.</p></li>
+          <li><h3>Retirement</h3><p>A pension or retirement plan, with the university adding money every paycheck.</p></li>
+          <li><h3>Time off</h3><p>Up to 4 weeks of vacation in your first years, plus 11 paid holidays.</p></li>
+          <li><h3>Room to grow</h3><p>Free training, mentoring and a clear path to move up.</p></li>
+          <li><h3>Close to home</h3><p>Jobs in St. Paul, Eveleth, Willmar and online across Minnesota.</p></li>
+        </ul>
+      </section>
+
+      <section class="ts-sec alt" id="benefits">
+        <h2 tabindex="-1">Benefits</h2>
+        <ul class="ts-plain">
+          <li>Medical, dental and vision insurance</li>
+          <li>Paid vacation, sick time and holidays</li>
+          <li>Retirement plans</li>
+          <li>Life and disability insurance</li>
+          <li>Tuition benefit for you and your family</li>
+          <li>Free bus pass on the Twin Rivers campus</li>
+        </ul>
+        <p class="note">Benefits depend on the job. Each job post lists its benefits.</p>
+      </section>
+
+      <section class="ts-sec ts-find" id="find">
+        <h2 tabindex="-1">Find a job</h2>
+        <p>Pick the choice that fits you.</p>
+        <div class="ts-choice">
+          <div class="ts-opt">
+            <button class="ts-opt-btn" type="button" id="currentBtn">Current employees</button>
+            <p>Already work at Tamarack? Sign in with your TamarackID to apply for a new job inside the university.</p>
+            <div id="currentMsg" aria-live="polite"></div>
+          </div>
+          <div class="ts-opt">
+            <a class="ts-opt-btn" href="jobs.html" id="externalLink">External applicants</a>
+            <p>Don’t work at Tamarack yet? Search all open jobs and apply. Anyone can apply.</p>
+          </div>
+        </div>
+        <p class="ts-student">Are you a Tamarack student looking for a campus job? <a href="#" data-nope data-msg="Student jobs are only for students who take classes at Tamarack. Use “External applicants.”">Student jobs</a></p>
+      </section>
+
+      <footer class="ts-foot">
+        <a class="ts-logo" href="home.html"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="5" fill="#1E3F6F"/><path d="M14 3.5L17.2 9.5H15.6L19 15.5H16.8L21 22H15.3V25H12.7V22H7L11.2 15.5H9L12.4 9.5H10.8Z" fill="#E4A82A"/></svg>Tamarack State University</a>
+        <p class="addr-line">Human Resources, 1200 Larch Avenue, St. Paul, MN 55104<br>(651) 555-0134</p>
+        <div class="ts-small">
+          <ul>
+            <li><a href="home.html">tamarack.edu home</a></li>
+            <li><a href="#" data-nope>Privacy</a></li>
+            <li><a href="#" data-nope>Accessibility</a></li>
+            <li><a href="#" data-nope>Equal opportunity</a></li>
+          </ul>
+          <p>&copy; 2026 Tamarack State University. Tamarack is an equal opportunity educator and employer.</p>
+        </div>
+      </footer>
+      <div class="ts-toast-slot"><p class="ts-toast" id="toast" role="status"></p></div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, toast = P.byId("toast"), timer = null, msgTimer = null;
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-nope]"); if (!a) return;
+    e.preventDefault();
+    var text = a.getAttribute("data-msg") || "“" + a.textContent.trim() + "” isn’t part of this practice. Use “Find a job.”";
+    clearTimeout(timer); toast.textContent = "";
+    timer = setTimeout(function () {
+      toast.textContent = text;
+      timer = setTimeout(function () { toast.textContent = ""; }, 6000);
+    }, 80);
+  });
+  // "Current employees" is the trap: it needs a TamarackID. The message says so and gives the way out.
+  P.byId("currentBtn").addEventListener("click", function () {
+    var box = P.byId("currentMsg");
+    clearTimeout(msgTimer); box.innerHTML = "";
+    msgTimer = setTimeout(function () {
+      box.innerHTML = '<div class="ts-alert" role="alert"><p><b>Current employees sign in with their TamarackID.</b></p>' +
+        '<p class="ts-pnote">Practice note: This choice is only for people who already work at Tamarack. You don’t work here yet, so use “External applicants.”</p>' +
+        '<a class="btn btn-secondary" href="jobs.html">Go to External applicants</a></div>';
+    }, 80);
+  });
+  P.coach([
+    "This is the university’s Human Resources site. HR does the hiring.",
+    "Scroll down to “Find a job.” There are two choices. Read what each one says under the button.",
+    "Pick the choice for people who don’t work at Tamarack yet."
+  ], '<p><button type="button" id="showWhere">Show me where</button></p>');
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#showWhere")) return;
+    var link = P.byId("externalLink");
+    link.classList.add("found");
+    link.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    link.focus({ preventScroll: true });
+  });
+  P.initBar();
+})();
+</script>
+</body>
+</html>

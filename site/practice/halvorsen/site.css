@@ -1,0 +1,115 @@
+/* Halvorsen & Pike company website (practice): the pages a learner passes through
+   between the job board and the application. Shown inside a small browser frame. */
+:root { --brand: #1E6B57; --brand-dark: #15503F; --brand-tint: #E7F1ED; --hp-ink: #1F2A27; --hp-sand: #F4F1EA; }
+
+.card.site-frame { padding: 0; overflow: hidden; }
+/* clip, not hidden: hidden would turn the frame into a scroll box and the home page's sticky message would stop following the screen */
+@supports (overflow: clip) { .card.site-frame { overflow: clip; } }
+.addr { display: flex; align-items: center; gap: 0.6rem; background: #E9ECEF; border-bottom: 1px solid #D3D8DD; padding: 0.55rem 0.85rem; font-size: 0.9rem; color: #3D4750; }
+.addr .dots { display: flex; gap: 0.3rem; }
+.addr .dots i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #C4CBD2; display: block; }
+.addr .url { flex: 1; min-width: 0; background: #fff; border: 1px solid #D3D8DD; border-radius: 999px; padding: 0.3rem 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addr .url b { font-weight: 600; color: #1F2A27; }
+.site { color: var(--hp-ink); }
+.site a { color: var(--brand-dark); }
+.site a.btn-primary, .site a.btn-primary:hover { color: #fff; } /* a link styled as a button keeps the button's colors */
+
+/* ---------- verify you are human ---------- */
+.verify { padding: 2.5rem 1.75rem 3rem; max-width: 30rem; margin: 0 auto; }
+.verify h1 { font-size: 1.45rem; margin: 0 0 0.4rem; }
+.verify > p { margin: 0 0 1.5rem; color: var(--muted); }
+.cap { border: 1px solid #C9CFD5; border-radius: 4px; background: #F9FAFB; box-shadow: 0 1px 3px rgba(0,0,0,0.08); max-width: 20rem; }
+.cap-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.9rem 1rem; }
+.cap-box { width: 1.9rem; height: 1.9rem; flex: none; border: 2px solid #8A949C; border-radius: 3px; background: #fff; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.cap-box:focus-visible { outline: 3px solid var(--pencil); outline-offset: 2px; }
+.cap-box[aria-checked="true"] { border-color: #1E8E3E; }
+.cap-box .spin { width: 1.2rem; height: 1.2rem; border: 3px solid #D8DDE2; border-top-color: #4A7BD0; border-radius: 50%; animation: capspin 0.8s linear infinite; }
+@keyframes capspin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .cap-box .spin { animation-duration: 2.5s; } }
+.cap-label { font-size: 1rem; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.cap-brand { margin-left: auto; font-size: 0.68rem; color: #8A949C; text-align: center; line-height: 1.2; }
+.chal { border-top: 1px solid #C9CFD5; padding: 0.75rem; background: #fff; }
+.chal-head { background: #3567BF; color: #fff; padding: 0.7rem 0.85rem; border-radius: 3px; margin-bottom: 0.6rem; }
+.chal-head p { margin: 0; font-size: 0.9rem; }
+.chal-head b { display: block; font-size: 1.25rem; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tile { aspect-ratio: 1; border: 0; padding: 0; cursor: pointer; background: #DCE6EE; position: relative; border-radius: 2px; }
+.tile svg { width: 100%; height: 100%; display: block; transition: transform 0.12s; }
+.tile[aria-pressed="true"] svg { transform: scale(0.82); }
+.tile[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 4px; left: 4px; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: #3567BF; color: #fff; font-size: 0.9rem; display: grid; place-items: center; }
+.tile:focus-visible { outline: 3px solid var(--pencil); outline-offset: 1px; z-index: 1; }
+.chal-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.6rem; }
+.chal-foot .again { background: none; border: 0; color: #4A5560; font-size: 0.95rem; cursor: pointer; padding: 0.4rem; }
+.chal-foot .again:hover { text-decoration: underline; }
+.chal-msg { min-height: 1.4rem; margin: 0.5rem 0 0; color: #B3261E; font-size: 0.95rem; }
+.verify > .cap-done { color: #1A7F37; font-weight: 600; margin: 1rem 0 0; }
+.cap-done:focus { outline: none; }
+.cap-done:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* ---------- company home page ---------- */
+.hp-top { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 0.9rem 1.5rem; border-bottom: 1px solid #E3E6E8; }
+.hp-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.15rem; color: var(--brand-dark); margin-right: auto; }
+.hp-nav { display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: 0.98rem; }
+.hp-nav a { color: var(--hp-ink); text-decoration: none; font-weight: 600; }
+.hp-nav a:hover { color: var(--brand); text-decoration: underline; }
+.hp-hero { background: linear-gradient(120deg, #15503F, #2C7A63); color: #fff; padding: 2.75rem 1.5rem 2.5rem; }
+.hp-hero h1 { font-size: 1.95rem; line-height: 1.15; margin: 0 0 0.6rem; }
+.hp-hero p { margin: 0 0 1.25rem; max-width: 30rem; line-height: 1.5; opacity: 0.92; }
+.hp-hero a:focus-visible { outline-color: #fff; }
+.hp-hero .btn-light { display: inline-block; background: #fff; color: var(--brand-dark); font-weight: 700; padding: 0.6rem 1.1rem; border-radius: 4px; text-decoration: none; margin: 0 0.5rem 0.5rem 0; }
+.hp-sec { padding: 2rem 1.5rem; border-bottom: 1px solid #EEF0F1; }
+.hp-sec:nth-of-type(even) { background: var(--hp-sand); }
+.hp-sec h2 { font-size: 1.3rem; margin: 0 0 1rem; }
+.hp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.9rem; }
+.hp-tile { background: #fff; border: 1px solid #E3E6E8; border-radius: 6px; padding: 0.95rem 1rem; }
+.hp-tile h3 { font-size: 1.02rem; margin: 0 0 0.3rem; }
+.hp-tile p { margin: 0; font-size: 0.95rem; color: #4A5560; line-height: 1.45; }
+.hp-news li { margin-bottom: 0.7rem; line-height: 1.45; }
+.hp-news time { display: block; font-size: 0.85rem; color: #6B757D; }
+.hp-foot { background: #1B2421; color: #B9C3BF; padding: 1.75rem 1.5rem 1.25rem; font-size: 0.82rem; }
+.hp-foot .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 1.25rem; }
+.hp-foot h4 { color: #E4E9E7; font-size: 0.82rem; margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.hp-foot ul { list-style: none; margin: 0; padding: 0; }
+.hp-foot li { margin: 0; }
+.hp-foot a { color: #B9C3BF; text-decoration: none; display: inline-block; padding: 0.35rem 0; }
+.hp-foot a:focus-visible { outline-color: #fff; color: #fff; }
+.hp-foot a:hover { color: #fff; text-decoration: underline; }
+.hp-foot .legal { border-top: 1px solid #2F3A36; margin-top: 1.25rem; padding-top: 0.9rem; color: #8A958F; }
+.hp-foot a.found { outline: 3px solid #F2B544; outline-offset: 3px; border-radius: 2px; color: #fff; }
+/* "isn't part of this practice" message: a zero-height strip at the end of the page that sticks to the bottom of the screen,
+   so the message shows wherever the learner clicked and never pushes the page around */
+.hp-toast-slot { position: sticky; bottom: 0; height: 0; z-index: 5; }
+.hp-toast { position: absolute; left: 1rem; right: 1rem; bottom: 0.75rem; max-width: 34rem; margin: 0 auto; background: var(--pencil); color: #fff; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 0 0 1px rgba(255,255,255,0.5), 0 6px 18px rgba(0,0,0,0.3); }
+.hp-toast:empty { padding: 0; box-shadow: none; background: transparent; }
+/* older browsers without overflow: clip: pin the message to the screen instead */
+@supports not (overflow: clip) { .hp-toast-slot { position: static; } .hp-toast { position: fixed; bottom: 1rem; z-index: 60; } }
+
+/* ---------- careers search ---------- */
+.cr-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.9rem 1.5rem; background: var(--brand-dark); color: #fff; font-weight: 700; }
+.cr-head span { font-weight: 400; opacity: 0.8; border-left: 1px solid rgba(255,255,255,0.4); padding-left: 0.6rem; }
+.cr-body { padding: 1.5rem 1.5rem 2rem; }
+.cr-body h1 { font-size: 1.45rem; margin: 0 0 1rem; }
+.cr-search { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 0.6rem; align-items: end; }
+.cr-search label { display: grid; gap: 0.25rem; font-size: 0.9rem; font-weight: 600; }
+.cr-search input, .cr-search select { font: inherit; font-size: 1rem; padding: 0.55rem 0.65rem; border: 1px solid var(--field); border-radius: 4px; background: #fff; min-width: 0; }
+.cr-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin: 1rem 0 0.25rem; font-size: 0.92rem; color: var(--muted); }
+.chip-x { display: inline-flex; align-items: center; gap: 0.35rem; background: var(--brand-tint); color: var(--brand-dark); border: 1px solid #BFD9CF; border-radius: 999px; padding: 0.2rem 0.4rem 0.2rem 0.75rem; font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+.chip-x b { font-size: 1.1rem; line-height: 1; padding: 0 0.25rem; }
+.cr-count { margin: 0.75rem 0; font-size: 0.95rem; color: var(--muted); }
+.cr-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.cr-job { border: 1px solid #E0E4E7; border-radius: 6px; padding: 1rem 1.1rem; }
+.cr-job h2 { font-size: 1.1rem; margin: 0 0 0.25rem; color: var(--brand-dark); }
+.cr-job .m { font-size: 0.93rem; color: #4A5560; }
+.cr-job .actions-row { margin-top: 0.7rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.cr-detail { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed #D6DBDF; }
+.cr-detail p, .cr-detail ul { margin: 0 0 0.6rem; line-height: 1.5; }
+.cr-detail ul { padding-left: 1.2rem; }
+.cr-empty, .cr-count.is-empty { border: 1px dashed var(--field); border-radius: 6px; padding: 1.25rem; text-align: center; color: var(--muted); }
+.cr-count.is-empty { color: var(--hp-ink); font-size: 1rem; }
+.cr-note { margin-top: 0.6rem; background: #FFF6E0; border: 1px solid #F0D48A; border-radius: 4px; padding: 0.6rem 0.8rem; font-size: 0.95rem; }
+
+@media (max-width: 640px) {
+  .cr-search { grid-template-columns: 1fr; }
+  .hp-hero h1 { font-size: 1.55rem; }
+  .verify { padding: 1.75rem 1rem 2rem; }
+}

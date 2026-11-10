@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search jobs, Tamarack State University (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a big university's job search with about 150 jobs, where several jobs share the same title.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Tamarack State University is not a real university. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Tamarack job search for external applicants">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url"><b>jobs.tamarack.edu</b>/external/search</span></div>
+    <div class="site">
+      <div class="ts-chead">
+        <a class="ts-logo" href="home.html"><svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="5" fill="#1E3F6F"/><path d="M14 3.5L17.2 9.5H15.6L19 15.5H16.8L21 22H15.3V25H12.7V22H7L11.2 15.5H9L12.4 9.5H10.8Z" fill="#E4A82A"/></svg>Tamarack State University</a>
+        <span class="ts-cunit">Careers</span>
+        <a class="ts-hrlink" href="hr.html">Work at Tamarack</a>
+      </div>
+      <div class="ts-cbody">
+        <div id="searchView">
+          <p class="ts-crumbs"><a href="hr.html">Work at Tamarack</a> <span aria-hidden="true">/</span> External applicants</p>
+          <h1 tabindex="-1">Search jobs</h1>
+          <form class="ts-search" id="sForm" role="search" aria-label="Search jobs">
+            <label for="kw">Keyword</label>
+            <input type="text" id="kw" placeholder="Job title, keyword or Job Opening ID" autocomplete="off">
+            <div class="ts-filters">
+              <div>
+                <label for="fCampus">Campus</label>
+                <select id="fCampus" autocomplete="off">
+                  <option value="">All campuses</option>
+                  <option value="tr">Twin Rivers campus (St. Paul)</option>
+                  <option value="ir">Iron Range campus (Eveleth)</option>
+                  <option value="pr">Prairie campus (Willmar)</option>
+                  <option value="ol">Online (work from home)</option>
+                </select>
+              </div>
+              <div>
+                <label for="fFamily">Job family</label>
+                <select id="fFamily" autocomplete="off">
+                  <option value="">All job families</option>
+                  <option>Academic advising</option>
+                  <option>Administrative and office</option>
+                  <option>Communications and marketing</option>
+                  <option>Facilities and grounds</option>
+                  <option>Finance and accounting</option>
+                  <option>Food service</option>
+                  <option>Health services</option>
+                  <option>Information technology</option>
+                  <option>Library</option>
+                  <option>Public safety</option>
+                  <option>Research</option>
+                  <option>Student services</option>
+                  <option>Teaching (faculty)</option>
+                </select>
+              </div>
+              <div>
+                <label for="fType">Full or part time</label>
+                <select id="fType" autocomplete="off">
+                  <option value="">Full and part time</option>
+                  <option>Full time</option>
+                  <option>Part time</option>
+                </select>
+              </div>
+            </div>
+            <div class="ts-sbtns">
+              <button class="btn btn-primary" type="submit">Search</button>
+              <button class="btn-link" type="button" id="clearAll">Clear search</button>
+            </div>
+          </form>
+          <div class="ts-rhead">
+            <h2 id="resH" tabindex="-1">Search results</h2>
+            <div class="ts-sort">
+              <label for="sort">Sort by</label>
+              <select id="sort" autocomplete="off">
+                <option value="new">Newest first</option>
+                <option value="old">Oldest first</option>
+                <option value="title">Job title (A to Z)</option>
+              </select>
+            </div>
+          </div>
+          <p class="ts-count" id="count" aria-live="polite"></p>
+          <ul class="ts-list" id="list"><li class="js-note">Loading jobs… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</li></ul>
+          <nav class="ts-pager" id="pager" aria-label="Pages of search results" hidden></nav>
+        </div>
+        <div id="postView" hidden></div>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="jobs-data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, D = window.TSU_JOBS, C = D.campuses;
+  var TARGET = "362184", PER = 20;
+  var JOBS = D.jobs.map(function (r) { return { id: r[0], title: r[1], dept: r[2], campus: r[3], family: r[4], type: r[5], pay: r[6], days: r[7], post: r[8] }; });
+  var BY = {}; JOBS.forEach(function (j) { BY[j.id] = j; });
+  var S = { kw: "", campus: "", family: "", type: "", sort: "new", page: 1 };
+  var shown = null;      // "search" or the Job Opening ID of the post on screen
+  var lastOpen = null;   // the post opened last from the list, so focus can go back to its button
+  var card = P.byId("card"), searchView = P.byId("searchView"), postView = P.byId("postView");
+
+  function campusLine(j) { var c = C[j.campus]; return c.name + ", " + c.city; }
+  function posted(d) { return d === 0 ? "Today" : d === 1 ? "1 day ago" : d > 30 ? "30+ days ago" : d + " days ago"; }
+
+  /* ---------- search ----------
+     Words are matched at the start of words in the title, department, campus, job family and Job Opening ID.
+     "Job ID 362184", "#362184" and "362 184" all find the same job: filler words are skipped and a number is compared digit by digit. */
+  var STOP = { and: 1, the: 1, a: 1, an: 1, of: 1, "in": 1, at: 1, "for": 1, near: 1, me: 1, job: 1, jobs: 1, opening: 1, openings: 1, id: 1, number: 1, posting: 1, position: 1 };
+  function clean(s) {
+    s = String(s || "").toLowerCase();
+    if (s.normalize) s = s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return s.replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  function hay(j) { return " " + clean([j.title, j.dept, C[j.campus].name, C[j.campus].city, j.family, j.type, j.id].join(" ")) + " "; }
+  function wordHit(h, w) { return h.indexOf(" " + w) !== -1 || (w.length > 3 && /[^s]s$/.test(w) && h.indexOf(" " + w.slice(0, -1)) !== -1); }
+  function results() {
+    var words = clean(S.kw).split(" ").filter(function (w) { return w && !STOP[w]; });
+    var digits = words.join("");
+    var idq = /^\d+$/.test(digits) && digits.length >= 4 ? digits : "";
+    var list = JOBS.filter(function (j) {
+      if (S.campus && j.campus !== S.campus) return false;
+      if (S.family && j.family !== S.family) return false;
+      if (S.type && j.type !== S.type) return false;
+      if (idq) return j.id.indexOf(idq) !== -1;
+      var h = hay(j);
+      return words.every(function (w) { return wordHit(h, w); });
+    });
+    var by = {
+      "new": function (a, b) { return a.days - b.days || b.id - a.id; },
+      old: function (a, b) { return b.days - a.days || a.id - b.id; },
+      title: function (a, b) { return a.title.localeCompare(b.title) || a.dept.localeCompare(b.dept) || a.id - b.id; }
+    };
+    return list.sort(by[S.sort] || by["new"]);
+  }
+  function readControls() {
+    S.kw = P.val("kw").trim(); S.campus = P.val("fCampus"); S.family = P.val("fFamily"); S.type = P.val("fType"); S.sort = P.val("sort") || "new";
+  }
+  function filterWords() {
+    var f = [];
+    if (S.campus) f.push("Campus: " + C[S.campus].name);
+    if (S.family) f.push("Job family: " + S.family);
+    if (S.type) f.push(S.type);
+    return f;
+  }
+  function slug(s) { return clean(s).replace(/ /g, "-"); }
+  function setUrl(path) { P.byId("url").innerHTML = "<b>jobs.tamarack.edu</b>" + esc(path); }
+
+  function render() {
+    var list = results(), n = list.length, pages = Math.max(1, Math.ceil(n / PER));
+    if (S.page > pages) S.page = pages;
+    var from = (S.page - 1) * PER, part = list.slice(from, from + PER), f = filterWords();
+    var q = [S.kw ? "keyword=" + encodeURIComponent(S.kw) : "", S.campus ? "campus=" + slug(C[S.campus].name) : "", S.family ? "family=" + slug(S.family) : "",
+      S.type ? "type=" + slug(S.type) : "", S.sort !== "new" ? "sort=" + S.sort : "", S.page > 1 ? "page=" + S.page : ""].filter(Boolean).join("&");
+    setUrl("/external/search" + (q ? "?" + q : ""));
+    // The count line is a live region, so the number of jobs (or "No jobs match") is read out after every search.
+    var count = P.byId("count"), ul = P.byId("list"), pager = P.byId("pager");
+    count.classList.toggle("is-empty", !n);
+    if (!n) {
+      count.textContent = "No jobs match your search." + (f.length ? " Filters in use: " + f.join(", ") + ". Try “Clear search,” then search again." : " Check the spelling, or try fewer words.");
+    } else {
+      count.textContent = (n > PER ? "Showing " + (from + 1) + " to " + (from + part.length) + " of " + n + " jobs" : "Showing " + n + " " + P.plural(n, "job")) +
+        (S.kw ? " for “" + S.kw + "”" : "") + (f.length ? ". Filters: " + f.join(", ") : "") + ".";
+    }
+    ul.hidden = !n;
+    ul.innerHTML = part.map(function (j) {
+      return '<li class="ts-job"><div class="info"><h3>' + esc(j.title) + '</h3><p class="dept">' + esc(j.dept) + "</p>" +
+        "<p>" + esc(campusLine(j)) + "</p><p>" + esc(j.type) + ". " + esc(j.pay) + "</p>" +
+        "<p>Job Opening ID " + esc(j.id) + ". Posted " + esc(posted(j.days).toLowerCase()) + "</p></div>" +
+        '<button class="btn btn-secondary" type="button" data-view="' + j.id + '">View job<span class="visually-hidden">: ' + esc(j.title) + ", " + esc(j.dept) + ", Job Opening ID " + j.id + "</span></button></li>";
+    }).join("");
+    pager.hidden = pages < 2;
+    if (pages > 1) {
+      var b = ['<button type="button" data-page="' + (S.page - 1) + '"' + (S.page === 1 ? " disabled" : "") + ">Previous</button>"];
+      for (var i = 1; i <= pages; i++) b.push('<button type="button" data-page="' + i + '" aria-label="Page ' + i + '"' + (i === S.page ? ' aria-current="page"' : "") + ">" + i + "</button>");
+      b.push('<button type="button" data-page="' + (S.page + 1) + '"' + (S.page === pages ? " disabled" : "") + ">Next</button>");
+      b.push('<span class="of">Page ' + S.page + " of " + pages + "</span>");
+      pager.innerHTML = b.join("");
+    } else pager.innerHTML = "";
+    // what the coach is told: the number of jobs, filters and page, never the words the learner typed
+    card.setAttribute("data-step", "Tamarack job search for external applicants. " + n + " " + P.plural(n, "job") + " found" + (S.kw ? " with a keyword search" : "") +
+      (f.length ? ". Filters: " + f.join(", ") : ". No filters") + (pages > 1 ? ". Page " + S.page + " of " + pages : "") + ". Sorted by " + P.byId("sort").selectedOptions[0].textContent + ".");
+  }
+
+  /* ---------- job post ---------- */
+  function postHtml(j) {
+    var p = D.posts[j.post], yearly = / a year$/.test(j.pay), right = j.id === TARGET;
+    function apply(n) {
+      return right ? '<a class="btn btn-primary" href="signin.html">Apply</a>' : '<button class="btn btn-primary" type="button" data-wrong="' + n + '">Apply</button>';
+    }
+    function ul(a) { return "<ul>" + a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; }
+    var facts = [["Campus", campusLine(j)], ["Job Opening ID", j.id], ["Job family", j.family], ["Full or part time", j.type], ["Pay", j.pay], ["Pay type", yearly ? "Salaried" : "Hourly"], ["Posted", posted(j.days)]];
+    return '<article class="ts-post">' +
+      '<p class="ts-crumbs ts-back"><button class="btn-link" type="button" data-back>Back to search results</button></p>' +
+      '<h1 tabindex="-1">' + esc(j.title) + '</h1><p class="dept-big">' + esc(j.dept) + "</p>" +
+      '<dl class="ts-facts">' + facts.map(function (x) { return "<div><dt>" + x[0] + "</dt><dd" + (x[0] === "Job Opening ID" ? ' id="postId" tabindex="-1"' : "") + ">" + esc(x[1]) + "</dd></div>"; }).join("") + "</dl>" +
+      '<div class="ts-apply">' + apply(1) + '</div><div id="wrong1" aria-live="polite"></div>' +
+      "<h2>About the job</h2><p>" + esc(p.about) + "</p>" +
+      "<h2>What you’ll do</h2>" + ul(p.does) +
+      "<h2>Required qualifications</h2>" + ul(p.needs) +
+      (p.prefer.length ? "<h2>Preferred qualifications</h2>" + ul(p.prefer) : "") +
+      "<h2>How to apply</h2><p>" + (yearly ? "A cover letter and a résumé are required. You’ll upload both when you apply." : "A résumé is required. A cover letter is optional.") +
+      " Applications are reviewed until the job is filled.</p>" +
+      "<h2>Benefits</h2><p>" + (j.type === "Full time" ? "Medical, dental and vision insurance, retirement, paid vacation and sick time, 11 paid holidays, and free Tamarack classes." :
+        "Paid sick time and free Tamarack classes. Part-time jobs don’t include health insurance.") + "</p>" +
+      '<div class="ts-apply">' + apply(2) + '<button class="btn btn-secondary" type="button" data-back>Back to search results</button></div><div id="wrong2" aria-live="polite"></div>' +
+      '<p class="eeo">Tamarack State University is an equal opportunity employer. We welcome applicants of every background. If you need help applying because of a disability, call Human Resources at (651) 555-0134.</p></article>';
+  }
+
+  /* ---------- views ---------- */
+  function coachSearch() {
+    P.coach([
+      "This is the university’s job search for people who don’t work here yet. It has about 150 jobs, and some have the same title.",
+      "The job board called it a “Job ID.” Here it’s called a “Job Opening ID.” It’s the same number: 362184.",
+      "Type the number in the Keyword box and click “Search.” Or search for the job title, then check each job’s department and Job Opening ID."
+    ], '<p><button type="button" id="showWhere" data-where="kw">Show me where</button></p>');
+  }
+  function coachPost() {
+    P.coach([
+      "This is the full job post. Before you click “Apply,” check that it’s the same job as the post on the job board.",
+      "Many jobs here have the same title. Match the department (Student Success Center) and the Job Opening ID (362184).",
+      "Read “How to apply” to see which files you need."
+    ], '<p><button type="button" id="showWhere" data-where="postId">Show me where</button></p>');
+  }
+  function showPost(j) {
+    shown = j.id;
+    searchView.hidden = true; postView.hidden = false;
+    postView.innerHTML = postHtml(j);
+    setUrl("/external/job/" + j.id);
+    card.setAttribute("data-step", "Tamarack job post: " + j.title + ", " + j.dept + ", " + campusLine(j) + ", Job Opening ID " + j.id);
+    coachPost();
+    window.scrollTo(0, 0);
+    postView.querySelector("h1").focus({ preventScroll: true });
+  }
+  function showSearch() {
+    var back = shown && shown !== "search";
+    shown = "search";
+    postView.hidden = true; postView.innerHTML = "";
+    searchView.hidden = false;
+    render(); coachSearch();
+    if (!back) return;
+    // back from a post: return to the button that opened it
+    var b = lastOpen && document.querySelector('[data-view="' + lastOpen + '"]');
+    if (b) { b.scrollIntoView({ block: "center" }); b.focus({ preventScroll: true }); }
+    else { window.scrollTo(0, 0); P.byId("resH").focus({ preventScroll: true }); }
+  }
+  function route() {
+    var m = /^#job-(\d{6})$/.exec(location.hash), j = m && BY[m[1]];
+    if (j) { if (shown !== j.id) showPost(j); }
+    else if (shown !== "search") showSearch();
+  }
+
+  /* ---------- events ---------- */
+  P.byId("sForm").addEventListener("submit", function (e) { e.preventDefault(); readControls(); S.page = 1; render(); });
+  ["fCampus", "fFamily", "fType", "sort"].forEach(function (id) {
+    P.byId(id).addEventListener("change", function () { readControls(); S.page = 1; render(); });
+  });
+  P.byId("clearAll").addEventListener("click", function () {
+    P.byId("kw").value = ""; P.byId("fCampus").value = ""; P.byId("fFamily").value = ""; P.byId("fType").value = "";
+    readControls(); S.page = 1; render(); P.byId("kw").focus();
+  });
+  var noteTimer = null;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-view], [data-page], [data-back], [data-wrong], #showWhere");
+    if (!b) return;
+    if (b.id === "showWhere") {
+      var t = P.byId(b.getAttribute("data-where")); if (!t) return;
+      t.classList.add("found");
+      t.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      t.focus({ preventScroll: true });
+      return;
+    }
+    if (b.dataset.view) {
+      if (e.detail > 1) return; // a double click counts as one
+      lastOpen = b.dataset.view;
+      history.pushState({ tsPost: lastOpen }, "", "#job-" + lastOpen);
+      route(); return;
+    }
+    if (b.dataset.page) {
+      if (b.disabled) return;
+      S.page = +b.dataset.page; render();
+      var h = P.byId("resH"); h.scrollIntoView({ block: "start" }); h.focus({ preventScroll: true });
+      return;
+    }
+    if (b.hasAttribute("data-back")) {
+      // opened from the list: the browser's own Back does the same thing. Opened from a link: go to the search.
+      if (history.state && history.state.tsPost) history.back();
+      else { history.replaceState(null, "", location.pathname + location.search); route(); }
+      return;
+    }
+    if (b.dataset.wrong) {
+      var box = P.byId("wrong" + b.dataset.wrong);
+      clearTimeout(noteTimer); box.innerHTML = "";
+      noteTimer = setTimeout(function () {
+        box.innerHTML = '<div class="ts-alert" role="alert"><p class="ts-pnote" style="margin:0">Practice note: Good try, but this isn’t the job from the job board. Many jobs here have the same title. Look for the one with Job Opening ID 362184.</p></div>';
+      }, 80);
+    }
+  });
+  window.addEventListener("popstate", route);
+  window.addEventListener("hashchange", route);
+
+  P.initBar();
+  readControls();
+  route();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify you are human, halvorsenpike.com (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a 'verify you are human' check before a company website.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Halvorsen &amp; Pike is not a real company. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Verify you are human check">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>halvorsenpike.com</b></span></div>
+    <div class="site verify">
+      <h1>Verify you are human</h1>
+      <p>halvorsenpike.com needs to check your connection before you continue.</p>
+      <div class="cap" id="cap">
+        <div class="cap-row">
+          <button class="cap-box" id="capBox" type="button" role="checkbox" aria-checked="false" aria-labelledby="capLabel"></button>
+          <span class="cap-label" id="capLabel">I’m not a robot</span>
+          <span class="cap-brand" aria-hidden="true">Human<br>Check</span>
+        </div>
+        <div class="chal" id="chal" hidden>
+          <div class="chal-head" id="chalHead"><p>Select all squares with</p><b>buses</b><p>Then click Verify.</p></div>
+          <div class="tiles" id="tiles" role="group" aria-labelledby="chalHead"></div>
+          <div class="chal-foot">
+            <button class="again" type="button" id="newPuzzle">&#8635; New puzzle</button>
+            <button class="btn btn-primary" type="button" id="verifyBtn">Verify</button>
+          </div>
+          <p class="chal-msg" id="chalMsg" role="alert"></p>
+        </div>
+      </div>
+      <p class="cap-done" id="capDone" role="status" tabindex="-1"></p>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice;
+  // Simple pictures for the puzzle. Each tile is a button with a name, so it also works with a keyboard or screen reader.
+  var ART = {
+    bus: '<rect width="100" height="100" fill="#CFE3F2"/><rect x="12" y="30" width="76" height="42" rx="8" fill="#F2B544"/><rect x="18" y="37" width="14" height="13" fill="#E8F2FA"/><rect x="36" y="37" width="14" height="13" fill="#E8F2FA"/><rect x="54" y="37" width="14" height="13" fill="#E8F2FA"/><rect x="72" y="37" width="10" height="22" fill="#E8F2FA"/><rect x="12" y="58" width="76" height="4" fill="#D79A2B"/><circle cx="30" cy="74" r="8" fill="#333"/><circle cx="70" cy="74" r="8" fill="#333"/>',
+    car: '<rect width="100" height="100" fill="#D5E8D4"/><path d="M18 62 L26 46 Q30 40 38 40 L62 40 Q70 40 74 46 L82 62 Z" fill="#C0392B"/><rect x="14" y="58" width="72" height="12" rx="5" fill="#C0392B"/><rect x="34" y="45" width="13" height="11" fill="#E8F2FA"/><rect x="52" y="45" width="13" height="11" fill="#E8F2FA"/><circle cx="30" cy="72" r="7" fill="#333"/><circle cx="70" cy="72" r="7" fill="#333"/>',
+    truck: '<rect width="100" height="100" fill="#E8DCCB"/><rect x="10" y="32" width="52" height="38" fill="#5B7FA6"/><path d="M62 44 L78 44 L88 56 L88 70 L62 70 Z" fill="#2E4A6B"/><rect x="68" y="48" width="10" height="8" fill="#E8F2FA"/><circle cx="26" cy="73" r="7" fill="#333"/><circle cx="74" cy="73" r="7" fill="#333"/>',
+    bike: '<rect width="100" height="100" fill="#F0E2E6"/><circle cx="28" cy="64" r="15" fill="none" stroke="#333" stroke-width="4"/><circle cx="72" cy="64" r="15" fill="none" stroke="#333" stroke-width="4"/><path d="M28 64 L44 40 L62 40 L72 64 M44 40 L52 64 L62 40" fill="none" stroke="#2E86C1" stroke-width="4"/><path d="M58 34 L68 34" stroke="#333" stroke-width="4"/>',
+    tree: '<rect width="100" height="100" fill="#DDEBF5"/><rect x="45" y="58" width="10" height="26" fill="#7A5230"/><circle cx="50" cy="42" r="24" fill="#3C8D4E"/>',
+    house: '<rect width="100" height="100" fill="#F3EBD9"/><path d="M18 50 L50 22 L82 50 Z" fill="#9C3D2E"/><rect x="26" y="50" width="48" height="34" fill="#E6D3B0"/><rect x="44" y="62" width="12" height="22" fill="#7A5230"/>',
+    light: '<rect width="100" height="100" fill="#D8E2EA"/><rect x="38" y="14" width="24" height="62" rx="6" fill="#2F3A40"/><circle cx="50" cy="28" r="7" fill="#E74C3C"/><circle cx="50" cy="45" r="7" fill="#F1C40F"/><circle cx="50" cy="62" r="7" fill="#2ECC71"/><rect x="47" y="76" width="6" height="16" fill="#2F3A40"/>',
+    boat: '<rect width="100" height="100" fill="#BFDDF0"/><path d="M50 18 L50 62 L76 62 Z" fill="#fff"/><path d="M20 66 L80 66 L70 80 L30 80 Z" fill="#8E5A3C"/><rect x="0" y="80" width="100" height="20" fill="#5DA9DB"/>'
+  };
+  var NAMES = { bus: "bus", car: "car", truck: "truck", bike: "bicycle", tree: "tree", house: "house", light: "traffic light", boat: "boat" };
+  var OTHERS = ["car", "truck", "bike", "tree", "house", "light", "boat"];
+  var box = P.byId("capBox"), chal = P.byId("chal"), tiles = P.byId("tiles"), msg = P.byId("chalMsg"), done = false, puzzle = [];
+
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function newPuzzle() {
+    var buses = 3 + Math.floor(Math.random() * 2), list = [];
+    for (var i = 0; i < 9; i++) list.push(i < buses ? "bus" : OTHERS[Math.floor(Math.random() * OTHERS.length)]);
+    puzzle = shuffle(list);
+    tiles.innerHTML = puzzle.map(function (k, i) {
+      return '<button type="button" class="tile" aria-pressed="false" aria-label="Picture ' + (i + 1) + ": " + NAMES[k] + '"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">' + ART[k] + "</svg></button>";
+    }).join("");
+  }
+  // Show a message so a screen reader reads it even when it's the same as last time: clear it, then fill it a moment later.
+  var sayTimer = null;
+  function say(text) { clearTimeout(sayTimer); msg.textContent = ""; if (text) sayTimer = setTimeout(function () { msg.textContent = text; }, 80); }
+  tiles.addEventListener("click", function (e) {
+    if (e.detail > 1) return; // a double click counts as one click (new computer users often double click)
+    var t = e.target.closest(".tile"); if (!t || done) return;
+    t.setAttribute("aria-pressed", t.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    say("");
+  });
+  // The words "I'm not a robot" work like the box, the way they do on real sites.
+  P.byId("capLabel").addEventListener("click", function () { box.click(); });
+  box.addEventListener("click", function () {
+    if (done || box.getAttribute("aria-busy") === "true" || !chal.hidden) return;
+    box.setAttribute("aria-busy", "true"); box.innerHTML = '<span class="spin" aria-hidden="true"></span>';
+    setTimeout(function () {
+      box.removeAttribute("aria-busy"); box.innerHTML = "";
+      newPuzzle(); chal.hidden = false; tiles.querySelector(".tile").focus();
+      coachNotes(2);
+    }, 900);
+  });
+  P.byId("newPuzzle").addEventListener("click", function () { newPuzzle(); say(""); tiles.querySelector(".tile").focus(); });
+  P.byId("verifyBtn").addEventListener("click", function (e) {
+    if (e.detail > 1 || done) return; // ignore the second click of a double click
+    var picked = [].map.call(tiles.querySelectorAll(".tile"), function (t) { return t.getAttribute("aria-pressed") === "true"; });
+    if (!picked.some(Boolean)) { say("Please select all squares with buses."); return; }
+    var right = puzzle.every(function (k, i) { return (k === "bus") === picked[i]; });
+    if (!right) { say("Please try again."); newPuzzle(); tiles.querySelector(".tile").focus(); return; }
+    done = true; say(""); chal.hidden = true;
+    box.setAttribute("aria-checked", "true");
+    box.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6" fill="none" stroke="#1E8E3E" stroke-width="3.5"/></svg>';
+    var ok = P.byId("capDone");
+    ok.textContent = "Verified. Taking you to halvorsenpike.com…";
+    ok.focus(); // the Verify button just disappeared, so keep the keyboard (and screen reader) on the news
+    // replace, not a normal link: Back from the home page skips this check instead of showing a stuck "Verified" screen
+    setTimeout(function () { location.replace("home.html"); }, 1300);
+  });
+  // Coming back to this page from the browser's memory after passing: go on to the home page again.
+  window.addEventListener("pageshow", function () { if (done) location.replace("home.html"); });
+
+  function coachNotes(stage) {
+    P.coach(stage === 2 ? [
+      "Pick every square with a bus in it, then click “Verify.”",
+      "If you miss one, you get a new puzzle. That happens to everyone, so just try again."
+    ] : [
+      "You left the job board. You apply for this job on the company’s own website.",
+      "Many sites check that you’re a person, not a robot, before they let you in. It’s normal and safe.",
+      "Click the box next to “I’m not a robot.”"
+    ]);
+  }
+  coachNotes(1);
+  P.initBar();
+})();
+</script>
+</body>
+</html>

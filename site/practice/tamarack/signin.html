@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in to apply, Tamarack State University (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: sign in or create an account before you apply for a university job.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Tamarack State University is not a real university. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Tamarack Sign in to apply">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url"><b>jobs.tamarack.edu</b>/external/signin?job=362184</span></div>
+    <div class="site">
+      <div class="ts-chead">
+        <a class="ts-logo" href="home.html"><svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="5" fill="#1E3F6F"/><path d="M14 3.5L17.2 9.5H15.6L19 15.5H16.8L21 22H15.3V25H12.7V22H7L11.2 15.5H9L12.4 9.5H10.8Z" fill="#E4A82A"/></svg>Tamarack State University</a>
+        <span class="ts-cunit">Careers</span>
+        <a class="ts-hrlink" href="hr.html">Work at Tamarack</a>
+      </div>
+      <div class="ts-cbody ts-signin" id="view"><p class="js-note">Loading… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  /* Privacy: the password is never kept. The email of an account made here is kept only in this page's memory,
+     so "Sign in" can check it while the page is open. Between pages, only a yes/no flag is kept (sessionStorage):
+     "an account was made on this site during this visit." */
+  var P = window.Practice, esc = P.esc, view = P.byId("view"), card = P.byId("card");
+  var mode = "choices", account = null, typedEmail = "", goTimer = null, msgTimer = null;
+  var JOB = "<b>Program Coordinator</b>, Student Success Center, Twin Rivers campus. Job Opening ID 362184.";
+  var FLAG = "tamarack-account";
+  function hadAccount() { try { return sessionStorage.getItem(FLAG) === "yes"; } catch (e) { return false; } }
+  function markAccount() { try { sessionStorage.setItem(FLAG, "yes"); } catch (e) {} }
+  var PW_RULES = [
+    ["len", "At least 8 characters", function (v) { return v.length >= 8; }],
+    ["num", "At least one number", function (v) { return /\d/.test(v); }],
+    ["cap", "At least one capital letter", function (v) { return /[A-Z]/.test(v); }]
+  ];
+
+  var V = {
+    choices: function () {
+      return '<p class="ts-crumbs"><a href="jobs.html#job-362184">Back to job post</a></p>' +
+        '<h1 tabindex="-1">Sign in to apply</h1>' +
+        '<p class="ts-for">You’re applying for ' + JOB + "</p>" +
+        '<section class="ts-box" aria-labelledby="h-tid"><h2 id="h-tid">Tamarack students and employees</h2><p>Use the TamarackID you already have.</p>' +
+        '<button class="btn btn-secondary" type="button" id="tidBtn">Sign in with TamarackID</button><div id="tidMsg" aria-live="polite"></div></section>' +
+        '<section class="ts-box" aria-labelledby="h-si"><h2 id="h-si">Returning applicants</h2><p>Already made an account on this site? Sign in with its email and password.</p>' +
+        '<form id="siForm" novalidate><div id="siMsg" aria-live="polite"></div>' +
+        P.textField("si-email", "Email", typedEmail, { type: "email", req: true, ac: "off" }) +
+        P.textField("si-pass", "Password", "", { type: "password", req: true, ac: "off" }) +
+        '<button class="btn btn-primary" type="submit">Sign in</button></form></section>' +
+        '<section class="ts-box new" aria-labelledby="h-new"><h2 id="h-new">New applicants</h2><p>First time applying for a job at Tamarack? Create an account to apply. It’s free.</p>' +
+        '<button class="btn btn-primary" type="button" id="createBtn">Create an account</button></section>';
+    },
+    create: function () {
+      return '<h1 tabindex="-1">Create an account</h1>' +
+        '<p class="sub">You’ll use this account to apply for Tamarack jobs and to check on your application later.</p>' +
+        '<form id="acctForm" novalidate><div id="acctErr" aria-live="polite"></div>' +
+        P.textField("a-email", "Email", typedEmail, { type: "email", req: true, ac: "off", hint: "Practice only. Make one up, like name@example.com." }) +
+        P.textField("a-pass", "Password", "", { type: "password", req: true, ac: "new-password", hint: "Practice only. Make one up. Don’t use a real password." }) +
+        '<ul class="hint pw-rules" id="pwRules">' + PW_RULES.map(function (x) { return '<li data-r="' + x[0] + '">' + x[1] + '<span class="pw-ok"></span></li>'; }).join("") + "</ul>" +
+        '<p class="visually-hidden" id="pwLive" aria-live="polite"></p>' +
+        P.textField("a-pass2", "Confirm password", "", { type: "password", req: true, ac: "new-password" }) +
+        '<div class="field" id="f-a-terms"><label class="choice"><input type="checkbox" id="a-terms"> <span>I agree to the Terms of Use and Privacy Policy<span class="req" aria-hidden="true">*</span></span></label></div>' +
+        '<div class="actions"><button class="btn btn-secondary" type="button" id="backBtn">Back to sign in</button><button class="btn btn-primary" type="submit">Create account</button></div></form>';
+    },
+    done: function (how) {
+      return '<div class="ts-done"><div class="mark" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" fill="none" stroke="#fff" stroke-width="3"/></svg></div>' +
+        '<h1 tabindex="-1">' + (how === "create" ? "Account created" : "You’re signed in") + "</h1>" +
+        '<p role="status">Taking you to the application…</p>' +
+        '<p><a class="btn btn-primary" href="./">Continue to the application</a></p></div>';
+    }
+  };
+  var STEP = {
+    choices: "Tamarack Sign in to apply. Choices: Sign in with TamarackID, Sign in (returning applicants), or Create an account (new applicants)",
+    create: "Tamarack Create an account (to apply)",
+    done: "Tamarack account ready, going to the application"
+  };
+  var URL = { choices: "/external/signin?job=362184", create: "/external/register?job=362184", done: "/external/apply?job=362184" };
+
+  function coach() {
+    if (mode === "create") {
+      P.coach([
+        "Make up a practice email and a practice password. Nothing is sent.",
+        "The password needs at least 8 characters, a number and a capital letter. Type it again in “Confirm password.”",
+        "On a real site, write your password down. You’ll need it to check on your application later."
+      ]);
+    } else if (mode === "done") {
+      P.coach(["Your practice account is ready. Next comes the application itself."]);
+    } else {
+      P.coach([
+        "The university wants you to sign in before you apply.",
+        "You don’t study or work at Tamarack, so you don’t have a TamarackID.",
+        "If this is your first time on this site, you don’t have an account here yet. Use “Create an account.”"
+      ], '<p><button type="button" id="showWhere">Show me where</button></p>');
+    }
+  }
+  function render(how) {
+    view.innerHTML = V[mode](how);
+    card.setAttribute("data-step", STEP[mode]);
+    P.byId("url").innerHTML = "<b>jobs.tamarack.edu</b>" + URL[mode];
+    coach(); bind();
+  }
+  function go(m, how, focus) {
+    mode = m; render(how);
+    if (focus === false) return;
+    window.scrollTo(0, 0);
+    view.querySelector("h1").focus({ preventScroll: true });
+  }
+  function finish(how) {
+    markAccount();
+    go("done", how);
+    clearTimeout(goTimer);
+    goTimer = setTimeout(function () { location.href = "./"; }, 1500);
+  }
+
+  function bind() {
+    if (mode !== "create") return;
+    var pw = P.byId("a-pass"), hint = card.querySelector("#f-a-pass .hint"), live = P.byId("pwLive"), said = "";
+    // screen readers hear the rules with the password box, and hear when one is met
+    if (hint) hint.id = "a-pass-hint";
+    pw.setAttribute("aria-describedby", (hint ? "a-pass-hint " : "") + "pwRules");
+    pw.addEventListener("input", function () {
+      var v = pw.value, met = 0, need = [];
+      PW_RULES.forEach(function (x) {
+        var ok = x[2](v), li = card.querySelector('#pwRules li[data-r="' + x[0] + '"]');
+        if (ok) met++; else need.push(x[1].toLowerCase());
+        li.classList.toggle("met", ok);
+        li.querySelector(".pw-ok").innerHTML = ok ? '<span aria-hidden="true"> &#10003;</span><span class="visually-hidden"> (done)</span>' : "";
+      });
+      var msg = !v ? "" : met === PW_RULES.length ? "All " + met + " password rules are met." :
+        met + " of " + PW_RULES.length + " password rules met. Still needed: " + need.join(", ") + ".";
+      if (msg !== said) { said = msg; live.textContent = msg; }
+    });
+  }
+
+  // A message is cleared, then filled a moment later, so a screen reader reads it again after a second click.
+  function say(id, html) {
+    var box = P.byId(id); if (!box) return;
+    clearTimeout(msgTimer); box.innerHTML = "";
+    msgTimer = setTimeout(function () { box.innerHTML = html; }, 80);
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("#tidBtn, #createBtn, #backBtn, #toCreate, #showWhere");
+    if (!b) return;
+    if (b.id === "tidBtn") {
+      say("tidMsg", '<div class="ts-alert" role="alert"><p><b>TamarackID is only for Tamarack students and employees.</b></p>' +
+        '<p class="ts-pnote">Practice note: You don’t study or work at Tamarack, so you don’t have a TamarackID. Use “Create an account” under New applicants.</p>' +
+        '<button class="btn btn-secondary" type="button" id="toCreate">Go to New applicants</button></div>');
+      return;
+    }
+    if (b.id === "toCreate" || b.id === "showWhere") {
+      var c = P.byId("createBtn"); if (!c) return;
+      c.classList.add("found");
+      c.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      c.focus({ preventScroll: true });
+      return;
+    }
+    if (b.id === "createBtn") { var t = P.byId("si-email"); if (t) typedEmail = t.value; go("create"); return; }
+    if (b.id === "backBtn") { typedEmail = P.val("a-email"); go("choices"); }
+  });
+
+  document.addEventListener("submit", function (e) {
+    var f = e.target;
+    if (f.id === "siForm") {
+      e.preventDefault();
+      P.clearErrors(f);
+      typedEmail = P.val("si-email");
+      var em = typedEmail.trim(), n = 0;
+      P.byId("siMsg").innerHTML = "";
+      if (!P.validEmail(em)) { P.markInvalid("si-email", em ? "Enter a valid email, like name@example.com." : "Enter your email."); n++; }
+      if (!P.val("si-pass")) { P.markInvalid("si-pass", "Enter your password."); n++; }
+      if (n) { P.summary("siMsg", n); return; }
+      // the password is never kept, so any password works for an account made here
+      if (account ? em.toLowerCase() === account.toLowerCase() : hadAccount()) { finish("signin"); return; }
+      say("siMsg", '<div class="alert alert-err" role="alert">' + (account ?
+        "We couldn’t find an account with that email. Use the same email you used when you created your account." :
+        "We couldn’t find an account with that email. If this is your first time on this site, use “Create an account” under New applicants.") + "</div>");
+      return;
+    }
+    if (f.id === "acctForm") {
+      e.preventDefault();
+      P.clearErrors(f);
+      var ae = P.val("a-email"), p1 = P.val("a-pass"), p2 = P.val("a-pass2"), k = 0;
+      if (!P.validEmail(ae)) { P.markInvalid("a-email", ae.trim() ? "Enter a valid email, like name@example.com." : "Enter your email."); k++; }
+      if (!p1) { P.markInvalid("a-pass", "Enter a password."); k++; }
+      else if (p1.length < 8 || !/\d/.test(p1) || !/[A-Z]/.test(p1)) { P.markInvalid("a-pass", "Your password doesn’t meet the rules listed below it."); k++; }
+      else if (p1 !== p2) { P.markInvalid("a-pass2", "Passwords don’t match. Type the same password in both boxes."); k++; }
+      if (!P.checked("a-terms")) { P.markInvalid("a-terms", "Check the box to agree to the Terms of Use."); k++; }
+      P.summary("acctErr", k);
+      if (k) return;
+      account = typedEmail = ae.trim(); // the password is not kept anywhere
+      finish("create");
+    }
+  });
+
+  // Back from the application: show the sign-in choices again (the account made here still works)
+  window.addEventListener("pageshow", function (e) {
+    if (!e.persisted) return;
+    clearTimeout(goTimer);
+    if (mode === "done") go("choices", null, false);
+  });
+
+  P.initBar();
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request workers, Brightway Staffing (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a staffing agency page for businesses, not for job seekers.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Brightway Staffing is not a real company. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Brightway page for businesses (the “Request workers” form). It is not for job seekers. The way out is “Find work.”">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>brightwaystaffing.com</b>/employers/request-workers</span></div>
+    <div class="site">
+      <header class="bw-top">
+        <a class="bw-logo" href="home.html"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 22L14 4l10 18z" fill="#24479A"/><circle cx="14" cy="16" r="3.5" fill="#F5C518"/></svg> Brightway Staffing</a>
+        <nav class="bw-nav" aria-label="Brightway Staffing">
+          <a href="jobs.html">Job seekers</a><a href="hire.html" aria-current="page">Employers</a><a href="home.html#locations">Locations</a><a href="home.html#about">About</a>
+        </nav>
+      </header>
+
+      <div class="bw-band">
+        <svg class="sun" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <g stroke="#F5C518" stroke-width="4" stroke-linecap="round" opacity="0.45">
+            <path d="M100 38V8" transform="rotate(90 100 100)"/><path d="M100 38V8" transform="rotate(120 100 100)"/><path d="M100 38V8" transform="rotate(150 100 100)"/><path d="M100 38V8" transform="rotate(180 100 100)"/><path d="M100 38V8" transform="rotate(210 100 100)"/><path d="M100 38V8" transform="rotate(240 100 100)"/>
+          </g>
+          <circle cx="100" cy="100" r="44" fill="#F5C518" opacity="0.9"/>
+        </svg>
+        <p class="kicker">For businesses</p>
+        <h1>Request workers</h1>
+        <p class="lead">Tell us about your business and the workers you need. A Brightway account manager will call you within one business day.</p>
+      </div>
+
+      <div class="bw-body">
+        <div class="bw-cross">
+          <p><b>Looking for a job?</b> This page is for businesses.</p>
+          <a class="btn btn-secondary" href="jobs.html" id="findWork">Find work</a>
+        </div>
+
+        <form class="bw-form" id="hireForm" action="#" novalidate>
+          <h2>Your business</h2>
+          <div class="row">
+            <div class="field"><label for="h-company">Company name</label><input type="text" id="h-company" autocomplete="off"></div>
+            <div class="field"><label for="h-name">Your name</label><input type="text" id="h-name" autocomplete="off"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="h-phone">Work phone</label><input type="tel" id="h-phone" autocomplete="off"></div>
+            <div class="field"><label for="h-email">Work email</label><input type="email" id="h-email" autocomplete="off"></div>
+          </div>
+          <h2>Workers you need</h2>
+          <div class="row">
+            <div class="field"><label for="h-kind">Kind of work</label>
+              <select id="h-kind" autocomplete="off"><option value="">Select</option><option>Production and assembly</option><option>Warehouse</option><option>Food packaging</option><option>Cleaning</option><option>Office</option><option>Other</option></select></div>
+            <div class="field"><label for="h-count">Number of workers needed</label><input type="number" id="h-count" min="1" max="500" inputmode="numeric" autocomplete="off"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="h-start">Start date</label><input type="date" id="h-start" autocomplete="off"></div>
+            <div class="field"><label for="h-shift">Shift</label>
+              <select id="h-shift" autocomplete="off"><option value="">Select</option><option>1st shift</option><option>2nd shift</option><option>3rd shift</option><option>Weekends</option></select></div>
+          </div>
+          <div class="field"><label for="h-more">Anything else we should know?</label><textarea id="h-more" autocomplete="off"></textarea></div>
+          <div class="actions"><button class="btn btn-primary" type="submit">Send request</button></div>
+          <noscript><p class="hint">This practice page needs JavaScript to answer. Use “Find work” above to see the jobs.</p></noscript>
+        </form>
+
+        <div class="bw-msg" id="hireMsg" tabindex="-1" hidden>
+          <h2>This form is for businesses</h2>
+          <p>Thanks for filling it in. This form is how a business asks Brightway for workers. It doesn’t apply you for a job, so nothing was sent.</p>
+          <p>Looking for a job? See Brightway’s open jobs on the Find work page.</p>
+          <p><a class="btn btn-primary" href="jobs.html">Find work</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, card = P.byId("card"), msg = P.byId("hireMsg");
+  var SHOW = '<p><button type="button" id="showWhere">Show me where</button></p>';
+  function coachNotes(sent) {
+    P.coach(sent ? [
+      "Nothing was sent. This form is only for businesses that want to hire.",
+      "Click “Find work” to see Brightway’s jobs. Look for Job # 4471."
+    ] : [
+      "This page is for businesses that need workers. It’s not for people looking for a job.",
+      "Look at the boxes: company name, how many workers you need. A job seeker wouldn’t fill these in.",
+      "Go to “Find work” to see Brightway’s open jobs."
+    ], SHOW);
+  }
+  // Sending the form never goes anywhere: it says kindly that the form is for businesses, and points to Find work.
+  // What the learner typed stays in the boxes and is never saved.
+  P.byId("hireForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var first = msg.hidden;
+    msg.hidden = false;
+    card.setAttribute("data-step", "Brightway page for businesses. The learner sent the “Request workers” form, and a message says it is for businesses. The way out is “Find work.”");
+    if (first) coachNotes(true);
+    msg.scrollIntoView({ block: "nearest" });
+    msg.focus({ preventScroll: true }); // keep the keyboard (and screen reader) on the message
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#showWhere")) return;
+    var link = P.byId("findWork");
+    link.classList.add("bw-found");
+    link.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    link.focus({ preventScroll: true });
+  });
+  coachNotes(false);
+  P.initBar();
+})();
+</script>
+</body>
+</html>

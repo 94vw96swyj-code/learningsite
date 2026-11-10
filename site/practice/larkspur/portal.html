@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in, MyLarkspur (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a hospital patient portal sign-in, the wrong door for a job seeker.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Larkspur Health is not a real health system. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="MyLarkspur sign-in: the patient portal (for patients, not for job seekers)">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url"><b>my.larkspurhealth.org</b>/signin</span></div>
+    <div class="site mp">
+      <a class="mp-back" href="home.html" id="backHome"><span aria-hidden="true">&larr;</span> Back to larkspurhealth.org</a>
+      <div class="mp-box">
+        <div class="mp-brand"><svg width="26" height="30" viewBox="0 0 30 34" aria-hidden="true"><path d="M15 33V7" stroke="#2F6B45" stroke-width="2" fill="none"/><path d="M15 29c-3.5-1-6-3.5-7-7M15 30c3.5-1 6-3.5 7-6.5" stroke="#2F6B45" stroke-width="1.8" fill="none"/><circle cx="15" cy="4.5" r="2.6" fill="#8D7FD6"/><circle cx="11.2" cy="9.6" r="3" fill="#6A5BC0"/><circle cx="18.8" cy="12.2" r="3.2" fill="#4B3C8C"/><circle cx="10.8" cy="16.4" r="3.4" fill="#6A5BC0"/><circle cx="19.4" cy="19.6" r="3.5" fill="#4B3C8C"/></svg><span>My<b>Larkspur</b></span></div>
+        <h1>Sign in to MyLarkspur</h1>
+        <p class="sub">See test results, message your care team and pay your bill.</p>
+        <div class="mp-msg" id="mpMsg" role="status"></div>
+        <noscript><p class="mp-msg">MyLarkspur is for patients. You can’t apply for jobs here. Use “Back to larkspurhealth.org” at the top.</p></noscript>
+        <!-- No name on the boxes: nothing typed here can ever go anywhere, even without JavaScript. -->
+        <form id="mpForm" novalidate>
+          <div class="field"><label for="mpUser">Username</label><input type="text" id="mpUser" autocomplete="off" autocapitalize="none" spellcheck="false" data-private></div>
+          <div class="field"><label for="mpPass">Password</label><input type="password" id="mpPass" autocomplete="new-password" aria-describedby="mpHint" data-private><p class="mp-hint" id="mpHint">Practice page: don’t type a real password.</p></div>
+          <button class="btn btn-primary" type="submit" id="mpSignIn">Sign in</button>
+        </form>
+        <p class="mp-links"><button type="button" class="btn-link" data-why="forgot">Forgot username?</button><button type="button" class="btn-link" data-why="forgot">Forgot password?</button></p>
+        <div class="mp-new"><p>New to MyLarkspur?</p><button type="button" class="btn-link" data-why="signup">Sign up now</button></div>
+      </div>
+      <section class="mp-who" aria-labelledby="whoTitle">
+        <h2 id="whoTitle">Who is MyLarkspur for?</h2>
+        <p>MyLarkspur is for Larkspur Health patients and their families. To sign up, you need an activation code from a clinic visit.</p>
+        <p>Looking for a job? You don’t sign in here. Go back to <a href="home.html">larkspurhealth.org</a>.</p>
+      </section>
+      <p class="mp-foot">MyLarkspur help line: (612) 555-0144</p>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, msg = P.byId("mpMsg");
+  var FIRST = {
+    signin: "MyLarkspur is the patient portal. Patients sign in here to see test results and message their care team.",
+    forgot: "Only patients have a MyLarkspur username and password.",
+    signup: "To sign up for MyLarkspur, patients need an activation code from a clinic visit."
+  };
+  // Every way into the portal (Sign in, Forgot, Sign up) ends at the same kind note and a way back.
+  function why(kind) {
+    P.byId("mpPass").value = ""; // never keep a password, even a practice one
+    msg.innerHTML = "";
+    msg.innerHTML = '<h2 id="msgTitle" tabindex="-1">This sign-in is for patients</h2>' +
+      "<p>" + P.esc(FIRST[kind]) + "</p>" +
+      "<p>You can’t apply for jobs here, and you don’t need a MyLarkspur account to apply. Jobs are on Larkspur Health’s main website.</p>" +
+      '<p><a href="home.html">Back to larkspurhealth.org</a></p>';
+    P.byId("msgTitle").focus();
+    P.byId("card").setAttribute("data-step", "MyLarkspur sign-in: the patient portal. The page now says “This sign-in is for patients” (not for job seekers)");
+  }
+  P.byId("mpForm").addEventListener("submit", function (e) { e.preventDefault(); why("signin"); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-why]"); if (b) { why(b.dataset.why); return; }
+    if (!e.target.closest("#showWhere")) return;
+    var link = P.byId("backHome");
+    link.classList.add("found");
+    link.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    link.focus({ preventScroll: true });
+  });
+  P.coach([
+    "This is MyLarkspur, the patient portal. Patients sign in here to see test results and message their doctor.",
+    "It’s not for jobs. You don’t need this account to apply, so you don’t need to make one.",
+    "Go back with “Back to larkspurhealth.org” at the top of the page. Then look for jobs under “About us.”"
+  ], '<p><button type="button" id="showWhere">Show me where</button></p>');
+  P.initBar();
+})();
+</script>
+</body>
+</html>

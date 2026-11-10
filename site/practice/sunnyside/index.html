@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crew Member, Sunny Side Diner (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice hourly-job application two ways: by text message or by website chat. Exact replies, résumé links, an availability grid, a work-style survey and an auto-booked interview. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<style>
+:root { --brand: #0E7C86; --brand-dark: #0A5D65; --brand-tint: #E2F3F4; }
+.card.chat-stage { background: transparent; border: 0; padding: 0; }
+.posting-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem 1.5rem; margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 6px; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.posting h3 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; }
+.posting ul { margin: 0; padding-left: 1.25rem; }
+.req-tag { font-size: 0.8rem; font-weight: 600; color: var(--err); margin-left: 0.4rem; }
+.ways { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-top: 1.5rem; }
+.way { border: 1.5px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; background: #fff; display: grid; gap: 0.6rem; align-content: start; }
+.way h3 { margin: 0; font-size: 1.05rem; }
+.way p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+.way .btn { justify-self: start; }
+@media (max-width: 560px) { .ways { grid-template-columns: 1fr; } }
+
+/* shared widgets */
+.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; justify-content: flex-end; }
+.chip { font: inherit; font-size: 0.92rem; background: #fff; color: var(--brand-dark); border: 1.5px solid var(--brand); border-radius: 999px; padding: 0.35rem 0.85rem; cursor: pointer; }
+.chip:hover { background: var(--brand-tint); }
+.wcard { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 0.95rem; font-size: 0.95rem; }
+.wcard .field { margin-bottom: 0.8rem; }
+.wcard .field > label { font-size: 0.85rem; }
+.wcard input[type=text], .wcard input[type=tel], .wcard input[type=email], .wcard select { padding: 0.45rem 0.55rem; font-size: 16px; } /* under 16px, iPhones zoom in on tap */
+.wcard .continue { margin-top: 0.75rem; justify-content: flex-start; }
+.wcard h3 { font-size: 0.95rem; margin: 0.4rem 0 0.6rem; }
+.wcard .job { padding: 0.8rem 0.8rem 0.1rem; }
+.wcard .row { gap: 0 0.6rem; }
+.wcard .flag-note { margin: -0.4rem 0 0.8rem; font-size: 0.95rem; }
+.wcard .btns { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.wcard .btn { padding: 0.5rem 1rem; }
+.drop.small { padding: 1.25rem 1rem; }
+.grid { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.grid th, .grid td { padding: 0.3rem 0.2rem; text-align: center; }
+.grid th:first-child, .grid td:first-child { text-align: left; font-weight: 600; }
+.grid thead th { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+.tog { display: inline-flex; }
+.tog input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.tog span { display: inline-block; min-width: 4.4rem; border: 1.5px solid var(--field); border-radius: 6px; padding: 0.3rem 0.35rem; font-size: 0.8rem; cursor: pointer; background: #fff; }
+.tog input:checked + span { background: var(--brand); border-color: var(--brand); color: #fff; }
+.tog input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
+.pnote { background: #F4F7FD; border-left: 1.5px solid var(--pencil); color: var(--pencil); font-family: var(--coach); font-size: 1.05rem; padding: 0.7rem 0.9rem; }
+.pnote p { margin: 0 0 0.4rem; }
+.pnote .score { font-size: 1.2rem; color: var(--ink); }
+.pnote ul { list-style: none; margin: 0.4rem 0; padding: 0; display: grid; gap: 0.45rem; }
+.pnote li { display: grid; grid-template-columns: 3.6rem 1fr; gap: 0.5rem; }
+.pnote .tag { font-weight: 600; }
+.pnote .tag.fixed { color: var(--ok); }
+.pnote .tag.missed { color: var(--err); }
+.pnote .chips { justify-content: flex-start; margin-top: 0.6rem; font-family: system-ui, sans-serif; }
+
+/* ---------- web chatroom ---------- */
+.room { max-width: 38rem; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; height: min(46rem, calc(100vh - 9rem)); height: min(46rem, calc(100dvh - 9rem)); min-height: 32rem; box-shadow: 0 2px 12px rgba(20,30,40,0.07); }
+.room-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--line); background: #fff; }
+.room-head .who { min-width: 0; }
+.rt-short { display: none; }
+/* the messages sit in their own live region, so new ones are read aloud one at a time */
+.thread-log { display: flex; flex-direction: column; gap: inherit; }
+.thread-log > * { flex-shrink: 0; }
+#thread:focus { outline: none; }
+#thread:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.room-head .sun { width: 2.3rem; height: 2.3rem; border-radius: 50%; background: #FFD34E; display: grid; place-items: center; flex: none; }
+.room-head b { display: block; font-size: 1rem; }
+.room-head .online { font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; gap: 0.35rem; }
+.room-head .online::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2BB673; }
+.room-head .round-tag { margin-left: auto; background: var(--brand-tint); color: var(--brand-dark); border-radius: 3px; padding: 0.1rem 0.5rem; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+.room-thread { flex: 1; overflow-y: auto; padding: 1rem; background: #FAFBFB; display: flex; flex-direction: column; gap: 0.85rem; }
+.rmsg { display: grid; grid-template-columns: 2rem 1fr; gap: 0.6rem; align-items: start; max-width: 92%; }
+.rmsg .av { width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.72rem; font-weight: 700; }
+.rmsg.bot .av { background: #FFD34E; color: #6B4E00; }
+.rmsg.me { align-self: flex-end; grid-template-columns: 1fr 2rem; }
+.rmsg.me .av { background: var(--brand); color: #fff; grid-column: 2; grid-row: 1; }
+.rmsg.me .body { grid-column: 1; grid-row: 1; text-align: right; }
+.rmsg .meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.2rem; }
+.rmsg .meta b { color: var(--text); font-weight: 600; margin-right: 0.35rem; }
+.rmsg .bubble { display: inline-block; text-align: left; padding: 0.55rem 0.8rem; border-radius: 10px; line-height: 1.42; font-size: 0.95rem; overflow-wrap: anywhere; }
+.rmsg.bot .bubble { background: #fff; border: 1px solid var(--line); }
+.rmsg.me .bubble { background: var(--brand); color: #fff; }
+.rmsg .bubble p { margin: 0; }
+.rmsg .bubble p + p { margin-top: 0.4rem; }
+.room-typing { font-size: 0.85rem; color: var(--muted); font-style: italic; padding-left: 2.6rem; }
+.room-widget { align-self: stretch; }
+.room-compose { display: flex; gap: 0.5rem; padding: 0.65rem; border-top: 1px solid var(--line); background: #fff; }
+.room-compose input { flex: 1; font-size: 16px; }
+.room-compose .btn { padding: 0.5rem 1rem; }
+
+/* ---------- SMS phone ---------- */
+.phone { width: 24.5rem; max-width: 100%; margin: 0 auto; height: min(50rem, calc(100vh - 7rem)); height: min(50rem, calc(100dvh - 7rem)); min-height: 36rem; border: 11px solid #1C1E21; border-radius: 2.8rem; background: #fff; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(20,30,40,0.18); font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; }
+.statusbar { height: 2.3rem; flex: none; display: flex; justify-content: space-between; align-items: center; padding: 0 1.6rem; font-size: 0.82rem; font-weight: 600; color: #000; }
+.statusbar .notch { width: 6.5rem; height: 1.45rem; background: #1C1E21; border-radius: 0 0 0.9rem 0.9rem; position: absolute; left: 50%; top: 0; transform: translateX(-50%); }
+.sms-head { flex: none; text-align: center; padding: 0.15rem 0.5rem 0.55rem; border-bottom: 1px solid #E5E5EA; position: relative; background: #F9F9F9; }
+.sms-head .back { position: absolute; left: 0.6rem; top: 0.9rem; color: #0A84FF; font-size: 1.6rem; line-height: 1; }
+.sms-head .who { width: 2.6rem; height: 2.6rem; border-radius: 50%; background: linear-gradient(#A5A9B1, #858A93); color: #fff; display: grid; place-items: center; margin: 0 auto 0.2rem; font-size: 1rem; }
+.sms-head .num { font-size: 0.8rem; color: #000; }
+.sms-head .rt { position: absolute; right: 0.6rem; top: 0.95rem; font-size: 0.7rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.05rem 0.35rem; }
+.sms-thread { flex: 1; overflow-y: auto; padding: 0.6rem 0.7rem 0.8rem; display: flex; flex-direction: column; gap: 0.22rem; background: #fff; }
+.sms-thread > *, .room-thread > * { flex-shrink: 0; }
+.sms-time { text-align: center; font-size: 0.72rem; color: #8A8A8E; margin: 0.5rem 0 0.35rem; }
+.sb { max-width: 78%; padding: 0.45rem 0.75rem; border-radius: 1.15rem; font-size: 0.95rem; line-height: 1.32; overflow-wrap: anywhere; }
+.sb p { margin: 0; }
+.sb p + p { margin-top: 0.35rem; }
+.sb.in { background: #E9E9EB; color: #000; align-self: flex-start; }
+.sb.out { background: #34C759; color: #fff; align-self: flex-end; }
+.sb.in + .sb.out, .sb.out + .sb.in { margin-top: 0.4rem; }
+.sb a, .sb .lnk { color: #0A64D8; text-decoration: underline; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; overflow-wrap: anywhere; }
+.linkprev { align-self: flex-start; width: 78%; border-radius: 1.15rem; overflow: hidden; background: #E9E9EB; border: 0; padding: 0; text-align: left; cursor: pointer; font: inherit; }
+.linkprev .img { height: 5.2rem; background: linear-gradient(135deg, #0E7C86, #5FB3A7); display: grid; place-items: center; }
+.linkprev .txt { display: block; padding: 0.5rem 0.75rem 0.6rem; }
+.linkprev .txt span { display: block; }
+.linkprev .txt b { display: block; font-size: 0.88rem; color: #000; }
+.linkprev .txt span { font-size: 0.78rem; color: #6C6C70; }
+.sms-typing { align-self: flex-start; background: #E9E9EB; border-radius: 1.15rem; padding: 0.6rem 0.8rem; display: flex; gap: 0.25rem; }
+.sms-typing i, .room-dots i { width: 0.42rem; height: 0.42rem; border-radius: 50%; background: #8E8E93; animation: blink 1s infinite; display: inline-block; }
+.sms-typing i:nth-child(2) { animation-delay: 0.15s; } .sms-typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sms-typing i { animation: none; } }
+.sms-note { align-self: stretch; margin: 0.5rem 0; }
+.sms-compose { flex: none; display: flex; gap: 0.45rem; align-items: center; padding: 0.5rem 0.65rem 1rem; border-top: 1px solid #E5E5EA; background: #F9F9F9; }
+.sms-compose input { flex: 1; border-radius: 999px; border: 1px solid #C7C7CC; padding: 0.45rem 0.85rem; font-size: 16px; }
+.sms-compose button { width: 2rem; height: 2rem; border-radius: 50%; border: 0; background: #34C759; display: grid; place-items: center; cursor: pointer; flex: none; }
+.sms-compose button[disabled] { background: #C7C7CC; cursor: default; }
+/* the mobile web page a text link opens */
+.sheet { position: absolute; inset: 2.3rem 0 0 0; background: #F2F2F7; display: flex; flex-direction: column; z-index: 5; border-radius: 0.9rem 0.9rem 0 0; box-shadow: 0 -4px 18px rgba(0,0,0,0.2); }
+.sheet-bar { flex: none; display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.75rem; background: #F9F9F9; border-bottom: 1px solid #E5E5EA; border-radius: 0.9rem 0.9rem 0 0; }
+.sheet-bar .url { flex: 1; text-align: center; font-size: 0.8rem; background: #E3E3E8; border-radius: 0.5rem; padding: 0.3rem 0.5rem; color: #333; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
+.sheet-bar button { background: none; border: 0; color: #0A84FF; font: inherit; font-size: 0.92rem; cursor: pointer; padding: 0.2rem 0.3rem; }
+.sheet-body { flex: 1; overflow-y: auto; padding: 0.9rem; }
+.sheet-body h2 { font-size: 1.1rem; margin: 0 0 0.3rem; }
+.sheet-brand { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--brand-dark); font-size: 0.95rem; margin-bottom: 0.75rem; }
+.files { list-style: none; margin: 0.75rem 0 0; padding: 0; background: #fff; border-radius: 10px; overflow: hidden; }
+.files li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.15rem 0.6rem; padding: 0.7rem 0.8rem; border-bottom: 1px solid #E5E5EA; }
+.files li:last-child { border-bottom: 0; }
+.files .fi { grid-row: span 2; width: 2rem; height: 2.4rem; border-radius: 3px; background: #F2F2F7; border: 1px solid #D1D1D6; display: grid; place-items: end center; font-size: 0.5rem; font-weight: 700; color: #fff; padding-bottom: 0.2rem; }
+.files .fi span { background: #C2412D; border-radius: 2px; padding: 0 0.15rem; }
+.files .fn { font-size: 0.9rem; font-weight: 600; word-break: break-all; }
+.files .fb { display: flex; gap: 0.9rem; font-size: 0.85rem; }
+.files .fb button { background: none; border: 0; padding: 0; color: #0A84FF; font: inherit; cursor: pointer; }
+.files .done { color: var(--ok); font-weight: 600; font-size: 0.82rem; }
+@media (max-width: 560px) {
+  .phone { width: 100%; border: 0; border-radius: 0; box-shadow: none; height: calc(100vh - 5.5rem); height: calc(100dvh - 5.5rem); min-height: 30rem; }
+  .statusbar { display: none; }
+  .sheet { top: 0; border-radius: 0; }
+  .sheet-bar { border-radius: 0; }
+  .room { height: calc(100vh - 6rem); height: calc(100dvh - 6rem); border-radius: 8px; }
+  /* phone: keep the chat header to two short lines so the messages get the room */
+  .room-head { gap: 0.55rem; padding: 0.55rem 0.75rem; }
+  .room-head .sun { width: 1.9rem; height: 1.9rem; }
+  .room-head b { font-size: 0.95rem; line-height: 1.25; }
+  .room-head .online { font-size: 0.78rem; }
+  .room-head .round-tag { padding: 0.1rem 0.4rem; }
+  .rt-long { display: none; }
+  .rt-short { display: inline; }
+  .room-thread { padding: 0.75rem; }
+}
+@media (max-width: 380px) { .room-head .sun { display: none; } }
+.debrief-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 2rem; }
+@media (max-width: 560px) { .debrief-card { padding: 1.25rem; } .tog span { min-width: 3.8rem; } }
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice application">
+  <div class="inner">
+    <p><b>Practice application.</b> Sunny Side Diner is not a real restaurant. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<header class="ats-head">
+  <div class="inner">
+    <div class="logo" style="color:#0A5D65">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="16" r="7" fill="#FFC72C"/><path d="M3 21h22" stroke="#0E7C86" stroke-width="3" stroke-linecap="round"/><path d="M14 3v4M5.5 7.5l2.8 2.8M22.5 7.5l-2.8 2.8" stroke="#FFC72C" stroke-width="2.5" stroke-linecap="round"/></svg>
+      Sunny Side Diner
+    </div>
+    <span class="careers">Join our crew</span>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+  <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+  <main class="card" id="card"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.SS_RESUMES;
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var narrow = window.matchMedia && window.matchMedia("(max-width: 860px)").matches;
+  var NUMBER = "(612) 555-0199";
+  var DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], SHIFTS = [["am", "Morning", "6 am to 2 pm"], ["pm", "Evening", "2 pm to 10 pm"]];
+  var ROLES = ["Line cook", "Server", "Dishwasher"];
+  var LIKERT = ["Strongly disagree", "Disagree", "Not sure", "Agree", "Strongly agree"];
+  var SURVEY = [
+    { id: "s1", text: "I show up on time for every shift." },
+    { id: "s3", text: "I stay calm when it gets busy." },
+    { id: "s5", text: "I follow food safety rules even when no one is watching." },
+    { id: "s2", text: "Being a little late is fine if the restaurant is slow.", flips: "s1" },
+    { id: "s4", text: "I get frustrated when customers rush me.", flips: "s3" },
+    { id: "s6", text: "Skipping a safety step is okay if it saves time.", flips: "s5" }
+  ];
+
+  /* view: what the chat on screen already shows, so a new message is added instead of redrawing the chat (keeps a half-typed reply).
+     heldKey: the step Sunny was on before she started typing, so the coach note and résumé list stay put meanwhile.
+     queued: Enter pressed while Sunny was typing; the reply is sent when she's done. gen: stops old timers after a restart. */
+  var S, msgs, w, busy, view, heldKey, queued, gen = 0, dockSig = null, coachSig = null, anySet = [];
+  function fresh(mode) {
+    S = { stage: "posting", mode: mode || (narrow ? "sms" : "web"), rounds: [], done: {}, current: null, profile: null, warned: false,
+      misses: 0, missNotes: [], consent: "", role: "", avail: {}, survey: {}, surveyIdx: 0, slot: null, slots: [],
+      stopped: false, stops: 0, ignored: 0, sheet: null, startedAt: null, finishedAt: null };
+    msgs = []; w = null; busy = false; view = null; heldKey = null; queued = false; anySet = []; gen++;
+    P.setInProgress(false);
+  }
+  fresh();
+  var sms = function () { return S.mode === "sms"; };
+  function now() { return new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); }
+  function mq(q) { return !!(window.matchMedia && window.matchMedia(q).matches); }
+  /* phones and tablets: the résumé list sits above the chat, and dragging doesn't work with a finger */
+  function narrowNow() { return mq("(max-width: 860px)"); }
+  function touchy() { return narrowNow() || mq("(pointer: coarse)"); }
+
+  /* ---------- coach ---------- */
+  var COACH = {
+    posting: ["Hourly jobs often apply by text or website chat. It feels casual, but it’s the real application.", "This one says weekends are required. Remember that."],
+    jobs: ["Texting a keyword is how a lot of hourly applications start. It has to be the exact word from the ad."],
+    start: ["This is a bot, not a person. It only understands what it was built to understand."],
+    consent: ["Bots need exact answers. When it says reply YES or NO, type exactly that."],
+    role: ["Pick the job you actually want. Some bots won’t let you change it later."],
+    roleSms: ["Text bots can’t show buttons, so they ask you to reply with a number."],
+    upload: ["Three practice résumés are waiting, cleanest to trickiest. Preview one, then drag it into the chat or use its Upload button.", "Each one breaks in a different way."],
+    linkUpload: ["Text bots send a link for anything big, like a résumé. Tap the link to open the upload page.", "Real links in hiring texts should go to the company’s own website. Be careful with strange links."],
+    sheetUpload: ["Pick a practice résumé. Preview it first if you want, then choose it."],
+    linkAvail: ["Another link. Tap it to pick your shifts."],
+    roundResult: ["Try the next résumé, or keep going with the application. You can stop after any round."],
+    avail: ["This grid is the biggest filter in hourly hiring. Fewer boxes means fewer shifts they can give you, and the system may pass you over.", "Check every shift you can honestly work. The posting said weekends."],
+    survey: ["There are no trick answers, but a few statements are flipped on purpose to check that you’re reading.", "Read each one all the way through before you answer."],
+    slot: ["The bot books your interview on the spot. Pick a time you can really make."],
+    confirmC: ["Exact reply again. It wants the letter C, nothing else."],
+    booked: ["Bots often put the address and what to bring in the last message. Write it down or take a screenshot before you move on."],
+    stopped: ["STOP is a magic word in texting. It unsubscribes you, and the bot goes silent. Nothing you send now will get an answer.", "To keep going, text START."]
+  };
+  /* what each chat step is called, for screen readers (the hidden h1) and for the AI coach */
+  var STEP = { jobs: "Text JOBS to start", start: "Start the chat", consent: "Answer YES or NO", role: "Pick a job", roleSms: "Pick a job",
+    upload: "Upload a résumé", linkUpload: "Tap the upload link", sheetUpload: "Upload a résumé", loading: "Reading the résumé",
+    confirm: "Check your information", roundResult: "Practice round results", linkAvail: "Tap the shifts link", avail: "Pick your shifts",
+    survey: "Work-style survey", slot: "Pick an interview time", confirmC: "Confirm your interview", booked: "Interview confirmed", stopped: "Texts stopped" };
+  function liveKey() {
+    if (S.stage === "posting") return "posting";
+    if (sms() && S.stopped) return "stopped";
+    if (sms() && S.sheet) return S.sheet.kind === "upload" ? "sheetUpload" : S.sheet.kind;
+    if (!w) return null;
+    if (sms() && w.kind === "role") return "roleSms";
+    if (w.kind === "linkwait") return w.target === "avail" ? "linkAvail" : "linkUpload";
+    return w.kind;
+  }
+  function coachKey() {
+    var k = liveKey();
+    if (k === null && busy) return heldKey; // Sunny is typing: keep the last step's note and résumé list, so nothing jumps
+    heldKey = k; return k;
+  }
+  function renderCoach() {
+    var notes = [], extra = "";
+    if (S.stage !== "done") {
+      var k = coachKey();
+      if (k === "confirm" && S.current) {
+        notes = ["The bot just read the résumé and filled in what it could."].concat(S.current.coach);
+        extra = '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>';
+      } else if (k === "upload") {
+        notes = ["Three practice résumés are waiting, cleanest to trickiest. " + (touchy() ? "Preview one, then tap its Upload button." : "Preview one, then drag it into the chat or use its Upload button."), COACH.upload[1]];
+      } else notes = COACH[k] || [];
+    }
+    var sig = notes.join("\n") + extra;
+    if (sig === coachSig) return; // same note: leave it alone so it isn't read aloud again
+    coachSig = sig;
+    P.coach(notes, extra || undefined);
+  }
+
+  /* ---------- dock ---------- */
+  function dockHint(k) {
+    if (k === "sheetUpload") return "Tap “Upload this one,” or tap Choose on the upload page.";
+    if (k === "linkUpload") return "Preview them here. To upload one, tap the link in the text first.";
+    if (k === "upload" && touchy()) return "Tap “Upload this one” under the résumé you want.";
+    return null; // the engine's own hint fits
+  }
+  function dockStep(k) { return S.stage === "chat" && ["upload", "confirm", "roundResult", "sheetUpload", "linkUpload", "loading"].indexOf(k) !== -1; }
+  function renderDock() {
+    var k = coachKey(), show = dockStep(k);
+    var up = (!sms() && k === "upload") || k === "sheetUpload", drag = up && !sms() && !touchy(), hint = show ? dockHint(k) : null;
+    var html = show ? P.dockHtml(RES, S.done, { canUpload: up, draggable: drag, hint: hint || undefined }) : "";
+    var sig = show + "|" + hint + "|" + drag + "|" + html;
+    if (sig === dockSig) return; // unchanged: don't redraw (keeps focus on a résumé button)
+    dockSig = sig;
+    dock.hidden = !show;
+    layout.classList.toggle("with-dock", show);
+    dock.innerHTML = html;
+    if (!show) return;
+    /* text mode has no box to drag onto, and fingers can't drag: say what works here */
+    var h = dock.querySelector(".dock-hint");
+    if (h && hint) h.textContent = hint;
+    if (!drag) dock.querySelectorAll("[draggable]").forEach(function (c) { c.removeAttribute("draggable"); });
+  }
+  P.bindDock(dock);
+
+  /* ---------- posting ---------- */
+  function postingHtml() {
+    var smsBtn = '<div class="way"><h3>Apply by text</h3><p>Text JOBS to ' + NUMBER + ". Works on any phone.</p><button class=\"btn " + (narrow ? "btn-primary" : "btn-secondary") + '" type="button" data-action="start" data-mode="sms">Text JOBS</button></div>';
+    var webBtn = '<div class="way"><h3>Chat on our website</h3><p>Chat with Sunny, our hiring assistant, right here.</p><button class="btn ' + (narrow ? "btn-secondary" : "btn-primary") + '" type="button" data-action="start" data-mode="web">Chat with us</button></div>';
+    return '<article class="posting"><h1 tabindex="-1">Crew Member</h1><p class="sub">Sunny Side Diner, Minneapolis, MN</p>' +
+      '<dl class="posting-meta"><div><dt>Pay</dt><dd>$18.00 to $20.00 an hour, plus tips for servers</dd></div><div><dt>Schedule</dt><dd>Full or part time</dd></div><div><dt>Shifts</dt><dd>Mornings and evenings</dd></div></dl>' +
+      "<p>We’re hiring line cooks, servers and dishwashers. If you’re friendly and like a busy brunch rush, apply in five minutes.</p>" +
+      '<h3>What you need<span class="req-tag">Required</span></h3><ul><li>Available weekends</li><li>16 or older (18 or older to serve alcohol)</li><li>A phone that can get text messages</li></ul>' +
+      "<h3>Nice to have</h3><ul><li>Food Handler card (we’ll help you get one)</li><li>Restaurant experience</li></ul>" +
+      '<div class="ways">' + (narrow ? smsBtn + webBtn : webBtn + smsBtn) + "</div></article>";
+  }
+
+  /* ---------- message rendering ---------- */
+  function roundTag() { return w && (w.kind === "upload" || w.kind === "confirm" || w.kind === "linkwait" && w.target === "upload") || (S.sheet && (S.sheet.kind === "upload" || S.sheet.kind === "confirm")); }
+
+  function smsMsg(m) {
+    if (m.who === "time") return '<p class="sms-time">' + esc(m.text) + "</p>";
+    if (m.who === "note") return '<div class="sms-note pnote">' + m.html + "</div>";
+    if (m.link) {
+      return '<div class="sb in"><p>' + m.html + ' <button class="lnk" type="button" data-open="' + m.link.target + '">' + esc(m.link.url) + "</button></p></div>" +
+        '<button class="linkprev" type="button" data-open="' + m.link.target + '" aria-label="Open ' + esc(m.link.title) + '"><span class="img" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24"><circle cx="12" cy="13" r="5.5" fill="#FFD34E"/><path d="M12 3v3M4.5 6.5l2 2M19.5 6.5l-2 2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></span><span class="txt"><b>' + esc(m.link.title) + "</b><span>sunnysidediner.example</span></span></button>";
+    }
+    return '<div class="sb ' + (m.who === "me" ? "out" : "in") + '">' + m.html + "</div>";
+  }
+  function webMsg(m) {
+    if (m.who === "time") return "";
+    if (m.who === "note") return '<div class="pnote">' + m.html + "</div>";
+    var me = m.who === "me";
+    return '<div class="rmsg ' + (me ? "me" : "bot") + '"><span class="av" aria-hidden="true">' + (me ? "You" : "S") + '</span><div class="body"><p class="meta"><b>' + (me ? "You" : "Sunny") + "</b>" + esc(m.time || "") + '</p><div class="bubble">' + m.html + "</div></div></div>";
+  }
+
+  function roundTagHtml() {
+    if (!roundTag()) return "";
+    var n = (S.rounds.length + 1) + " of 3";
+    return sms() ? '<span class="rt">Round ' + n + "</span>" : '<span class="round-tag"><span class="rt-long">Practice round </span><span class="rt-short">Round </span>' + n + "</span>";
+  }
+  function typingHtml() { return sms() ? '<div class="sms-typing" role="img" aria-label="Sunny is typing"><i></i><i></i><i></i></div>' : '<p class="room-typing">Sunny is typing…</p>'; }
+  function stepTitle() { return (sms() ? "Apply by text message" : "Apply by website chat") + (STEP[coachKey()] ? ": " + STEP[coachKey()] : ""); }
+  function textOn() { return sms() ? !S.sheet : !busy && !!w && (w.kind === "consent" || w.kind === "confirmC"); }
+  /* website chat: what the reply box says when there's nothing to type on this step */
+  function placeholder() {
+    if (textOn()) return sms() ? "Text Message" : "Type your reply";
+    if (busy || !w) return "Sunny is typing…";
+    return { upload: "Upload a résumé above", confirm: "Check the form above", avail: "Pick your shifts above", roundResult: "Pick a button in the note above",
+      booked: "Tap See how you did above" }[w.kind] || "Choose an option above";
+  }
+
+  function smsShell() {
+    var t = now();
+    return '<h1 class="visually-hidden" id="chatTitle">' + esc(stepTitle()) + "</h1>" +
+      '<div class="phone" role="region" aria-label="Text messages with ' + NUMBER + '">' +
+      '<div class="statusbar" aria-hidden="true"><span>' + esc(t) + '</span><span class="notch"></span><span>5G &nbsp;▮</span></div>' +
+      '<div class="sms-head" id="chatHead"><span class="back" aria-hidden="true">‹</span><span class="who" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg></span><span class="num">' + NUMBER + "</span>" +
+      roundTagHtml() + "</div>" +
+      '<div class="sms-thread" id="thread" tabindex="-1"><div class="thread-log" id="log" role="log" aria-live="polite" aria-label="Messages">' + msgs.map(smsMsg).join("") + "</div>" + (busy ? typingHtml() : "") + "</div>" +
+      '<form class="sms-compose" id="composer"><label class="visually-hidden" for="say">Text message</label><input type="text" id="say" autocomplete="off" placeholder="Text Message"' + (textOn() ? "" : " disabled") + '>' +
+      '<button type="submit" aria-label="Send"' + (textOn() ? "" : " disabled") + '><svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 20V5M5 11l7-7 7 7" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>' +
+      (S.sheet ? sheetHtml() : "") + "</div>";
+  }
+  function webShell() {
+    var on = textOn();
+    return '<h1 class="visually-hidden" id="chatTitle">' + esc(stepTitle()) + "</h1>" +
+      '<div class="room" role="region" aria-label="Website chat with Sunny, the hiring assistant">' +
+      '<div class="room-head" id="chatHead"><span class="sun" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="13" r="5.5" fill="#F29F05"/><path d="M12 2.5v3M4.5 6l2 2M19.5 6l-2 2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></span>' +
+      '<div class="who"><b>Sunny Side Diner<span class="rt-long"> careers chat</span></b><span class="online">Sunny, virtual hiring assistant</span></div>' +
+      roundTagHtml() + "</div>" +
+      '<div class="room-thread" id="thread" tabindex="-1"><div class="thread-log" id="log" role="log" aria-live="polite" aria-label="Messages">' + msgs.map(webMsg).join("") + "</div>" + (busy ? typingHtml() : "") +
+      (w && !busy ? '<div class="room-widget" id="widget">' + webWidget() + "</div>" : "") + "</div>" +
+      '<form class="room-compose" id="composer"><label class="visually-hidden" for="say">Type a reply</label><input type="text" id="say" autocomplete="off" placeholder="' + esc(placeholder()) + '"' + (on ? "" : " disabled") + '>' +
+      '<button class="btn btn-primary" type="submit"' + (on ? "" : " disabled") + ">Send</button></form></div>";
+  }
+
+  /* ---------- widgets ---------- */
+  function chips(list) { return '<div class="chips">' + list.map(function (c) { return '<button class="chip" type="button" data-chip="' + esc(c[0]) + '">' + esc(c[1] || c[0]) + "</button>"; }).join("") + "</div>"; }
+  function webWidget() {
+    switch (w.kind) {
+      case "start": return chips([["go", "Let’s go"]]);
+      case "role": return chips(ROLES.map(function (r) { return [r]; }));
+      case "upload": return '<div class="wcard"><div class="drop small" id="drop">' + dropText() + "</div>" +
+        (S.rounds.length ? '<div class="chips continue"><button class="chip" type="button" data-action="continue-app">Continue the application</button></div>' : "") + "</div>";
+      case "confirm": return confirmHtml();
+      case "avail": return availHtml();
+      case "survey": return chips(LIKERT.map(function (l, i) { return [String(i + 1), l]; }));
+      case "slot": return chips(S.slots.map(function (s, i) { return [String(i), s.label]; }));
+      default: return "";
+    }
+  }
+  function dropText() {
+    if (narrowNow()) return '<p><b>Tap “Upload this one” above</b></p><p class="hint">It’s under each practice résumé, above the chat.</p>';
+    if (touchy()) return '<p><b>Tap “Upload this one” on a practice résumé</b></p><p class="hint">The practice résumés are next to the chat.</p>';
+    return '<p><b>Drag a résumé here</b></p><p class="hint">Or use an Upload button in the practice résumés.</p>';
+  }
+  function f(id, label, value, type, req) { return P.textField(id, label, value, { type: type, req: req }); }
+  function monthYear(p, j, which, label, disabled) {
+    var mo = '<option value="">Month</option>'; for (var m = 1; m <= 12; m++) mo += '<option value="' + m + '"' + (String(j[which + "M"]) === String(m) ? " selected" : "") + ">" + P.MONTHS[m - 1].slice(0, 3) + "</option>";
+    var yo = '<option value="">Year</option>'; for (var y = 2026; y >= 1980; y--) yo += '<option value="' + y + '"' + (String(j[which + "Y"]) === String(y) ? " selected" : "") + ">" + y + "</option>";
+    return '<div class="field" id="f-' + p + which + '"><label for="' + p + which + 'M">' + label + '</label><div class="pair"><select id="' + p + which + 'M" aria-label="' + label + ' month"' + (disabled ? " disabled" : "") + ">" + mo + '</select><select id="' + p + which + 'Y" aria-label="' + label + ' year"' + (disabled ? " disabled" : "") + ">" + yo + "</select></div></div>";
+  }
+  function confirmHtml() {
+    var c = S.profile.contact;
+    return '<div class="wcard" id="ccard"><div id="infoErr" aria-live="polite"></div>' +
+      '<p class="hint" style="margin:0 0 0.75rem">Check every box against the résumé. Fix anything wrong.</p>' +
+      '<p style="margin:0 0 0.9rem"><button class="btn btn-secondary" type="button" data-action="open-current">Open ' + esc(S.current.file) + "</button></p>" +
+      '<div class="row">' + f("c-first", "First name", c.first, "text", true) + f("c-last", "Last name", c.last, "text", true) + "</div>" +
+      '<div class="row">' + f("c-phone", "Mobile phone", c.phone, "tel", true) + f("c-zip", "ZIP code", c.zip, "text", true) + "</div>" +
+      f("c-email", "Email", c.email, "email", true) +
+      "<h3>Work history</h3>" + S.profile.jobs.map(function (j, i) {
+        var p = "j" + i + "-";
+        return '<div class="job"><div class="job-head"><h3>Job ' + (i + 1) + "</h3>" + (i > 0 ? '<button class="btn-link" type="button" data-action="remove-job" data-i="' + i + '">Remove</button>' : "") + "</div>" +
+          f(p + "title", "Job title", j.title, "text", true) + f(p + "employer", "Employer", j.employer, "text", true) +
+          '<div class="dates">' + monthYear(p, j, "start", "Started", false) + monthYear(p, j, "end", "Ended", j.current) + "</div>" +
+          '<div class="field" id="f-' + p + 'cur"><label class="choice"><input type="checkbox" id="' + p + 'current" data-current="' + i + '"' + (j.current ? " checked" : "") + "> <span>I still work here</span></label></div></div>";
+      }).join("") +
+      '<button class="btn btn-secondary" type="button" id="add-job" data-action="add-job">Add a job I missed</button>' +
+      '<div id="coachCheck"></div><div class="btns"><span></span><button class="btn btn-primary" type="button" data-action="looks-right">Looks right</button></div></div>';
+  }
+  function availHtml() {
+    return '<div class="wcard"><div id="avErr" aria-live="polite"></div><table class="grid"><thead><tr><th scope="col">Day</th>' +
+      SHIFTS.map(function (s) { return '<th scope="col">' + s[1] + "<br>" + s[2] + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      DAYS.map(function (d) {
+        return '<tr><th scope="row">' + d + "</th>" + SHIFTS.map(function (s) {
+          var k = d + "-" + s[0];
+          return '<td><label class="tog"><input type="checkbox" data-av="' + k + '"' + (S.avail[k] ? " checked" : "") + '><span>' + s[1] + '<span class="visually-hidden"> ' + d + "</span></span></label></td>";
+        }).join("") + "</tr>";
+      }).join("") + "</tbody></table>" +
+      '<label class="choice" style="margin-top:0.6rem"><input type="checkbox" id="anyShift"> <span>I can work any shift</span></label>' +
+      '<div class="btns"><span></span><button class="btn btn-primary" type="button" data-action="save-avail">Save my availability</button></div></div>';
+  }
+  function roundNoteHtml(last, more) {
+    return "<p>Practice round " + S.rounds.length + ": " + esc(last.person) + " (" + esc(last.level) + ")</p>" +
+      '<p class="score">You caught ' + last.fixed + " of " + last.total + "</p><ul>" + last.results.map(function (x) {
+        return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? "Fixed" : "Missed") + "</span><span><b>" + esc(x.label) + ".</b> " + esc(x.why) + "</span></li>";
+      }).join("") + "</ul>" +
+      '<div class="chips">' + (more ? '<button class="chip" type="button" data-action="next-round">Try the next résumé</button>' : "") +
+      '<button class="chip" type="button" data-action="continue-app">Continue the application</button></div>';
+  }
+  function sheetHtml() {
+    var k = S.sheet.kind, body = "";
+    var lock = '<svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0110 0v3" stroke="#555" stroke-width="2.5" fill="none"/><rect x="5" y="10" width="14" height="11" rx="2" fill="#555"/></svg>';
+    var brand = '<p class="sheet-brand"><svg width="18" height="18" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="16" r="7" fill="#FFC72C"/><path d="M3 21h22" stroke="#0E7C86" stroke-width="3" stroke-linecap="round"/></svg>Sunny Side Diner</p>';
+    if (k === "upload") {
+      var left = RES.filter(function (r) { return !S.done[r.id]; });
+      body = brand + "<h2>Upload your résumé</h2><p class=\"hint\">Choose a file from your phone. (Round " + (S.rounds.length + 1) + " of 3)</p><ul class=\"files\">" +
+        RES.map(function (r) {
+          var d = S.done[r.id];
+          return '<li><span class="fi" aria-hidden="true"><span>PDF</span></span><span class="fn">' + esc(r.file) + '</span><span class="fb"><button type="button" data-preview="' + esc(r.id) + '">Preview</button>' +
+            (d ? '<span class="done">Done: ' + d.fixed + " of " + d.total + "</span>" : '<button type="button" data-upload="' + esc(r.id) + '">Choose</button>') + "</span></li>";
+        }).join("") + "</ul>" + (left.length ? "" : '<p class="hint">All three are done.</p>') +
+        (S.rounds.length ? '<p class="hint" style="margin-top:1rem">Done practicing? Go on to the rest of the application.</p><p style="margin:0.5rem 0 0"><button class="btn btn-secondary" type="button" data-action="continue-app">Continue the application</button></p>' : "");
+    } else if (k === "loading") {
+      body = '<div class="loading" role="status"><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(S.current.file) + "…</b></p></div>";
+    } else if (k === "confirm") {
+      body = brand + "<h2>Check your information</h2>" + confirmHtml();
+    } else if (k === "roundResult") {
+      body = '<div class="pnote">' + roundNoteHtml(S.rounds[S.rounds.length - 1], S.rounds.length < 3) + "</div>";
+    } else if (k === "avail") {
+      body = brand + "<h2>When can you work?</h2><p class=\"hint\">Tap every shift you can work. Most of our shifts are on weekends.</p>" + availHtml();
+    }
+    var canClose = k === "upload" || k === "avail";
+    return '<div class="sheet" role="dialog" aria-label="Sunny Side Diner web page"><div class="sheet-bar">' +
+      (canClose ? '<button type="button" data-action="close-sheet">Close</button>' : '<span style="width:2.6rem"></span>') +
+      '<span class="url">' + lock + "sunnysidediner.example</span><span style=\"width:2.6rem\"></span></div>" +
+      '<div class="sheet-body" id="sheetBody">' + body + "</div></div>";
+  }
+
+  /* ---------- render ---------- */
+  /* opts.same: the same step drawn again (Add a job, Remove): the résumé stays open and nothing scrolls.
+     opts.scrollTo: an element id to bring to the top of the chat. */
+  function render(opts) {
+    opts = opts || {};
+    var ae = document.activeElement;
+    /* An open résumé stays open while the résumé list is still showing (Sunny's messages don't close it).
+       It closes when the list goes away, or when a round starts with a different résumé than the one open. */
+    var k = S.stage === "chat" ? coachKey() : null, vt = P.byId("viewerTitle");
+    var keepViewer = opts.same || (dockStep(k) && (k !== "confirm" && k !== "loading" || !vt || (S.current && vt.textContent === S.current.file)));
+    if (!keepViewer) P.closeViewer(false);
+    if (S.stage !== "chat") {
+      view = null; card.removeAttribute("data-step");
+      card.className = S.stage === "posting" ? "card" : "card chat-stage";
+      card.innerHTML = S.stage === "posting" ? postingHtml() : debriefHtml();
+    } else {
+      var th = P.byId("thread"), sb = P.byId("sheetBody");
+      var keep = opts.same ? { th: th ? th.scrollTop : 0, sb: sb ? sb.scrollTop : 0 } : null;
+      if (view && view.mode === S.mode && P.byId("log")) updateChat();
+      else {
+        card.className = "card chat-stage"; card.innerHTML = sms() ? smsShell() : webShell();
+        view = { mode: S.mode, n: msgs.length };
+        P.byId("composer").addEventListener("submit", onSubmit);
+      }
+      bindParts();
+      th = P.byId("thread"); sb = P.byId("sheetBody");
+      if (keep) { th.scrollTop = keep.th; if (sb) sb.scrollTop = keep.sb; }
+      else if (opts.scrollTo && P.byId(opts.scrollTo)) th.scrollTop = P.byId(opts.scrollTo).offsetTop - th.offsetTop - 8;
+      else th.scrollTop = th.scrollHeight;
+      P.byId("chatTitle").textContent = stepTitle();
+      card.setAttribute("data-step", stepFacts());
+    }
+    renderDock(); renderCoach();
+    if (opts.focusHeading) { var h = card.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } window.scrollTo(0, 0); }
+    else if (S.stage === "chat" && (lostFocus(ae) || (w && w.kind === "booked" && ae === P.byId("say")))) focusNext(); // booked: the only next step is "See how you did"
+  }
+
+  /* Change only what changed: new messages are added to the end of the live region (so they're read aloud once),
+     and the reply box is never rebuilt, so a half-typed reply and the cursor stay where they were. */
+  function updateChat() {
+    var head = P.byId("chatHead"), tag = head.querySelector(".rt, .round-tag");
+    if (tag) tag.remove();
+    head.insertAdjacentHTML("beforeend", roundTagHtml());
+    if (msgs.length > view.n) P.byId("log").insertAdjacentHTML("beforeend", msgs.slice(view.n).map(sms() ? smsMsg : webMsg).join(""));
+    view.n = msgs.length;
+    var th = P.byId("thread"), typing = th.querySelector(".sms-typing, .room-typing"), wd = P.byId("widget");
+    if (busy && !typing) th.insertAdjacentHTML("beforeend", typingHtml());
+    if (!busy && typing) typing.remove();
+    if (wd) wd.remove();
+    if (!sms() && w && !busy) th.insertAdjacentHTML("beforeend", '<div class="room-widget" id="widget">' + webWidget() + "</div>");
+    var say = P.byId("say"), send = card.querySelector("#composer button"), on = textOn();
+    say.disabled = !on; send.disabled = !on;
+    say.placeholder = placeholder();
+    var sh = card.querySelector(".sheet");
+    if (sh) sh.remove();
+    if (sms() && S.sheet) card.querySelector(".phone").insertAdjacentHTML("beforeend", sheetHtml());
+  }
+
+  function bindParts() {
+    var drop = P.byId("drop");
+    if (drop && !drop.dataset.bound) {
+      drop.dataset.bound = "1";
+      P.bindDrop(drop, { onResume: startRound, onFile: function () { msgs.push({ who: "bot", html: "<p>For this practice, use one of the practice résumés.</p>", time: now() }); render({ same: true }); } });
+    }
+  }
+
+  /* For the AI coach: where the learner is, plus Sunny's last message. Leaves out anything marked data-private (like a name the learner typed). */
+  function stepFacts() {
+    var last = card.querySelectorAll(sms() ? "#log .sb.in" : "#log .rmsg.bot .bubble"), txt = "";
+    if (last.length) {
+      var c = last[last.length - 1].cloneNode(true);
+      c.querySelectorAll("[data-private]").forEach(function (x) { x.textContent = "[name]"; });
+      txt = c.textContent.replace(/\s+/g, " ").trim();
+    }
+    return (stepTitle() + (txt ? ". Sunny’s last message: " + txt : "")).slice(0, 300);
+  }
+
+  /* After a tap, the button often disappears while Sunny types. Put focus somewhere useful instead of the page body. */
+  function lostFocus(ae) {
+    var th = P.byId("thread"), sheet = card.querySelector(".sheet");
+    if (!ae || ae === document.body || !document.contains(ae) || ae.disabled || ae === th) return true;
+    return !!(sheet && card.contains(ae) && !sheet.contains(ae)); // a text link just opened its web page: move into it
+  }
+  function focusNext() {
+    var th = P.byId("thread"), el = null;
+    var sheet = card.querySelector(".sheet");
+    if (sheet) {
+      el = sheet.querySelector(".sheet-body .chip, .sheet-body .chips button");
+      if (!el) { el = sheet.querySelector(".sheet-body h2") || sheet.querySelector(".sheet-body .loading"); if (el) el.setAttribute("tabindex", "-1"); }
+    } else if (!busy) {
+      var wd = P.byId("widget"), lastMsg = P.byId("log").lastElementChild;
+      el = (wd && wd.querySelector(".chip")) ||
+        (lastMsg && lastMsg.classList.contains("pnote") && lastMsg.querySelector(".chip")) ||
+        (!P.byId("say").disabled && P.byId("say")) ||
+        (wd && wd.querySelector("button, input, select"));
+    }
+    (el || th).focus({ preventScroll: true });
+  }
+
+  function onSubmit(e) {
+    e.preventDefault();
+    var box = P.byId("say"), v = box.value.trim();
+    if (!v) return;
+    if (busy) { if (sms()) queued = true; return; } // sent as soon as Sunny finishes typing; the words stay in the box until then
+    if (!sms() && !(w && (w.kind === "consent" || w.kind === "confirmC"))) return;
+    box.value = "";
+    onText(v);
+  }
+  function sendQueued() {
+    if (!queued || busy || S.stage !== "chat" || !sms()) return;
+    queued = false;
+    var box = P.byId("say");
+    if (!box || box.disabled) return;
+    var v = box.value.trim();
+    if (!v) return;
+    box.value = "";
+    onText(v);
+  }
+
+  function bot(lines, then, link) {
+    var g = gen;
+    w = null; busy = true; render();
+    var i = 0;
+    (function next() {
+      setTimeout(function () {
+        if (g !== gen) return; // the learner started over
+        var m = { who: "bot", html: "<p>" + lines[i] + "</p>", time: now() };
+        if (link && i === lines.length - 1) m.link = link;
+        msgs.push(m);
+        i++;
+        if (i < lines.length) { render(); next(); }
+        else { busy = false; if (then) then(); else render(); sendQueued(); }
+      }, reduce ? 120 : 650);
+    })();
+  }
+  function me(text) { msgs.push({ who: "me", html: "<p>" + esc(text) + "</p>", time: now() }); }
+  function show(next, opts) { w = next; render(opts); }
+  function miss(note) { S.misses++; if (note && S.missNotes.indexOf(note) === -1) S.missNotes.push(note); }
+
+  /* ---------- flow ---------- */
+  function start(mode) {
+    fresh(mode); S.stage = "chat"; S.startedAt = Date.now();
+    if (sms()) { msgs.push({ who: "time", text: "Text Message, Today " + now() }); show({ kind: "jobs" }); }
+    else bot(["Hi! I’m Sunny, the hiring assistant for Sunny Side Diner.", "Applying takes about five minutes. Ready to start?"], function () { show({ kind: "start" }); });
+  }
+  function askConsent() {
+    bot(sms() ? ["Thanks for your interest in Sunny Side Diner! Can we text you about your application? Reply YES or NO. Msg & data rates may apply. Reply STOP to opt out."]
+      : ["First things first. Can I text you updates about your application?", "Reply YES or NO."], function () { show({ kind: "consent" }); });
+  }
+  function askRole() {
+    bot(sms() ? ["Which job? Reply 1 for Line cook, 2 for Server, 3 for Dishwasher."] : ["Which job are you applying for?"], function () { show({ kind: "role" }); });
+  }
+  function askUpload() {
+    var again = S.rounds.length > 0;
+    if (sms()) bot([again ? "Upload your next résumé here:" : "Great! Upload your résumé here and we’ll fill in what we can:"], function () { show({ kind: "linkwait", target: "upload" }); },
+      { target: "upload", url: "sunnysidediner.example/r/7Kx2", title: "Sunny Side Diner: Upload résumé" });
+    else bot([again ? "Ready for the next one? Upload another practice résumé." : "Do you have a résumé? Upload it and I’ll fill in what I can."], function () { show({ kind: "upload" }); });
+  }
+
+  function startRound(id) {
+    var r = RES.filter(function (x) { return x.id === id; })[0];
+    if (!r || S.done[r.id]) return;
+    if (sms() ? !(S.sheet && S.sheet.kind === "upload") : !(w && w.kind === "upload")) return;
+    S.current = r; S.profile = P.clone(r.parsed); S.warned = false;
+    P.setInProgress(true); // from here on, leaving the page asks first
+    if (sms()) {
+      var g = gen;
+      S.sheet = { kind: "loading" }; render();
+      setTimeout(function () { if (g !== gen) return; S.sheet = { kind: "confirm" }; w = { kind: "confirm" }; render(); }, reduce ? 300 : 1200);
+    } else {
+      me("Uploaded " + r.file);
+      bot(["Thanks! Reading your résumé now…", "Here’s what I found. Please check it before we move on."], function () { show({ kind: "confirm" }, { scrollTo: "widget" }); });
+    }
+  }
+
+  function chatValidate(pr) {
+    P.clearErrors();
+    var n = 0, c = pr.contact;
+    function need(ok, id, msg) { if (!ok) { P.markInvalid(id, msg); n++; } }
+    need(c.first.trim(), "c-first", "Enter a first name.");
+    need(c.last.trim(), "c-last", "Enter a last name.");
+    need(P.digits(c.phone).length >= 10, "c-phone", "Enter a 10-digit phone number.");
+    need(/^\d{5}$/.test(c.zip.trim()), "c-zip", "Enter a 5-digit ZIP code.");
+    need(P.validEmail(c.email), "c-email", c.email.trim() ? "Enter a valid email." : "Enter an email.");
+    pr.jobs.forEach(function (j, i) {
+      var p = "j" + i + "-";
+      need(j.title.trim(), p + "title", "Enter a job title.");
+      need(j.employer.trim(), p + "employer", "Enter the employer.");
+      need(j.startY, p + "start", "Choose at least a start year.");
+      if (!j.current) need(j.endY, p + "end", "Choose an end year, or check “I still work here.”");
+    });
+    P.summary("infoErr", n);
+    return n === 0;
+  }
+
+  function finishRound() {
+    var res = P.score(S.current, S.profile), fx = res.filter(function (x) { return x.fixed; }).length;
+    S.rounds.push({ id: S.current.id, person: S.current.person, level: S.current.level, results: res, fixed: fx, total: res.length, profile: P.clone(S.profile) });
+    S.done[S.current.id] = { fixed: fx, total: res.length };
+    if (sms()) { S.sheet = { kind: "roundResult" }; w = { kind: "roundResult" }; render(); var sb = P.byId("sheetBody"); if (sb) sb.scrollTop = 0; return; }
+    me("Looks right");
+    msgs.push({ who: "note", html: roundNoteHtml(S.rounds[S.rounds.length - 1], S.rounds.length < 3) });
+    show({ kind: "roundResult" });
+  }
+  function stripNoteButtons() {
+    msgs.forEach(function (m) { if (m.who === "note") m.html = m.html.replace(/<div class="chips">[\s\S]*<\/div>$/, ""); });
+    card.querySelectorAll("#log .pnote .chips").forEach(function (c) { c.remove(); });
+  }
+
+  /* "Continue the application" shows after a round (on the round note, and on the upload step once a round is done) */
+  function canContinue() {
+    if (!S.rounds.length || busy) return false;
+    if (sms()) return !!(S.sheet && (S.sheet.kind === "upload" || S.sheet.kind === "roundResult"));
+    return !!(w && (w.kind === "roundResult" || w.kind === "upload"));
+  }
+  function continueApp() {
+    if (!canContinue()) return;
+    stripNoteButtons();
+    S.profile = S.rounds[S.rounds.length - 1].profile;
+    S.sheet = null;
+    var first = '<span data-private>' + esc(S.profile.contact.first) + "</span>"; // the learner may have typed this name
+    if (sms()) availLink("Thanks, " + first + "! We got your info. Now pick the shifts you can work:");
+    else bot(["Thanks, " + first + "! Now let’s talk about when you can work.", "Tap every shift you can work. Most of our shifts are on weekends."], function () { show({ kind: "avail" }, { scrollTo: "widget" }); });
+  }
+
+  function askSurvey() {
+    var q = SURVEY[S.surveyIdx], lines = [];
+    if (S.surveyIdx === 0) lines.push(sms() ? "Almost done! A quick 6-question survey. Reply with a number: 1 = Strongly disagree, 2 = Disagree, 3 = Not sure, 4 = Agree, 5 = Strongly agree."
+      : "Almost done. A quick work-style survey, six statements. There are no wrong answers.");
+    lines.push("<b>" + (S.surveyIdx + 1) + " of 6.</b> " + esc(q.text));
+    bot(lines, function () { show({ kind: "survey" }); });
+  }
+  function surveyAnswer(n) {
+    var q = SURVEY[S.surveyIdx]; S.survey[q.id] = n;
+    if (!sms()) me(LIKERT[n - 1]);
+    S.surveyIdx++;
+    if (S.surveyIdx < SURVEY.length) askSurvey(); else askSlot();
+  }
+
+  function nextDays() {
+    var out = [], d = new Date(); d.setHours(12, 0, 0, 0);
+    [[4, "3:00 pm"], [5, "10:00 am"], [6, "9:00 am"]].forEach(function (x) {
+      var t = new Date(d); t.setDate(t.getDate() + 2);
+      while (t.getDay() !== x[0]) t.setDate(t.getDate() + 1);
+      out.push({ when: t.getTime(), label: t.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) + " at " + x[1] });
+    });
+    return out.sort(function (a, b) { return a.when - b.when; });
+  }
+  function askSlot() {
+    S.slots = nextDays();
+    if (sms()) bot(["Good news! You’re invited to a 15-minute interview. Reply with a letter:<br>A) " + esc(S.slots[0].label) + "<br>B) " + esc(S.slots[1].label) + "<br>C) " + esc(S.slots[2].label)], function () { show({ kind: "slot" }); });
+    else bot(["Good news! You’re invited to a 15-minute interview with our kitchen manager.", "Pick a time:"], function () { show({ kind: "slot" }); });
+  }
+  function pickSlot(i) {
+    S.slot = S.slots[i];
+    if (!sms()) me(S.slot.label);
+    bot(["You’re booked for " + esc(S.slot.label) + " at Sunny Side Diner, 1200 Sunrise Avenue, Minneapolis. Reply C to confirm or R to pick a different time."], function () { show({ kind: "confirmC" }); });
+  }
+  /* The confirmation stays on screen until the learner chooses to move on, so there's time to read it */
+  function finish() {
+    bot(["You’re confirmed! See you " + esc(S.slot.label) + ". Bring a photo ID and ask for Dana at the host stand."], function () {
+      S.finishedAt = Date.now();
+      msgs.push({ who: "note", html: "<p>Your interview is booked. Read Sunny’s last message, then see how you did.</p>" +
+        '<div class="chips"><button class="chip" type="button" data-action="see-debrief">See how you did</button></div>' });
+      show({ kind: "booked" });
+    });
+  }
+  function showDebrief() {
+    if (!(w && w.kind === "booked") || busy) return;
+    S.stage = "done"; P.setInProgress(false);
+    render({ focusHeading: true });
+  }
+
+  /* ---------- typed replies ---------- */
+  function onText(v) {
+    var t = v.trim().toUpperCase().replace(/[.!]+$/, "");
+    me(v);
+    if (sms()) {
+      if (t === "STOP") { var held = w; S.stopped = true; S.stops++; bot(["You’re unsubscribed from Sunny Side Diner texts. You won’t get any more messages. Reply START to resubscribe."], function () { w = held; render(); }); return; }
+      if (S.stopped) {
+        if (t === "START") { S.stopped = false; var keep = w; bot(["You’re resubscribed to Sunny Side Diner texts."], function () { repeatPrompt(keep); }); }
+        else { S.ignored++; render(); } // a real unsubscribed number stays silent
+        return;
+      }
+      if (t === "HELP") { var k2 = w; bot(["Sunny Side Diner jobs. Msg & data rates may apply. Reply STOP to opt out."], function () { show(k2); }); return; }
+    }
+    var kind = w && w.kind, keepW = w;
+    if (kind === "jobs") {
+      if (t === "JOBS") askConsent();
+      else { miss("the exact keyword JOBS"); bot(["To apply for jobs at Sunny Side Diner, text JOBS. Reply STOP to opt out."], function () { show(keepW); }); }
+    } else if (kind === "consent") {
+      if (t === "YES" || t === "NO") { S.consent = t; askRole(); }
+      else { miss("the word YES or NO, nothing else"); bot(["Sorry, I didn’t understand that. Please reply YES or NO."], function () { show(keepW); }); }
+    } else if (kind === "role") {
+      var idx = ["1", "2", "3"].indexOf(t); if (idx === -1) idx = ROLES.map(function (r) { return r.toUpperCase(); }).indexOf(t);
+      if (idx !== -1) { S.role = ROLES[idx]; askUpload(); }
+      else { miss("a number for the job: 1, 2 or 3"); bot(["Sorry, please reply 1, 2 or 3."], function () { show(keepW); }); }
+    } else if (kind === "linkwait") {
+      miss("a tap on the link instead of a text");
+      bot(["Please tap the link above to continue."], function () { show(keepW); });
+    } else if (kind === "survey") {
+      if (/^[1-5]$/.test(t)) surveyAnswer(+t);
+      else { miss("a number from 1 to 5"); bot(["Please reply with a number from 1 to 5."], function () { show(keepW); }); }
+    } else if (kind === "slot") {
+      var si = ["A", "B", "C"].indexOf(t);
+      if (si !== -1) pickSlot(si);
+      else { miss("one letter for the time: A, B or C"); bot(["Please reply A, B or C."], function () { show(keepW); }); }
+    } else if (kind === "confirmC") {
+      if (t === "C") finish();
+      else if (t === "R") { S.slot = null; askSlot(); }
+      else { miss("the letter C to confirm"); bot(["Sorry, I didn’t understand that. Reply C to confirm or R to pick a different time."], function () { show(keepW); }); }
+    } else {
+      bot(["Sorry, I didn’t understand that."], function () { show(keepW); });
+    }
+  }
+  function availLink(line) {
+    bot([line], function () { show({ kind: "linkwait", target: "avail" }); },
+      { target: "avail", url: "sunnysidediner.example/s/7Kx2", title: "Sunny Side Diner: Pick your shifts" });
+  }
+  function repeatPrompt(k) {
+    if (!k) { render(); return; }
+    var map = { jobs: function () { show(k); }, consent: askConsent, role: askRole, survey: askSurvey, slot: askSlot,
+      linkwait: function () { if (k.target === "avail") availLink("Pick the shifts you can work:"); else askUpload(); },
+      confirmC: function () { pickSlot(S.slots.indexOf(S.slot)); } };
+    (map[k.kind] || function () { show(k); })();
+  }
+
+  /* "I can work any shift" checks every box; unchecking it clears only the boxes it checked, not the ones picked one by one */
+  card.addEventListener("change", function (e) {
+    var t = e.target, any = P.byId("anyShift");
+    if (!any) return;
+    if (t === any) {
+      if (any.checked) {
+        anySet = [];
+        card.querySelectorAll("[data-av]").forEach(function (cb) { if (!cb.checked) { cb.checked = true; anySet.push(cb.dataset.av); } });
+      } else {
+        anySet.forEach(function (k) { var cb = card.querySelector('[data-av="' + k + '"]'); if (cb) cb.checked = false; });
+        anySet = [];
+      }
+    } else if (t.dataset && t.dataset.av && !t.checked && any.checked) {
+      any.checked = false; anySet = []; // a box was turned off, so "any shift" is no longer true; the rest stay as they are
+    }
+  });
+
+  function clearCoachResult() { var r = P.byId("coachResult"); if (r) r.textContent = ""; } // the blue outlines are gone after a redraw
+  function showWrong() {
+    S.profile = P.collect(S.profile.jobs.length);
+    var n = P.flag(P.score(S.current, S.profile)), out = P.byId("coachResult");
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks" : "look") + " off. They’re outlined in blue." : "Everything matches the résumé. Nice work.";
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload], [data-chip], [data-open]");
+    if (!b) return;
+    /* a résumé can be opened any time, even while Sunny is typing */
+    if (b.dataset.preview) { P.openViewer(RES.filter(function (r) { return r.id === b.dataset.preview; })[0], b); return; }
+    if (b.dataset.action === "open-current") { if (S.current) P.openViewer(S.current, b); return; }
+    if (busy) return;
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    if (b.dataset.open) {
+      if (S.stopped) return;
+      var tgt = b.dataset.open;
+      if (tgt === "upload" && w && w.kind === "linkwait" && w.target === "upload") { S.sheet = { kind: "upload" }; render(); }
+      if (tgt === "avail" && w && w.kind === "linkwait" && w.target === "avail") { S.sheet = { kind: "avail" }; w = { kind: "avail" }; render(); }
+      return;
+    }
+    if (b.dataset.chip !== undefined) {
+      var c = b.dataset.chip, kind = w && w.kind;
+      if (kind === "start") { me("Let’s go"); askConsent(); }
+      else if (kind === "role") { S.role = c; me(c); askUpload(); }
+      else if (kind === "survey") surveyAnswer(+c);
+      else if (kind === "slot") pickSlot(+c);
+      return;
+    }
+    switch (b.dataset.action) {
+      case "start": start(b.dataset.mode); break;
+      case "close-sheet":
+        if (S.sheet && S.sheet.kind === "avail") {
+          w = { kind: "linkwait", target: "avail" };
+          S.avail = {}; card.querySelectorAll("[data-av]").forEach(function (cb) { if (cb.checked) S.avail[cb.dataset.av] = true; }); // keep the picks for next time
+        }
+        S.sheet = null; render(); break;
+      /* Add and Remove redraw the same card: the résumé stays open and the chat doesn't jump */
+      case "add-job": {
+        S.profile = P.collect(S.profile.jobs.length);
+        S.profile.jobs.push({ title: "", employer: "", location: "", startM: "", startY: "", endM: "", endY: "", current: false, desc: "" });
+        render({ same: true }); clearCoachResult();
+        var t = P.byId("j" + (S.profile.jobs.length - 1) + "-title"); if (t) t.focus();
+        break;
+      }
+      case "remove-job": {
+        S.profile = P.collect(S.profile.jobs.length); S.profile.jobs.splice(+b.dataset.i, 1);
+        render({ same: true }); clearCoachResult();
+        var a = P.byId("add-job"); if (a) a.focus();
+        break;
+      }
+      case "show-wrong": showWrong(); break;
+      case "looks-right": {
+        S.profile = P.collect(S.profile.jobs.length);
+        if (!chatValidate(S.profile)) break;
+        var bad = P.score(S.current, S.profile).filter(function (x) { return !x.fixed; });
+        if (P.hints() && bad.length && !S.warned) {
+          S.warned = true;
+          P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " here still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real bot wouldn’t warn you.</p>" +
+            '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="send-anyway" style="margin-left:1rem">Send it anyway</button></div>';
+          break;
+        }
+        finishRound(); break;
+      }
+      case "send-anyway": S.profile = P.collect(S.profile.jobs.length); if (chatValidate(S.profile)) finishRound(); break;
+      case "next-round":
+        if (!(w && w.kind === "roundResult") || S.rounds.length >= 3) break;
+        stripNoteButtons();
+        if (sms()) { S.sheet = { kind: "upload" }; w = { kind: "linkwait", target: "upload" }; render(); }
+        else askUpload();
+        break;
+      case "continue-app": continueApp(); break;
+      case "see-debrief": showDebrief(); break;
+      case "save-avail": {
+        S.avail = {};
+        card.querySelectorAll("[data-av]").forEach(function (cb) { if (cb.checked) S.avail[cb.dataset.av] = true; });
+        var n = Object.keys(S.avail).length;
+        if (!n) { P.byId("avErr").innerHTML = '<div class="alert alert-err" role="alert">Choose at least one shift.</div>'; break; }
+        S.sheet = null;
+        if (!sms()) me(n + " " + P.plural(n, "shift") + " selected");
+        S.surveyIdx = 0; askSurvey(); break;
+      }
+      case "copy-code": { var txt = P.byId("code").textContent; if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; }); break; }
+      case "restart": fresh(S.mode); render({ focusHeading: true }); break;
+      case "other-way": start(S.mode === "sms" ? "web" : "sms"); break;
+    }
+  });
+
+  /* ---------- debrief ---------- */
+  function exactHtml() {
+    var h = !S.misses ? "<p>You gave the bot exactly what it asked for every time.</p>"
+      : "<p>The bot didn’t understand " + S.misses + " " + P.plural(S.misses, "reply", "replies") + ". It wanted:</p><ul class=\"plain\">" +
+        S.missNotes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul><p>Bots only take the exact answer they ask for.</p>";
+    if (S.consent === "NO") h += "<p>You said no to texts. That’s allowed, but hourly employers often send interview invites by text, so you could miss one.</p>";
+    return h;
+  }
+  /* Work-style survey. Each flipped statement is paired with the one it flips.
+     Agreeing with both is a contradiction. Disagreeing with a good habit, or agreeing with a bad one, reads as a warning sign.
+     Disagreeing with both is not a contradiction ("I'm not always on time" and "being late isn't fine" can both be true). */
+  function surveyHtml() {
+    var clashes = [], warn = [], unsure = 0, good = 0;
+    SURVEY.filter(function (q) { return q.flips; }).forEach(function (q) {
+      var base = SURVEY.filter(function (x) { return x.id === q.flips; })[0], a = S.survey[base.id], b = S.survey[q.id];
+      if (a === 3) unsure++;
+      if (b === 3) unsure++;
+      if (a >= 4 && b >= 4) { clashes.push("“" + base.text + "” and “" + q.text + "”"); return; }
+      if (a <= 2) warn.push("You disagreed with “" + base.text + "”");
+      if (b >= 4) warn.push("You agreed with “" + q.text + "”");
+      if (a >= 4 && b <= 2) good++;
+    });
+    function list(items) { return '<ul class="plain">' + items.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; }
+    var h = "";
+    if (good === 3) h += "<p>Your answers were clear and consistent, even on the flipped statements.</p>";
+    if (clashes.length) h += "<p>Some answers contradicted each other. You agreed with both of these:</p>" + list(clashes) +
+      "<p>The second statement in each pair was flipped on purpose. Surveys like this check whether people read carefully.</p>";
+    if (warn.length) h += "<p>Some answers may look like warning signs to an employer:</p>" + list(warn) +
+      "<p>If you misread one, slow down and read each statement to the end. If you meant it, that’s worth thinking about.</p>";
+    if (unsure) h += "<p>You picked “Not sure” " + unsure + " " + P.plural(unsure, "time") + ". Many hiring surveys give “Not sure” a low score. When a statement is true for you, say so clearly.</p>";
+    return h;
+  }
+  function debriefHtml() {
+    var fixed = 0, total = 0;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var shifts = Object.keys(S.avail), weekend = shifts.filter(function (k) { return /^(Sat|Sun)/.test(k); }).length;
+    var availNote = !weekend ? "The posting said weekends are required, and you didn’t pick any weekend shifts. A real system would likely pass over this application."
+      : shifts.length <= 4 ? "You picked " + shifts.length + " " + P.plural(shifts.length, "shift") + ". Fewer shifts usually means fewer callbacks. Pick every shift you can honestly work."
+      : "You picked " + shifts.length + " shifts, including " + weekend + " on the weekend. That gives a scheduler room to work with.";
+    var cd = P.code("SS", S.rounds.length, fixed, total);
+    var other = S.mode === "sms" ? "website chat" : "text message";
+    return '<div class="debrief-card"><div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 tabindex="-1">Interview booked</h1><p><span data-private>' + esc(S.profile.contact.first) + "</span>, you’re set for " + esc(S.slot.label) + " at Sunny Side Diner. You applied by " + (S.mode === "sms" ? "text message" : "website chat") + ".</p>" +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2><p>You finished in about ' + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Résumé mistakes caught: ' + fixed + " of " + total + " across " + S.rounds.length + " " + P.plural(S.rounds.length, "résumé") + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") + "</ul>" +
+      (S.rounds.some(function (r) { return r.fixed < r.total; }) ? '<h3>What slipped through</h3><ul class="plain">' + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(x.label) + ".</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      "<h3>Exact replies</h3>" + exactHtml() +
+      (S.stops ? "<h3>STOP</h3><p>You texted STOP. That unsubscribed you, and the bot went silent" + (S.ignored ? " through " + S.ignored + " " + P.plural(S.ignored, "message") : "") + " until you texted START. On a real line, STOP can end your application without anyone noticing.</p>" : "") +
+      "<h3>Availability</h3><p>" + esc(availNote) + "</p>" +
+      "<h3>Work-style survey</h3>" + surveyHtml() +
+      "<h3>Your interview</h3><p>Put it in your phone’s calendar right now, with a reminder an hour before. Bots book on the spot, and a missed interview usually ends the application.</p>" +
+      '<h3>Good to know about hiring bots</h3><ul class="plain"><li>Text bots often use a short number. Save it as a contact so you don’t ignore it.</li><li>Some cancel your interview if you don’t confirm in time.</li><li>A real employer asks for your Social Security number on hiring paperwork after an offer, not in a text or chat. If one asks for it, stop.</li></ul>' +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="other-way">Try it by ' + other + '</button><button class="btn btn-secondary" type="button" data-action="restart">Start over</button><a href="../">Back to job board</a></div></section></div>';
+  }
+
+  P.initBar();
+  render();
+})();
+</script>
+</body>
+</html>

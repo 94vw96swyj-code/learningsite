@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice Job Search</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="A practice job search with eight invented employers, each using a different kind of online application. Built by Drew Cannedy for adult job seekers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="assets/practice.css">
+<style>
+:root { --brand: #B5410F; --brand-dark: #8F3209; --brand-tint: #FDF0E8; }
+.board-head { background: var(--card); border-bottom: 1px solid var(--line); }
+.board-head .inner { max-width: 84rem; margin: 0 auto; padding: 0.9rem 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.board-logo { font-weight: 800; font-size: 1.25rem; color: var(--brand-dark); display: flex; align-items: center; gap: 0.5rem; margin-right: auto; }
+.search { display: flex; gap: 0.5rem; flex: 1 1 26rem; max-width: 34rem; }
+.search input { flex: 1; }
+.search .btn { padding: 0.55rem 1rem; }
+.results { grid-area: card; min-width: 0; }
+.layout.hub { grid-template-areas: "howto coach" "card coach"; grid-template-rows: auto 1fr; row-gap: 1.5rem; }
+.layout.hub .howto { grid-area: howto; margin: 0; }
+body.hints-off .layout.hub { grid-template-areas: "howto" "card"; }
+@media (max-width: 860px) {
+  .layout.hub, body.hints-off .layout.hub { grid-template-areas: "howto" "coach" "card"; }
+  body.hints-off .layout.hub { grid-template-areas: "howto" "card"; }
+}
+.results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.results-head h2.list-title { font-size: 1.35rem; margin: 0; }
+.results-head p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
+.jobcard { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.25rem; display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 1.25rem; align-items: start; }
+.jobcard h3 { font-size: 1.15rem; margin: 0; }
+.jobcard h3 a { color: var(--text); text-decoration: none; }
+.jobcard h3 a:hover { text-decoration: underline; }
+.jobcard .meta { color: var(--muted); font-size: 0.92rem; }
+.jobcard .how { margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.15rem 0.55rem; justify-self: start; }
+.jobcard .go { grid-column: 2; grid-row: 1 / span 4; align-self: center; }
+.jobcard .soon { font-size: 0.85rem; color: var(--muted); text-align: right; }
+.jobcard.locked h3 { color: var(--muted); }
+.empty { background: #fff; border: 1px dashed var(--field); border-radius: 8px; padding: 2rem; text-align: center; color: var(--muted); }
+.empty p { margin: 0 0 1rem; }
+.titlelink { font: inherit; font-weight: 700; color: var(--text); background: none; border: 0; padding: 0; text-align: left; cursor: pointer; }
+.titlelink:hover { text-decoration: underline; }
+/* The white box has no padding of its own (it sits on .post-in), so a click that lands on the dialog itself is a click on the dim backdrop */
+dialog.post { width: min(40rem, calc(100vw - 2rem)); max-height: min(88vh, 52rem); border: 1px solid var(--line); border-radius: 10px; padding: 0; overscroll-behavior: contain; box-shadow: 0 18px 50px rgba(20, 30, 40, 0.3); color: var(--text); }
+dialog.post::backdrop { background: rgba(20, 28, 34, 0.55); }
+/* While the post is open, the board behind it holds still */
+html.post-open { overflow: hidden; }
+.post-in { position: relative; padding: 1.75rem 1.75rem 1.25rem; }
+.post-x { position: absolute; top: 0.6rem; right: 0.7rem; width: 2.5rem; height: 2.5rem; font-size: 1.7rem; line-height: 1; background: none; border: 0; border-radius: 6px; cursor: pointer; color: var(--muted); }
+.post-x:hover { background: #EEF1F3; color: var(--text); }
+.post-co { margin: 0; color: var(--muted); font-weight: 600; }
+dialog.post h2 { font-size: 1.45rem; margin: 0.15rem 2.5rem 0.9rem 0; }
+dialog.post h3 { font-size: 1.02rem; margin: 1.1rem 0 0.35rem; }
+dialog.post p, dialog.post ul { margin: 0; line-height: 1.5; }
+dialog.post ul { padding-left: 1.2rem; }
+.post-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.6rem 1.25rem; margin: 0 0 0.9rem; padding: 0.85rem 1rem; background: #F6F7F8; border-radius: 6px; }
+.post-meta div { margin: 0; }
+.post-meta dt { font-size: 0.82rem; color: var(--muted); }
+.post-meta dd { margin: 0; font-weight: 600; }
+dialog.post .how { display: inline-block; font-size: 0.88rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.15rem 0.55rem; }
+.post-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.post-note { margin-top: 0.6rem !important; font-size: 0.9rem; color: var(--muted); }
+@media (max-width: 560px) {
+  .jobcard { grid-template-columns: 1fr; }
+  .jobcard .go { grid-column: 1; grid-row: auto; margin-top: 0.75rem; justify-self: start; }
+  .jobcard .soon { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice job search">
+  <div class="inner">
+    <p><b>Practice job search.</b> Every employer here is invented. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a href="https://drew-cannedy.com/">Drew Cannedy's portfolio</a>
+    </div>
+  </div>
+</div>
+
+<header class="board-head">
+  <div class="inner">
+    <div class="board-logo"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="3" width="24" height="20" rx="3" fill="#B5410F"/><circle cx="8" cy="10" r="2.2" fill="#FDF0E8"/><circle cx="18" cy="15" r="2.2" fill="#FDF0E8"/></svg>Corkboard Jobs</div>
+    <form class="search" role="search" id="searchForm">
+      <label class="visually-hidden" for="q">Search jobs</label>
+      <input type="text" id="q" placeholder="Job title or company" autocomplete="off">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+  </div>
+</header>
+
+<main class="layout hub">
+    <h1 class="visually-hidden">Practice job search</h1>
+    <section class="howto" aria-labelledby="howto-h">
+      <h2 id="howto-h">How this practice works</h2>
+      <ol>
+        <li><b>Pick a job below and click View job.</b> Read the whole post, then click its Apply button. Each job uses a different kind of online application, like the ones you will see when you apply for real.</li>
+        <li><b>Apply with a practice résumé.</b> Each application gives you three practice résumés to choose from. The site fills in the form from the résumé, the way real sites do.</li>
+        <li><b>Check every box against the résumé.</b> Some answers will be wrong or missing. Open the résumé, compare, and fix them.</li>
+        <li><b>Finish the application.</b> At the end you get a completion code. If your class asks for it, copy the code into your course assignment.</li>
+      </ol>
+      <p><b>Hourly or salaried.</b> The first five jobs pay by the hour. The last three are salaried jobs. They take longer and need more careful work, like picking the right cover letter.</p>
+      <p>Every employer here is made up. Use the <b>Back to job board</b> button at the top of any application to come back here and try another one.</p>
+    </section>
+  <div class="results">
+    <div class="results-head"><h2 class="list-title">Jobs near Minneapolis, MN</h2><p id="count" aria-live="polite"></p></div>
+    <ul class="jobs" id="jobs"><li class="empty js-note">Loading jobs… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</li></ul>
+  </div>
+  <aside class="coach" id="coach" aria-label="Coach notes"></aside>
+</main>
+
+<dialog class="post" id="post" aria-labelledby="postTitle">
+  <div class="post-in">
+    <button class="post-x" type="button" id="postClose" aria-label="Close the job post">&times;</button>
+    <div id="postBody"></div>
+    <div class="post-actions">
+      <a class="btn btn-primary" id="postApply" href="#">Apply</a>
+      <button class="btn btn-secondary" type="button" id="postClose2">Close</button>
+    </div>
+    <p class="post-note" id="postNote"></p>
+  </div>
+</dialog>
+
+<script src="assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc;
+  var JOBS = [
+    { title: "Warehouse Associate, 2nd Shift", co: "Halvorsen & Pike", where: "Brooklyn Park, MN", pay: "$21.00 to $23.50 an hour", type: "Full time", posted: "2 days ago", how: "Apply on company site", href: "halvorsen/verify.html", id: "24-0817",
+      apply: "Apply on company site", note: "This opens the company’s own website.",
+      about: "Halvorsen & Pike moves building supplies to hardware stores across the Upper Midwest. The 2nd shift team gets about 400 orders out the door every night.",
+      does: ["Pick and pack orders with a handheld scanner", "Load and unload trucks", "Count inventory and report damaged product"],
+      needs: ["18 or older", "Able to lift up to 50 pounds", "Available Monday to Friday, 3:00 pm to 11:30 pm"] },
+    { title: "Retail Sales Associate", co: "Northgate Outfitters", where: "Roseville, MN", pay: "$17.50 an hour", type: "Part time", posted: "Today", how: "Easy Apply", href: "northgate/",
+      apply: "Easy Apply", note: "Easy Apply sends the profile you keep on this job board.",
+      about: "Northgate Outfitters sells outdoor clothing and gear. Help customers find the right fit, keep the floor stocked, and run the register.",
+      does: ["Help customers on the sales floor", "Restock shelves and racks", "Run the register"],
+      needs: ["1 year of retail or customer service experience", "Available evenings and weekends", "18 or older"] },
+    { title: "Crew Member", co: "Sunny Side Diner", where: "Minneapolis, MN", pay: "$18.00 to $20.00 an hour", type: "Full or part time", posted: "5 days ago", how: "Text JOBS to apply", href: "sunnyside/",
+      apply: "Apply by text or chat", note: "You’ll apply by chatting with the diner’s hiring bot.",
+      about: "Sunny Side Diner is hiring line cooks, servers and dishwashers for a busy brunch rush.",
+      does: ["Cook, serve or wash dishes, depending on the job you pick", "Keep your station clean", "Work as a team during the rush"],
+      needs: ["Available weekends", "16 or older (18 or older to serve alcohol)", "A phone that can get text messages"] },
+    { title: "Production Worker", co: "Brightway Staffing", where: "Plymouth, MN", pay: "$19.00 an hour", type: "Temp to hire", posted: "1 day ago", how: "Apply through a staffing agency", href: "brightway/home.html", id: "4471",
+      apply: "Apply with Brightway", note: "This opens the agency’s own website. A staffing agency hires you, then places you at this company.",
+      about: "Work at a food packaging plant in Plymouth through Brightway Staffing. One application puts you in the running for this job and others like it.",
+      does: ["Pack and label food products on a moving line", "Keep your area clean", "Follow food safety rules"],
+      needs: ["Able to stand for a full shift", "Steel-toe boots (they can help you get them)", "A reliable way to get to Plymouth"] },
+    { title: "Office Support Specialist", co: "City of North Harbor", where: "North Harbor, MN", pay: "$22.40 to $27.10 an hour", type: "Full time", posted: "1 week ago", how: "Government application", href: "northharbor/home.html", id: "2026-0419",
+      apply: "Apply", note: "This opens the City’s own website. Government applications are long, so set aside time.",
+      about: "Greet the public at City Hall, answer phones, schedule appointments and keep records in city systems.",
+      does: ["Greet visitors and answer phones", "Schedule appointments", "Type letters and enter data"],
+      needs: ["High school diploma or GED", "One year of full-time office or customer service experience (part-time hours count toward it)"] },
+    { title: "Program Coordinator", co: "Tamarack State University", where: "St. Paul, MN", pay: "$52,000 to $58,000 a year", type: "Full time, salaried", posted: "3 days ago", how: "Apply on company site", href: "tamarack/home.html", id: "362184",
+      apply: "Apply on company site", note: "This opens the university’s own website. This application asks for a cover letter as well as a résumé.",
+      about: "Tamarack State University’s Student Success Center helps students stay in school and finish their degrees. Plan and run programs for first-year and first-generation students on the Twin Rivers campus.",
+      does: ["Plan and run workshops, events and a peer mentor program", "Hire, train and schedule student peer mentors", "Track who comes to programs and write a short report each term"],
+      needs: ["A bachelor’s degree, or a combination of related education and work experience equal to four years", "At least 2 years coordinating programs, events or services", "Cover letter and résumé required"] },
+    { title: "Clinic Operations Supervisor", co: "Larkspur Health", where: "Bloomington, MN", pay: "$61,000 to $72,000 a year", type: "Full time, salaried", posted: "3 days ago", how: "Apply on company site", href: "larkspur/home.html", id: "R-10457",
+      apply: "Apply on company site", note: "This opens the hospital’s own website. Find the job on its careers page.",
+      about: "Larkspur Health runs 3 hospitals and 24 clinics across the Twin Cities. Lead the front desk, check-in and scheduling team at the busy Bloomington Clinic.",
+      does: ["Supervise and schedule a team of 12 patient service staff", "Handle patient concerns and cover staff call-outs", "Train new staff and track team goals"],
+      needs: ["2 or more years of supervisory or lead experience", "Clinic, healthcare or customer service operations experience", "BLS (CPR) certification within 30 days of hire", "Associate’s or bachelor’s degree preferred, or equal experience"] },
+    { title: "Project Coordinator", co: "Lindqvist Freight", where: "Eagan, MN", pay: "$56,000 to $63,000 a year", type: "Full time, salaried, hybrid", posted: "3 days ago", how: "Apply on company site", href: "lindqvist/", id: "LF-2614",
+      apply: "Apply on company site", note: "This opens the company’s own careers site. The application is on the same page as the job post.",
+      about: "Lindqvist Freight moves freight across Minnesota, Wisconsin and the Dakotas. The Operations Project Office keeps new equipment, route changes and software rollouts on schedule and on budget.",
+      does: ["Build project schedules and send weekly status reports", "Track project budgets and vendor invoices in spreadsheets", "Keep vendors, drivers and warehouse teams up to date"],
+      needs: ["2 or more years coordinating projects, operations or events", "Experience keeping schedules, budgets and vendor communication on track", "Comfortable with spreadsheets and project tools"] }
+  ];
+
+  function render(list) {
+    var ul = P.byId("jobs");
+    P.byId("count").textContent = list.length + " " + P.plural(list.length, "job");
+    if (!list.length) { ul.innerHTML = '<li class="empty"><p>No jobs match that search. Try a shorter word, like “warehouse” or “retail.”</p><button class="btn btn-secondary" type="button" id="showAll">Show all jobs</button></li>'; P.byId("showAll").addEventListener("click", clearSearch); return; }
+    ul.innerHTML = list.map(function (j) {
+      var live = !!j.href;
+      var i = JOBS.indexOf(j);
+      return '<li class="jobcard' + (live ? "" : " locked") + '"><h3>' + (live ? '<button type="button" class="titlelink" data-post="' + i + '">' + esc(j.title) + "</button>" : esc(j.title)) + "</h3>" +
+        "<span>" + esc(j.co) + "</span>" +
+        '<span class="meta">' + esc(j.where) + ". " + esc(j.pay) + ". " + esc(j.type) + ". Posted " + esc(j.posted.charAt(0).toLowerCase() + j.posted.slice(1)) + "</span>" +
+        '<span class="how">' + esc(j.how) + "</span>" +
+        (live ? '<button type="button" class="btn btn-primary go" data-post="' + i + '">View job<span class="visually-hidden">: ' + esc(j.title) + "</span></button>" : '<span class="go soon">Practice coming soon</span>') + "</li>";
+    }).join("");
+  }
+
+  // Search reads everything on the card and in the job post. Punctuation, accents and "&" are ignored,
+  // and so are filler words, so "cook jobs near me" works like "cook".
+  var FILLER = ["and", "job", "jobs", "in", "near", "me", "for", "the", "a", "an", "id", "per", "pay", "paid", "that", "with", "of"];
+  // Words people use for how a job pays. Every salaried card says "salaried"; hourly cards get "hourly" added below.
+  var SAME = { salary: "salaried", salaries: "salaried", yearly: "salaried", year: "salaried", annual: "salaried", annually: "salaried",
+    hour: "hourly", hours: "hourly", wage: "hourly", wages: "hourly" };
+  function clean(s) {
+    s = String(s).toLowerCase();
+    if (s.normalize) s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    s = s.replace(/(\d),(?=\d{3})/g, "$1"); // $52,000 reads as $52000
+    return " " + s.replace(/&/g, " ").replace(/[^a-z0-9$.\s]/g, " ").replace(/\.(?!\d)/g, " ").replace(/\s+/g, " ").trim() + " ";
+  }
+  // A number only matches the start of a number on the page: "2" finds "2 days ago" and "2nd", not "$20.00"
+  function numHit(hay, w) {
+    var core = w.replace(/^\$+/, "");
+    if (!core) return true;
+    return new RegExp("[\\s$]" + core.replace(/[.$]/g, "\\$&") + "(?!\\d)").test(hay);
+  }
+  // A word matches the start of a word on the page, so "per" doesn't find "experience"
+  function wordHit(hay, w) {
+    if (/^[$0-9]/.test(w)) return numHit(hay, w);
+    return hay.indexOf(" " + w) !== -1 || (w.length > 3 && w.slice(-1) === "s" && hay.indexOf(" " + w.slice(0, -1)) !== -1);
+  }
+  function search(q) {
+    var words = clean(q).split(" ").filter(function (w) { return w && FILLER.indexOf(w) === -1; }).map(function (w) {
+      if (/^\$?\d+k$/.test(w)) return w.replace(/k$/, "000"); // 56k reads as 56000
+      return SAME[w] || w;
+    });
+    return JOBS.filter(function (j) {
+      var hay = clean([j.title, j.co, j.co.replace(/\s+/g, ""), j.where, "near minneapolis", j.pay, /an hour/.test(j.pay) ? "hourly" : "", j.type, "posted " + j.posted, j.how,
+        j.id || "", (j.id || "").replace(/\D/g, ""), (j.id || "").replace(/[^A-Za-z0-9]/g, ""), j.apply, j.about, j.does.join(" "), j.needs.join(" ")].join(" "));
+      return words.every(function (w) { return wordHit(hay, w); });
+    });
+  }
+  /* Job posting pop-up: read the whole post, then Apply */
+  var dlg = P.byId("post");
+  function openPost(j, opener) {
+    var meta = [["Pay", j.pay], ["Type", j.type], ["Location", j.where], ["Posted", j.posted]].concat(j.id ? [["Job ID", j.id]] : []);
+    P.byId("postBody").innerHTML =
+      '<p class="post-co">' + esc(j.co) + "</p>" +
+      '<h2 id="postTitle">' + esc(j.title) + "</h2>" +
+      '<dl class="post-meta">' + meta.map(function (m) { return "<div><dt>" + m[0] + "</dt><dd>" + esc(m[1]) + "</dd></div>"; }).join("") + "</dl>" +
+      '<p class="how">' + esc(j.how) + "</p>" +
+      "<h3>About the job</h3><p>" + esc(j.about) + "</p>" +
+      "<h3>What you’ll do</h3><ul>" + j.does.map(function (d) { return "<li>" + esc(d) + "</li>"; }).join("") + "</ul>" +
+      "<h3>What you need</h3><ul>" + j.needs.map(function (d) { return "<li>" + esc(d) + "</li>"; }).join("") + "</ul>";
+    P.byId("postApply").setAttribute("href", j.href);
+    P.byId("postApply").textContent = j.apply;
+    P.byId("postNote").textContent = j.note;
+    dlg.returnTo = opener;
+    pressedOutside = false;
+    if (dlg.showModal) { dlg.showModal(); holdBoard(true); } else dlg.setAttribute("open", "");
+    dlg.scrollTop = 0;
+    P.byId("postTitle").setAttribute("tabindex", "-1"); P.byId("postTitle").focus();
+  }
+  // Stop the board behind the post from scrolling. Where the scroll bar takes up room, pad by its width so nothing shifts.
+  var heldAt = 0;
+  function holdBoard(on) {
+    var root = document.documentElement;
+    if (on) {
+      var bar = window.innerWidth - root.clientWidth;
+      heldAt = window.pageYOffset;
+      root.classList.add("post-open");
+      if (bar > 0) root.style.paddingRight = bar + "px";
+    } else if (root.classList.contains("post-open")) {
+      root.classList.remove("post-open"); root.style.paddingRight = "";
+      if (window.pageYOffset !== heldAt) window.scrollTo(window.pageXOffset, heldAt);
+    }
+  }
+  function closePost() { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+  dlg.addEventListener("close", function () {
+    holdBoard(false);
+    if (dlg.returnTo && dlg.returnTo.isConnected) dlg.returnTo.focus();
+  });
+  // Close on a click on the dim backdrop only: the press and the release must both land outside the white box,
+  // so selecting text in the post and letting go outside it doesn't close it.
+  var pressedOutside = false;
+  function outsideBox(e) {
+    if (e.target !== dlg) return false;
+    var r = dlg.getBoundingClientRect();
+    return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+  }
+  dlg.addEventListener("mousedown", function (e) { pressedOutside = outsideBox(e); });
+  dlg.addEventListener("click", function (e) { if (pressedOutside && outsideBox(e)) closePost(); pressedOutside = false; });
+  P.byId("postClose").addEventListener("click", closePost);
+  P.byId("postClose2").addEventListener("click", closePost);
+  P.byId("jobs").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-post]");
+    if (b) openPost(JOBS[+b.dataset.post], b);
+  });
+
+  function clearSearch() { P.byId("q").value = ""; render(JOBS); P.byId("q").focus(); }
+
+  P.byId("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault(); render(search(P.val("q")));
+    // On phones the results sit far below the search box, so bring them into view
+    var head = document.querySelector(".results-head");
+    if (head && head.getBoundingClientRect().top > window.innerHeight * 0.6) head.scrollIntoView({ block: "start", behavior: "smooth" });
+  });
+  P.byId("q").addEventListener("input", function () { render(search(P.val("q"))); });
+  P.byId("q").addEventListener("keydown", function (e) { if (e.key === "Escape" && P.val("q")) { e.preventDefault(); clearSearch(); } });
+
+  P.coach(["Click “View job” to read the whole post before you apply.",
+    "Look at the orange label under each job. It tells you how you apply, and that tells you what kind of application is coming.",
+    "Every kind works differently. Try them in any order."]);
+  P.initBar();
+  render(JOBS);
+})();
+</script>
+</body>
+</html>

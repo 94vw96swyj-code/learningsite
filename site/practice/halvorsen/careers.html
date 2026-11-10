@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Careers, Halvorsen &amp; Pike (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Practice: a company careers site where the job is hard to find.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice website">
+  <div class="inner">
+    <p><b>Practice website.</b> Halvorsen &amp; Pike is not a real company. Nothing you type leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout" id="layout">
+  <main class="card site-frame" id="card" data-step="Halvorsen &amp; Pike careers page (job search)">
+    <div class="addr" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url"><b>careers.halvorsenpike.com</b>/jobs?location=duluth-mn</span></div>
+    <div class="site">
+      <div class="cr-head"><svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="15" height="15" rx="2" fill="#fff"/><rect x="11" y="11" width="15" height="15" rx="2" fill="none" stroke="#BFD9CF" stroke-width="2.5"/></svg> Halvorsen &amp; Pike <span>Careers</span></div>
+      <div class="cr-body">
+        <h1>Find your job at Halvorsen &amp; Pike</h1>
+        <form class="cr-search" id="crForm" role="search">
+          <label>Keyword <input type="text" id="kw" placeholder="Job title, keyword or Job ID" autocomplete="off"></label>
+          <label>Location
+            <select id="loc" autocomplete="off">
+              <option value="">All locations</option>
+              <option>Brooklyn Park, MN</option>
+              <option selected>Duluth, MN</option>
+              <option>Fargo, ND</option>
+              <option>Sioux Falls, SD</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+        <div class="cr-chips" id="chips"></div>
+        <p class="cr-count" id="crCount" aria-live="polite"></p>
+        <ul class="cr-list" id="crList"><li class="cr-empty js-note">Loading jobs… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</li></ul>
+      </div>
+    </div>
+  </main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc;
+  var TARGET = "24-0817";
+  // The job from the job board is here, but under a different title and in a city the page isn't showing yet.
+  var JOBS = [
+    { id: "24-0731", title: "CDL-A Delivery Driver", loc: "Duluth, MN", type: "Full time", pay: "$27.00 to $31.00 an hour",
+      text: "Deliver building supplies to hardware stores in northern Minnesota and Wisconsin.", needs: ["Class A CDL", "Clean driving record", "2 years of driving experience"] },
+    { id: "24-0805", title: "Inside Sales Representative", loc: "Duluth, MN", type: "Full time", pay: "$20.00 an hour plus bonus",
+      text: "Take orders by phone and email from hardware stores and builders.", needs: ["1 year of sales or customer service", "Comfortable on the phone"] },
+    { id: "24-0811", title: "Yard Associate, Weekends", loc: "Duluth, MN", type: "Part time", pay: "$19.50 an hour",
+      text: "Load lumber and outdoor products in our yard on Saturdays and Sundays.", needs: ["Able to lift 50 pounds", "Available weekends"] },
+    { id: "24-0817", title: "Material Handler, 2nd Shift", loc: "Brooklyn Park, MN", type: "Full time", pay: "$21.00 to $23.50 an hour",
+      text: "Pick, pack and load orders in our Brooklyn Park warehouse, Monday to Friday, 3:00 pm to 11:30 pm.", needs: ["18 or older", "Able to lift up to 50 pounds", "Available for 2nd shift"] },
+    { id: "24-0822", title: "Forklift Operator, 3rd Shift", loc: "Brooklyn Park, MN", type: "Full time", pay: "$23.00 to $25.50 an hour",
+      text: "Move pallets and load trucks overnight in our Brooklyn Park warehouse.", needs: ["Current forklift certification", "1 year of forklift experience"] },
+    { id: "24-0790", title: "Warehouse Lead, 1st Shift", loc: "Fargo, ND", type: "Full time", pay: "$25.00 an hour",
+      text: "Lead a team of 8 in our Fargo warehouse and train new hires.", needs: ["2 years leading a warehouse team", "Forklift certification"] },
+    { id: "24-0799", title: "Customer Service Representative", loc: "Sioux Falls, SD", type: "Full time", pay: "$19.00 an hour",
+      text: "Help dealers track orders and fix delivery problems.", needs: ["1 year of customer service", "Basic computer skills"] }
+  ];
+  var open = {};
+  function clean(s) { return String(s || "").toLowerCase().replace(/[\u2010-\u2015]/g, "-").replace(/[^a-z0-9\s-]/g, " "); }
+  function digits(s) { return String(s).replace(/\D/g, ""); }
+  function results() {
+    // "Job ID 24-0817", "#24-0817", "240817" and "job id 24 0817" all find the same job: the words job and id are skipped, and numbers are compared digit by digit.
+    var q = clean(P.val("kw")).replace(/\b(jobs?|ids?)\b/g, " ").trim(), loc = P.val("loc");
+    var words = q.split(/\s+/).filter(Boolean), idq = /^[\d\s-]+$/.test(q) ? digits(q) : "";
+    return JOBS.filter(function (j) {
+      if (loc && j.loc !== loc) return false;
+      if (idq.length >= 4) return digits(j.id).indexOf(idq) !== -1;
+      var hay = clean([j.title, j.id, j.text, j.needs.join(" ")].join(" "));
+      return words.every(function (w) { return hay.indexOf(w) !== -1 || (digits(w).length >= 4 && digits(j.id).indexOf(digits(w)) !== -1); });
+    });
+  }
+  function render() {
+    var list = results(), loc = P.val("loc"), kw = P.val("kw").trim();
+    P.byId("url").innerHTML = "<b>careers.halvorsenpike.com</b>/jobs" + (loc || kw ? "?" : "") + [loc ? "location=" + esc(loc.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-$/, "")) : "", kw ? "q=" + esc(encodeURIComponent(kw)) : ""].filter(Boolean).join("&");
+    P.byId("chips").innerHTML = (loc ? '<span>Filters:</span><button type="button" class="chip-x" id="clearLoc" aria-label="Remove filter: location ' + esc(loc) + '">Location: ' + esc(loc) + ' <b aria-hidden="true">&times;</b></button>' : "") +
+      (kw ? '<button type="button" class="chip-x" id="clearKw" aria-label="Remove keyword ' + esc(kw) + '">Keyword: ' + esc(kw) + ' <b aria-hidden="true">&times;</b></button>' : "");
+    P.byId("card").setAttribute("data-step", "Halvorsen & Pike careers page (job search). Location filter: " + (loc || "All locations"));
+    // The count line is a live region, so "No jobs match" is read out too, not only shown.
+    var count = P.byId("crCount"), ul = P.byId("crList");
+    count.classList.toggle("is-empty", !list.length);
+    count.textContent = list.length ? "Showing " + list.length + " " + P.plural(list.length, "job") + (loc ? " in " + loc : "") :
+      loc ? "No jobs match your search in " + loc + ". Check the Location box. Try “All locations.”" : "No jobs match your search. Check the spelling, or try a different word.";
+    ul.hidden = !list.length;
+    if (!list.length) { ul.innerHTML = ""; return; }
+    ul.innerHTML = list.map(function (j) {
+      var isOpen = !!open[j.id];
+      return '<li class="cr-job"><h2>' + esc(j.title) + '</h2><div class="m">' + esc(j.loc) + " &middot; " + esc(j.type) + " &middot; " + esc(j.pay) + " &middot; Job ID " + esc(j.id) + "</div>" +
+        '<div class="actions-row"><button class="btn btn-secondary" type="button" data-view="' + j.id + '" aria-expanded="' + isOpen + '">' + (isOpen ? "Hide details" : "View job") + '<span class="visually-hidden">: ' + esc(j.title) + "</span></button></div>" +
+        (isOpen ? '<div class="cr-detail"><p>' + esc(j.text) + "</p><ul>" + j.needs.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+          (j.id === TARGET ? '<a class="btn btn-primary" href="./">Apply now</a>' : '<button class="btn btn-primary" type="button" data-wrong="' + j.id + '">Apply now</button><div id="note-' + j.id + '"></div>') + "</div>" : "") + "</li>";
+    }).join("");
+  }
+  P.byId("crForm").addEventListener("submit", function (e) { e.preventDefault(); render(); });
+  P.byId("loc").addEventListener("change", render);
+  // After the browser's Back or Forward, draw the list again so it always matches the Location box.
+  window.addEventListener("pageshow", render);
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-view], [data-wrong], #clearLoc, #clearKw"); if (!b) return;
+    if (b.id === "clearLoc") { P.byId("loc").value = ""; render(); P.byId("loc").focus(); return; }
+    if (b.id === "clearKw") { P.byId("kw").value = ""; render(); P.byId("kw").focus(); return; }
+    if (b.dataset.view) { if (e.detail > 1) return; /* a double click counts as one */ open[b.dataset.view] = !open[b.dataset.view]; render(); var again = document.querySelector('[data-view="' + b.dataset.view + '"]'); if (again) again.focus(); return; }
+    if (b.dataset.wrong) {
+      P.byId("note-" + b.dataset.wrong).innerHTML = '<p class="cr-note" role="alert">Practice note: this isn’t the job you picked on the job board. Look for the same Job ID as the job post: ' + TARGET + ".</p>";
+    }
+  });
+  P.coach([
+    "This is the company’s own job list. The job you picked isn’t showing yet. That happens on real career sites.",
+    "Look at what the page is filtering by. The job post said Brooklyn Park, MN.",
+    "Companies don’t always use the same job title everywhere. The Job ID from the post, " + TARGET.replace("-", "\u2011") + ", stays the same. To search for it, first change Location to “All locations.”"
+  ]);
+  P.initBar();
+  render();
+})();
+</script>
+</body>
+</html>

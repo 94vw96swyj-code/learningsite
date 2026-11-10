@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Production Worker, Brightway Staffing (Practice)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231A2328'/%3E%3Cpath d='M12 7H8v18h4' fill='none' stroke='%238EB0F4' stroke-width='2.5'/%3E%3Ctext x='20' y='22.5' font-family='Georgia,serif' font-size='17' fill='%23F3F4F1' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<meta name="description" content="A practice staffing agency application: fix three practice résumés, set job preferences, pass a safety quiz, and book orientation. Built by Drew Cannedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="../assets/practice.css">
+<style>
+:root { --brand: #24479A; --brand-dark: #1A3577; --brand-tint: #E8EEFA; }
+.posting-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem 1.5rem; margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; background: var(--brand-tint); border-radius: 6px; }
+.posting-meta dt { font-size: 0.85rem; color: var(--muted); }
+.posting-meta dd { margin: 0; font-weight: 600; }
+.posting h3 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; }
+.posting ul { margin: 0; padding-left: 1.25rem; }
+.agency-note { background: #FFF8E1; border: 1px solid #F1D98A; border-radius: 6px; padding: 0.75rem 1rem; margin: 0 0 1.25rem; }
+.round-tag { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--brand-dark); background: var(--brand-tint); border-radius: 3px; padding: 0.1rem 0.5rem; margin-bottom: 0.75rem; }
+.compare { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: -0.25rem 0 1.5rem; }
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0 1rem; }
+.quiz fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.1rem 0.6rem; margin-bottom: 1rem; }
+.quiz legend { padding: 0 0.3rem; }
+</style>
+</head>
+<body>
+
+<div class="practice-bar" role="region" aria-label="About this practice application">
+  <div class="inner">
+    <p><b>Practice application.</b> Brightway Staffing is not a real agency. Nothing you type or upload leaves this page.</p>
+    <div class="bar-tools">
+      <button class="switch" id="hintToggle" type="button" aria-pressed="true"><span class="track" aria-hidden="true"></span><span id="hintLabel">Coach notes on</span></button>
+      <a class="back-board" href="../"><span aria-hidden="true">&larr;</span> Back to job board</a>
+    </div>
+  </div>
+</div>
+
+<header class="ats-head">
+  <div class="inner">
+    <div class="logo" style="color:#1A3577">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 22L14 4l10 18z" fill="#24479A"/><circle cx="14" cy="16" r="3.5" fill="#F5C518"/></svg>
+      Brightway Staffing
+    </div>
+    <span class="careers">Find work</span>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+  <aside class="dock" id="dock" aria-label="Practice résumés" hidden></aside>
+  <main class="card" id="card"><p class="js-note">Loading the practice… If nothing appears, this browser may be too old or have JavaScript turned off. Ask your instructor for help.</p></main>
+  <aside class="coach" id="coach" aria-label="Coach notes" aria-live="polite"></aside>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="resumes.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.Practice, esc = P.esc, RES = window.BW_RESUMES;
+  var card = P.byId("card"), dock = P.byId("dock"), layout = P.byId("layout");
+  var STEPS = ["Résumé", "Your information", "Job preferences", "Safety quiz", "Review"];
+  var PROG = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 5 };
+  var TYPES = ["Production and assembly", "Warehouse", "Food production", "Packaging", "Machine operation", "Cleaning", "Forklift"];
+  var SHIFTS = ["1st shift (6:00 am to 2:30 pm)", "2nd shift (2:30 pm to 11:00 pm)", "3rd shift (11:00 pm to 7:00 am)", "Weekends"];
+  var RIDES = [["car", "My own car"], ["bus", "Bus or train"], ["ride", "A ride from someone"], ["walk", "Bike or walk"]];
+  var QUIZ = [
+    { id: "q1", q: "A box looks heavy. What’s the safest way to lift it?", a: ["Bend at the waist and lift fast", "Bend your knees, keep it close, and lift with your legs", "Twist while you lift to save time"], right: 1,
+      why: "Lift with your legs and keep the load close. Twisting and bending at the waist are how backs get hurt." },
+    { id: "q2", q: "You get a small cut on the line. What do you do?", a: ["Keep working, it’s small", "Wait until your break", "Tell your supervisor right away"], right: 2,
+      why: "Report every injury right away, even small ones. It protects you if it gets worse." },
+    { id: "q3", q: "A machine jams while it’s running. What do you do?", a: ["Stop and get your lead. Never reach into running equipment", "Reach in carefully to clear it", "Hit it until it unjams"], right: 0,
+      why: "Never reach into a running machine. Machines get locked off (the power is shut off and locked) before anyone clears a jam." },
+    { id: "q4", q: "Where do you get safety glasses and gloves?", a: ["You don’t need them for most jobs", "Required safety gear is usually provided. Ask on your first day", "Always buy your own before day one"], right: 1,
+      why: "Required safety gear is usually provided. Ask on day one, and wear it the whole shift." },
+    { id: "q5", q: "You can’t make tomorrow’s shift. Who do you tell?", a: ["Nobody. Just don’t go", "Only the supervisor at the site", "Brightway, as early as you can, following their call-off rules"], right: 2,
+      why: "When you work through an agency, the agency is your employer. Call them first. Missing a shift without calling (a no-call, no-show) can end every assignment." }
+  ];
+
+  var S;
+  function fresh() {
+    /* current/profile: the form on screen. app: the last finished round, the only profile that goes into the application.
+       drafts: unfinished rounds by résumé id, so Back and re-upload never lose edits. */
+    S = { step: 0, rounds: [], done: {}, current: null, profile: null, app: null, drafts: {}, lastDraft: null, reading: false, warned: false, returnToReview: false,
+      pref: { types: [], shifts: [], pay: "", miles: "", ride: "", callin: "" }, quiz: {}, sign: "", cert: false, startedAt: null, finishedAt: null };
+  }
+  fresh();
+  function remaining() { return RES.filter(function (r) { return !S.done[r.id]; }); }
+  function lastRound() { return S.rounds[S.rounds.length - 1]; }
+  function resume(id) { return RES.filter(function (r) { return r.id === id; })[0]; }
+  function firstName(r) { return r.person.split(" ")[0]; }
+  function draftResume() {
+    var id = S.drafts[S.lastDraft] ? S.lastDraft : Object.keys(S.drafts)[0];
+    return id ? resume(id) : null;
+  }
+  function sentence(s) { return /[.?!]$/.test(s) ? s : s + "."; }
+
+  /* Job matching for scoring. "loose" is the match the engine uses. "near" also ignores spaces, hyphens and simple
+     word endings, so "House Keeper", "Housekeeping" and "Dish washer" count as the r\u00e9sum\u00e9's job. */
+  function nrm(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\bst\b\.?/g, "saint").replace(/[^a-z0-9]+/g, " ").trim(); }
+  function loose(a, b) { var x = nrm(a), y = nrm(b); if (!x || !y) return x === y; return x === y || (x.length >= 3 && y.indexOf(x) !== -1) || (y.length >= 3 && x.indexOf(y) !== -1); }
+  function stem(s) { return nrm(s).split(" ").map(function (w) { return w.length > 4 ? w.replace(/(ing|ers|er|s)$/, "") : w; }).join(""); }
+  function near(a, b) {
+    if (loose(a, b)) return true;
+    var x = stem(a), y = stem(b);
+    return !!x && !!y && (x === y || (x.length >= 5 && y.indexOf(x) !== -1) || (y.length >= 5 && x.indexOf(y) !== -1));
+  }
+  function same(j, tj) { return loose(j.title, tj.title) && loose(j.employer, tj.employer); }
+  function jobAt(pr, tj) { for (var i = 0; i < pr.jobs.length; i++) if (near(pr.jobs[i].title, tj.title) && near(pr.jobs[i].employer, tj.employer)) return i; return -1; }
+  function employerAt(pr, tj) { for (var i = 0; i < pr.jobs.length; i++) if (near(pr.jobs[i].employer, tj.employer)) return i; return -1; }
+  /* A copy of the form where a nearly matching job carries the r\u00e9sum\u00e9's exact title and employer, so the engine's checks find it */
+  function canon(r, pr) {
+    var sp = P.clone(pr), claimed = {};
+    r.truth.jobs.forEach(function (tj) { sp.jobs.forEach(function (j, i) { if (same(j, tj)) claimed[i] = true; }); });
+    r.truth.jobs.forEach(function (tj) {
+      if (sp.jobs.some(function (j) { return same(j, tj); })) return;
+      for (var i = 0; i < sp.jobs.length; i++) {
+        if (!claimed[i] && near(sp.jobs[i].title, tj.title) && near(sp.jobs[i].employer, tj.employer)) { sp.jobs[i].title = tj.title; sp.jobs[i].employer = tj.employer; claimed[i] = true; return; }
+      }
+    });
+    return sp;
+  }
+  /* Score, then point each miss at the right place: leftover jobs, a title that's off, or dates that are off */
+  function scoreNow(r, pr) {
+    var sp = canon(r, pr);
+    return P.score(r, sp).map(function (x, k) {
+      var er = r.errors[k];
+      if (x.fixed) return x;
+      var left = er.leftovers ? er.leftovers(sp) : [];
+      if (left.length) return { label: x.label, why: x.why, fields: left.map(function (n) { return "j" + n + "-title"; }), fixed: false };
+      var t = er.datesOf !== undefined ? er.datesOf : er.titleOf;
+      if (t === undefined) return x;
+      var tj = r.truth.jobs[t], i = jobAt(sp, tj), p;
+      if (i < 0) {
+        i = employerAt(sp, tj);
+        if (i < 0) return x;
+        if (er.titleLabel) return { label: er.titleLabel, why: er.titleWhy, fields: ["j" + i + "-title"], fixed: false };
+        /* Only the dates are checked here. The title is counted by another mistake, so judge the dates as if it were right. */
+        var trial = P.clone(sp); trial.jobs[i].title = tj.title; trial.jobs[i].employer = tj.employer;
+        if (P.score(r, trial)[k].fixed) return { label: x.label, why: x.why, fields: x.fields, fixed: true };
+      }
+      if (er.datesOf === undefined) return x;
+      p = "j" + i + "-";
+      return { label: er.datesLabel, why: er.datesWhy, fixed: false,
+        fields: tj.startM ? [p + "current", p + "startM", p + "startY", p + "endM", p + "endY"] : [p + "current", p + "startY", p + "endY"] };
+    });
+  }
+
+  var COACH = {
+    0: ["You found it. Same Job # 4471 as the job post. Brightway’s job list called it Production Associate, and this page calls it Production Worker, but it’s the same job.", "A staffing agency hires you, then sends you to work at other companies.", "One application can put you in line for many jobs, so it asks more questions about what you want."],
+    1: ["Three practice résumés are waiting, cleanest to trickiest. Preview one, then drag it onto the upload box or use its Upload button."],
+    4: ["The agency matches you to jobs using these answers. The fewer boxes you check, the fewer calls you get.", "Be honest about how you get to work. It helps them send you somewhere you can actually reach."],
+    5: ["Agencies quiz you on safety because their workers go to many different sites.", "Read every answer before you pick.",
+      "Words you might not know: Your lead is the worker in charge of your line. A machine that’s locked off has its power shut off and locked, so it can’t start.",
+      "Call-off rules tell you how to let the agency know you can’t come in. A no-call, no-show means missing a shift without telling anyone."],
+    6: ["Last check before you submit. The signature has to match the name exactly."]
+  };
+  function renderCoach() {
+    if (S.step === 2 && S.current && !S.returnToReview) {
+      P.coach(["The agency’s system just read the résumé."].concat(S.current.coach),
+        '<p><button type="button" data-action="show-wrong">Show me what’s off</button></p><p class="result" id="coachResult"></p>');
+    } else if (S.step === 3) {
+      P.coach(remaining().length && S.rounds.length < 3 ? ["Try the next résumé, or continue the application. You can stop after any round."] : ["That's all three. Now finish the application."]);
+    } else P.coach(COACH[S.step] || []);
+  }
+  function renderDock() {
+    var show = S.step >= 1 && S.step <= 3;
+    dock.hidden = !show; layout.classList.toggle("with-dock", show);
+    if (show) dock.innerHTML = P.dockHtml(RES, S.done, { canUpload: S.step === 1 });
+  }
+  P.bindDock(dock);
+
+  function progress() {
+    var n = PROG[S.step];
+    if (!n) return "";
+    return '<ol class="progress" aria-label="Application steps">' + STEPS.map(function (s, i) {
+      var k = i + 1;
+      return "<li" + (k < n ? ' class="done"' : "") + (k === n ? ' aria-current="step"' : "") + ">" + esc(s) + "</li>";
+    }).join("") + "</ol>";
+  }
+  function resultList(results) {
+    return "<ul>" + results.map(function (x) {
+      return '<li><span class="tag ' + (x.fixed ? "fixed" : "missed") + '">' + (x.fixed ? (x.word || "Fixed") : (x.missWord || "Missed")) + "</span><span><b>" + esc(sentence(x.label)) + "</b> " + esc(x.why) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+  function checks(name, list, picked) {
+    return '<div class="checks">' + list.map(function (t) { return '<label class="choice"><input type="checkbox" name="' + name + '" value="' + esc(t) + '"' + (picked.indexOf(t) !== -1 ? " checked" : "") + "> <span>" + esc(t) + "</span></label>"; }).join("") + "</div>";
+  }
+  function radios(name, list, picked, inline) {
+    return '<div class="' + (inline ? "inline-choices" : "") + '">' + list.map(function (t) { return '<label class="choice"><input type="radio" name="' + name + '" value="' + esc(t[0]) + '"' + (picked === t[0] ? " checked" : "") + "> <span>" + esc(t[1] || t[0]) + "</span></label>"; }).join("") + "</div>";
+  }
+
+  var V = {};
+  V[0] = function () {
+    return '<article class="posting"><h1 tabindex="-1">Production Worker</h1><p class="sub">Brightway Staffing, working at a food packaging plant in Plymouth, MN. Job # 4471</p>' +
+      '<dl class="posting-meta"><div><dt>Pay</dt><dd>$19.00 an hour, paid weekly</dd></div><div><dt>Type</dt><dd>Temp to hire</dd></div><div><dt>Shifts</dt><dd>1st and 2nd shift open</dd></div></dl>' +
+      '<p class="agency-note">One application with Brightway puts you in the running for this job and others like it.</p>' +
+      '<button class="btn btn-primary" type="button" data-action="apply">Apply to Brightway</button>' +
+      "<h3>What you’ll do</h3><ul><li>Pack and label food products on a moving line</li><li>Keep your area clean and follow food safety rules</li></ul>" +
+      "<h3>What you need</h3><ul><li>Able to stand for a full shift</li><li>Steel-toe boots (we can help you get them)</li><li>Reliable way to get to Plymouth</li></ul></article>";
+  };
+  V[1] = function () {
+    var d = draftResume(), name = d ? firstName(d) : "";
+    var backTo = d ? '<button class="btn btn-secondary" type="button" data-action="resume-draft" data-id="' + esc(d.id) + '">Back to ' + esc(name) + "’s form</button>" : "";
+    return progress() + '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>" +
+      '<h1 tabindex="-1">Upload your résumé</h1><p class="sub">We’ll use it to start your Brightway profile.</p>' +
+      '<div class="drop" id="drop"><p><b>Drag a résumé here</b></p><p class="hint">Or use an Upload button in the practice résumés.</p></div>' +
+      (d ? '<p class="hint" style="margin-top:1rem">' + esc(name) + "’s round isn’t finished yet. Your changes are saved." + (S.rounds.length ? " “Continue the application” uses only the rounds you finished." : "") + "</p>" : "") +
+      (S.rounds.length ? '<div class="actions">' + (backTo || "<span></span>") + '<button class="btn btn-secondary" type="button" data-action="to-prefs">Continue the application</button></div>'
+        : '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button>' + backTo + "</div>");
+  };
+  V[2] = function () {
+    var edit = S.returnToReview;
+    return progress() + (edit ? "" : '<span class="round-tag">Round ' + (S.rounds.length + 1) + " of 3</span>") +
+      '<h1 tabindex="-1">Your information</h1>' + (edit ? "" : '<div class="alert alert-info">We filled this in from your résumé. Please check it.</div>') +
+      '<p class="compare"><button class="btn btn-secondary" type="button" data-action="open-current">Open ' + esc(S.current.file) + '</button><span class="hint">It opens beside the form so you can compare.</span></p>' +
+      '<div id="infoErr" aria-live="polite"></div>' + P.formHtml(S.profile) + '<div id="coachCheck"></div>' +
+      '<div class="actions">' + (edit ? "<span></span>" : '<button class="btn btn-secondary" type="button" data-action="back">Back</button>') +
+      '<button class="btn btn-primary" type="button" data-action="next-info">' + (edit ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+  V[3] = function () {
+    var last = lastRound(), more = remaining().length && S.rounds.length < 3;
+    return progress() + '<h1 tabindex="-1">Round ' + S.rounds.length + ' done</h1><p class="sub">' + esc(last.person) + " (" + esc(last.level) + ")</p>" +
+      '<section class="debrief" aria-label="Round results"><p class="score">You caught ' + last.fixed + " of " + last.total + "</p>" + resultList(last.results) + "</section>" +
+      '<div class="actions">' + (more ? '<button class="btn btn-primary" type="button" data-action="next-round">Try the next résumé</button>' : "<span></span>") +
+      '<button class="btn ' + (more ? "btn-secondary" : "btn-primary") + '" type="button" data-action="to-prefs">Continue the application</button></div>';
+  };
+  V[4] = function () {
+    var p = S.pref;
+    return progress() + '<h1 tabindex="-1">Job preferences</h1><p class="sub">Tell us what kind of work you want. We’ll call you when something matches.</p><div id="pErr" aria-live="polite"></div>' +
+      '<fieldset id="f-ptype"><legend>What kinds of work would you take?<span class="req" aria-hidden="true">*</span></legend>' + checks("ptype", TYPES, p.types) + "</fieldset>" +
+      '<fieldset id="f-pshift"><legend>Which shifts can you work?<span class="req" aria-hidden="true">*</span></legend>' + checks("pshift", SHIFTS, p.shifts) + "</fieldset>" +
+      '<div class="row">' + P.textField("pf-pay", "Lowest hourly pay you’ll accept", p.pay, { req: true, hint: "Numbers only, like 18.50" }) +
+      '<div class="field" id="f-pf-miles"><label for="pf-miles">How far will you travel?<span class="req" aria-hidden="true">*</span></label><select id="pf-miles"><option value="">Select</option>' +
+      ["5", "10", "20", "30"].map(function (m) { return '<option value="' + m + '"' + (p.miles === m ? " selected" : "") + ">Up to " + m + " miles</option>"; }).join("") + "</select></div></div>" +
+      '<fieldset id="f-pride"><legend>How will you get to work?<span class="req" aria-hidden="true">*</span></legend>' + radios("pride", RIDES, p.ride) + "</fieldset>" +
+      '<fieldset id="f-pcall"><legend>Can you take a same-day call to work a shift?<span class="req" aria-hidden="true">*</span></legend>' + radios("pcall", [["Yes"], ["No"]], p.callin, true) + "</fieldset>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="next-pref">' + (S.returnToReview ? "Save and return to review" : "Continue") + "</button></div>";
+  };
+  V[5] = function () {
+    return progress() + '<h1 tabindex="-1">Safety quiz</h1><p class="sub">Five questions. Everyone who works through Brightway takes this.</p><div id="qErr" aria-live="polite"></div><div class="quiz">' +
+      QUIZ.map(function (q, i) {
+        return '<fieldset id="f-' + q.id + '"><legend>' + (i + 1) + ". " + esc(q.q) + "</legend>" +
+          q.a.map(function (a, k) { return '<label class="choice"><input type="radio" name="' + q.id + '" value="' + k + '"' + (S.quiz[q.id] === k ? " checked" : "") + "> <span>" + esc(a) + "</span></label>"; }).join("") + "</fieldset>";
+      }).join("") + "</div>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="next-quiz">Continue</button></div>';
+  };
+  function payText(s) { var n = P.num(s); return isNaN(n) ? String(s) : n.toFixed(2); }
+  function rideText(v) { var m = RIDES.filter(function (x) { return x[0] === v; })[0]; return m ? m[1] : v; }
+  V[6] = function () {
+    var c = S.app.profile.contact, p = S.pref;
+    var jobs = S.app.profile.jobs.map(function (j) {
+      var end = j.current ? "Present" : (j.endM ? P.fmtDate(j.endM, j.endY) : j.endY);
+      var st = j.startM ? P.fmtDate(j.startM, j.startY) : j.startY;
+      return "<dt>" + esc(j.title) + "</dt><dd>" + esc(j.employer) + (st ? ", " + esc(st) + (end ? " to " + esc(end) : "") : "") + "</dd>";
+    }).join("");
+    var today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    return progress() + '<h1 tabindex="-1">Review and submit</h1>' +
+      '<div class="review-block"><div class="rb-head"><h3>Contact information</h3><button class="btn-link" type="button" data-action="edit" data-to="2">Edit</button></div><dl>' +
+      "<dt>Name</dt><dd>" + esc(c.first + " " + c.last) + "</dd><dt>Email</dt><dd>" + esc(c.email) + "</dd><dt>Phone</dt><dd>" + esc(c.phone) + "</dd><dt>Location</dt><dd>" + esc(c.city + ", " + c.state + " " + c.zip) + "</dd></dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h3>Work history</h3><button class="btn-link" type="button" data-action="edit" data-to="2">Edit</button></div><dl>' + jobs + "</dl></div>" +
+      '<div class="review-block"><div class="rb-head"><h3>Job preferences</h3><button class="btn-link" type="button" data-action="edit" data-to="4">Edit</button></div><dl>' +
+      "<dt>Work types</dt><dd>" + esc(p.types.join(", ")) + "</dd><dt>Shifts</dt><dd>" + esc(p.shifts.join(", ")) + "</dd><dt>Lowest pay</dt><dd>$" + esc(payText(p.pay)) + "</dd>" +
+      "<dt>Travel</dt><dd>Up to " + esc(p.miles) + " miles</dd><dt>Getting to work</dt><dd>" + esc(rideText(p.ride)) + "</dd><dt>Same-day calls</dt><dd>" + esc(p.callin) + "</dd></dl></div>" +
+      '<div class="section"><h2>Signature</h2><div id="rErr" aria-live="polite"></div>' +
+      '<div class="field" id="f-r-cert"><label class="choice"><input type="checkbox" id="r-cert"' + (S.cert ? " checked" : "") + '> <span>I certify that the information in this application is true and complete.<span class="req" aria-hidden="true">*</span></span></label></div>' +
+      P.textField("r-sign", "Type your full name as your signature", S.sign, { req: true, ac: "off" }) + '<p class="hint">Date: ' + esc(today) + "</p></div>" +
+      '<div class="actions"><button class="btn btn-secondary" type="button" data-action="back">Back</button><button class="btn btn-primary" type="button" data-action="submit">Submit application</button></div>';
+  };
+  function nextTuesday() {
+    var d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + 1);
+    while (d.getDay() !== 2) d.setDate(d.getDate() + 1);
+    return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  }
+  V[7] = function () {
+    var fixed = 0, total = 0;
+    S.rounds.forEach(function (r) { fixed += r.fixed; total += r.total; });
+    var quiz = QUIZ.map(function (q) { return { label: q.q, why: q.why, fixed: S.quiz[q.id] === q.right, word: "Right", missWord: "Missed" }; });
+    var right = quiz.filter(function (x) { return x.fixed; }).length;
+    var p = S.pref, notes = [];
+    var pay = P.num(p.pay);
+    if (!isNaN(pay) && pay > 19) notes.push("You set your lowest pay at $" + pay.toFixed(2) + ", above the $19.00 this job pays. Agencies match by pay, so you’ll see fewer jobs.");
+    if (p.types.length <= 1) notes.push("You picked only one kind of work. Fewer types means fewer calls. Add every kind you’d honestly take.");
+    if (p.shifts.length <= 1) notes.push("You picked only one shift. If you can work others, say so. That’s often the difference between waiting a week and working tomorrow.");
+    if (p.ride === "bus") notes.push("You ride the bus. Tell your recruiter. Good agencies match you to sites on a bus line.");
+    if (p.callin === "No") notes.push("Same-day calls are how a lot of first assignments happen. If you can ever say yes, say so.");
+    if (!notes.length) notes.push("Your preferences give the agency plenty of room to place you.");
+    var mins = Math.max(1, Math.round((S.finishedAt - S.startedAt) / 60000));
+    var cd = P.code("BW", S.rounds.length, fixed + right, total + QUIZ.length);
+    return '<div class="confirm-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h1 tabindex="-1">You’re in. Orientation is booked.</h1>' +
+      "<p>" + esc(S.app.profile.contact.first) + ", come to orientation on <b>" + esc(nextTuesday()) + " at 9:00 am</b> at Brightway Staffing, 4400 Main Street, Plymouth.</p>" +
+      '<div class="review-block"><h3 style="margin-bottom:0.4rem">Bring</h3><ul style="margin:0;padding-left:1.2rem"><li>A photo ID</li><li>Documents that show you can work in the U.S. (we’ll email you the list)</li><li>Steel-toe boots, if you have them</li></ul></div>' +
+      '<section class="debrief" aria-labelledby="db-h"><h2 id="db-h">How you did</h2><p>You finished in about ' + mins + " " + P.plural(mins, "minute") + ".</p>" +
+      '<p class="score">Résumé mistakes caught: ' + fixed + " of " + total + "</p>" +
+      '<ul class="rounds">' + S.rounds.map(function (r) { return "<li><span>" + esc(r.person) + " (" + esc(r.level) + ")</span><span>" + r.fixed + " of " + r.total + "</span></li>"; }).join("") + "</ul>" +
+      (S.rounds.some(function (r) { return r.fixed < r.total; }) ? '<h3>What slipped through</h3><ul class="plain">' + S.rounds.map(function (r) {
+        return r.results.filter(function (x) { return !x.fixed; }).map(function (x) { return "<li>" + esc(r.person) + ": " + esc(sentence(x.label)) + "</li>"; }).join("");
+      }).join("") + "</ul>" : "") +
+      '<h3>Job preferences</h3><ul class="plain">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+      '<h3>Safety quiz: ' + right + " of " + QUIZ.length + "</h3>" + resultList(quiz) +
+      '<h3>Good to know about staffing agencies</h3><ul class="plain"><li>A real agency never charges you a fee to find you work. If one asks you to pay, walk away.</li>' +
+      "<li>While you’re a temp, the agency is your employer. They pay you, and you call them first about anything.</li>" +
+      "<li>Temp to hire means the company may hire you directly after a trial period. Ask how long it usually takes.</li></ul>" +
+      '<h3>Your completion code</h3><p>Copy this into your course assignment to show you finished.</p><div class="code-box"><code id="code">' + esc(cd) + '</code><button type="button" data-action="copy-code">Copy</button></div>' +
+      '<div class="actions" style="justify-content:flex-start;font-family:system-ui,sans-serif;font-size:1rem"><button class="btn btn-primary" type="button" data-action="restart">Try it again</button><a href="../">Back to job board</a></div></section>';
+  };
+
+  function render(focus) {
+    if (focus !== false) P.closeViewer(false); // same-step re-renders (Add another job, Remove) keep the résumé open
+    card.innerHTML = V[S.step]();
+    renderDock(); renderCoach(); bindStep();
+    if (focus !== false) { var h = card.querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } window.scrollTo(0, 0); }
+  }
+  function go(step) { S.step = step; S.warned = false; render(); }
+  function bindStep() {
+    if (S.step === 1) P.bindDrop(P.byId("drop"), { onResume: startRound, onFile: function () {
+      if (P.byId("fileNote")) return;
+      P.byId("drop").insertAdjacentHTML("afterend", '<p class="alert alert-info" id="fileNote" role="status" style="margin-top:1rem">For this practice, use one of the practice résumés.</p>');
+    } });
+  }
+  function startRound(id) {
+    var r = resume(id);
+    if (!r || S.done[r.id] || S.step !== 1 || S.reading) return;
+    S.reading = true; P.setInProgress(true);
+    dock.querySelectorAll("[data-upload]").forEach(function (x) { x.disabled = true; });
+    card.innerHTML = '<div class="loading" role="status"><div class="spinner" aria-hidden="true"></div><p><b>Reading ' + esc(r.file) + "…</b></p></div>";
+    setTimeout(function () { S.reading = false; openRound(r); }, 1300);
+  }
+  /* Uploading a résumé again, or "Back to Keisha’s form", picks up the edits from before */
+  function openRound(r) {
+    S.current = r; S.profile = P.clone(S.drafts[r.id] || r.parsed); S.returnToReview = false;
+    go(2);
+  }
+  function scoreRound(R, r, pr) {
+    R.results = scoreNow(r, pr);
+    R.fixed = R.results.filter(function (x) { return x.fixed; }).length; R.total = R.results.length;
+    S.done[R.id] = { fixed: R.fixed, total: R.total };
+  }
+  function finishRound() {
+    var R = { id: S.current.id, person: S.current.person, level: S.current.level };
+    scoreRound(R, S.current, S.profile);
+    S.rounds.push(R);
+    delete S.drafts[S.current.id];
+    S.app = { resume: S.current, profile: P.clone(S.profile) };
+    go(3);
+  }
+  /* Edit from Review: save, and score the last round again so fixes made here count */
+  function saveEdit() {
+    S.app.profile = S.profile;
+    scoreRound(lastRound(), S.app.resume, S.app.profile);
+    S.returnToReview = false; go(6);
+  }
+  function collectPref() {
+    var all = function (n) { return Array.prototype.map.call(card.querySelectorAll('input[name="' + n + '"]:checked'), function (x) { return x.value; }); };
+    var one = function (n) { var x = card.querySelector('input[name="' + n + '"]:checked'); return x ? x.value : ""; };
+    S.pref = { types: all("ptype"), shifts: all("pshift"), pay: P.val("pf-pay"), miles: P.val("pf-miles"), ride: one("pride"), callin: one("pcall") };
+  }
+  /* "52k", "$45K a year", "45000 salary" and "45 000" are pay for a year, not an hour */
+  function yearlyPay(s) {
+    s = String(s || "");
+    return /\d\s*k\b/i.test(s) || /year|\byrs?\b|annual|salary/i.test(s) || /\d[   ]\d{3}(?!\d)/.test(s);
+  }
+  function prefErrors(p) {
+    var e = [], pay = P.num(p.pay);
+    if (!p.types.length) e.push(["ptype", "Choose at least one."]);
+    if (!p.shifts.length) e.push(["pshift", "Choose at least one."]);
+    if (isNaN(pay)) e.push(["pf-pay", "Enter a number, like 18.50."]);
+    else if (pay >= 1000 || yearlyPay(p.pay)) e.push(["pf-pay", "That looks like pay for a whole year. Enter pay for one hour, like 18.50."]);
+    else if (pay < 5 || pay > 100) e.push(["pf-pay", "Enter an hourly pay between $5 and $100, like 18.50."]);
+    if (!p.miles) e.push(["pf-miles", "Choose how far."]);
+    if (!p.ride) e.push(["pride", "Choose one."]);
+    if (!p.callin) e.push(["pcall", "Choose Yes or No."]);
+    return e;
+  }
+  function checkPrefs() {
+    P.clearErrors();
+    var e = prefErrors(S.pref);
+    e.forEach(function (x) { P.markInvalid(x[0], x[1]); });
+    P.summary("pErr", e.length);
+    if (!e.length) S.pref.pay = P.num(S.pref.pay).toFixed(2);
+    return !e.length;
+  }
+  function collectQuiz() {
+    QUIZ.forEach(function (q) { var x = card.querySelector('input[name="' + q.id + '"]:checked'); S.quiz[q.id] = x ? +x.value : undefined; });
+  }
+  function saveSign() {
+    if (S.step === 6 && P.byId("r-sign")) { S.sign = P.val("r-sign"); S.cert = P.checked("r-cert"); }
+  }
+  function editInfo() { S.returnToReview = true; S.current = S.app.resume; S.profile = P.clone(S.app.profile); go(2); }
+  function showWrong() {
+    S.profile = P.collect(S.profile.jobs.length);
+    var n = P.flag(scoreNow(S.current, S.profile)), out = P.byId("coachResult");
+    if (out) out.textContent = n ? n + " " + P.plural(n, "thing") + " still " + (n === 1 ? "looks" : "look") + " off. They’re outlined in blue." : "Everything matches the résumé. Nice work.";
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action], [data-preview], [data-upload]");
+    if (!b) return;
+    if (b.dataset.preview) { P.openViewer(resume(b.dataset.preview), b); return; }
+    if (b.dataset.upload) { startRound(b.dataset.upload); return; }
+    switch (b.dataset.action) {
+      case "apply": S.startedAt = S.startedAt || Date.now(); go(1); break;
+      case "back":
+        if (S.step === 2) {
+          S.profile = P.collect(S.profile.jobs.length);
+          if (S.returnToReview) { if (P.validateProfile(S.profile, "infoErr", { monthOptional: true })) saveEdit(); break; }
+          S.drafts[S.current.id] = S.profile; S.lastDraft = S.current.id; go(1); break;
+        }
+        if (S.step === 4) { collectPref(); if (S.returnToReview) { if (checkPrefs()) { S.returnToReview = false; go(6); } } else go(3); break; }
+        if (S.step === 5) { collectQuiz(); go(4); break; }
+        if (S.step === 6) { saveSign(); go(5); break; }
+        go(0); break;
+      case "resume-draft": { var dr = resume(b.dataset.id); if (dr && S.drafts[dr.id] && S.step === 1 && !S.reading) openRound(dr); break; }
+      case "open-current": P.openViewer(S.current, b); break;
+      case "add-job":
+        S.profile = P.collect(S.profile.jobs.length);
+        S.profile.jobs.push({ title: "", employer: "", location: "", startM: "", startY: "", endM: "", endY: "", current: false, desc: "" });
+        S.warned = false; render(false); var t = P.byId("j" + (S.profile.jobs.length - 1) + "-title"); if (t) t.focus(); break;
+      case "remove-job": {
+        S.profile = P.collect(S.profile.jobs.length); S.profile.jobs.splice(+b.dataset.i, 1);
+        S.warned = false; render(false); var a = P.byId("add-job"); if (a) a.focus(); break;
+      }
+      case "show-wrong": showWrong(); break;
+      case "next-info": {
+        S.profile = P.collect(S.profile.jobs.length);
+        if (!P.validateProfile(S.profile, "infoErr", { monthOptional: true })) break;
+        if (S.returnToReview) { saveEdit(); break; }
+        var bad = scoreNow(S.current, S.profile).filter(function (x) { return !x.fixed; });
+        /* Only "Continue anyway" skips the coach check */
+        if (P.hints() && bad.length) {
+          S.warned = true;
+          P.byId("coachCheck").innerHTML = '<div class="coach-check" role="alert"><p>Coach check: ' + bad.length + " " + P.plural(bad.length, "thing") + " here still " + (bad.length === 1 ? "doesn’t" : "don’t") + " match the résumé. A real agency site wouldn’t warn you.</p>" +
+            '<button class="btn btn-secondary" type="button" data-action="show-wrong">Look again</button> <button class="btn-link" type="button" data-action="continue-anyway" style="margin-left:1rem">Continue anyway</button></div>';
+          break;
+        }
+        finishRound(); break;
+      }
+      case "continue-anyway": S.profile = P.collect(S.profile.jobs.length); if (P.validateProfile(S.profile, "infoErr", { monthOptional: true })) finishRound(); break;
+      case "next-round": go(1); break;
+      case "to-prefs": if (S.rounds.length && S.app && !S.reading) go(4); break;
+      case "next-pref": {
+        collectPref();
+        if (!checkPrefs()) break;
+        if (S.returnToReview) { S.returnToReview = false; go(6); } else go(5);
+        break;
+      }
+      case "next-quiz": {
+        P.clearErrors(); var m = 0;
+        collectQuiz();
+        QUIZ.forEach(function (q) { if (S.quiz[q.id] === undefined) { P.markInvalid(q.id, "Choose an answer."); m++; } });
+        P.summary("qErr", m);
+        if (!m) go(6);
+        break;
+      }
+      case "edit": saveSign(); if (b.dataset.to === "2") editInfo(); else { S.returnToReview = true; go(+b.dataset.to); } break;
+      case "submit": {
+        saveSign();
+        /* What gets submitted has to pass the same checks as the form steps */
+        if (!P.validateProfile(S.app.profile, "", { monthOptional: true })) { editInfo(); P.validateProfile(S.profile, "infoErr", { monthOptional: true }); break; }
+        if (prefErrors(S.pref).length) { S.returnToReview = true; go(4); checkPrefs(); break; }
+        P.clearErrors();
+        var r = 0, c = S.app.profile.contact, full = (c.first + " " + c.last).trim().replace(/\s+/g, " "), sig = S.sign.trim();
+        if (!S.cert) { P.markInvalid("r-cert", "Check the box to certify your application."); r++; }
+        if (!sig) { P.markInvalid("r-sign", "Type your full name."); r++; }
+        else if (!P.sameName(sig, full)) { P.markInvalid("r-sign", "Your signature must match the name on your application: " + full + ". If that name is wrong, use the Edit button next to Contact information to fix it."); r++; }
+        P.summary("rErr", r);
+        if (!r) { S.finishedAt = Date.now(); P.setInProgress(false); go(7); }
+        break;
+      }
+      case "copy-code": { var txt = P.byId("code").textContent; if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select and copy it"; }); break; }
+      case "restart": fresh(); P.setInProgress(false); go(0); break;
+    }
+  });
+
+  P.initBar();
+  render(false);
+})();
+</script>
+</body>
+</html>
